@@ -7,8 +7,19 @@
 #include "glut.h"
 #include "inc/fmod.hpp"
 
+class Vector2D;
+class Vector3D;
+
 template <typename T>
 using Matrix = std::vector<std::vector<T>>;
+
+enum class Direction {
+	none = 0,
+	up = 1,
+	down = 2,
+	left = 3,
+	right = 4
+};
 
 namespace gv {
 
@@ -25,5 +36,12 @@ namespace gv {
 	extern const int map[rows][columns];
 
 	extern bool toggleWireframe;
+
+	extern Vector2D defaultSize;
+
+	extern Vector3D defaultWireframeColor;
+	extern Vector3D gameObjectWireframeColor;
+	extern Vector3D nodeWireframeColor;
+	extern Vector3D edgeWireframeColor;
 }
 #endif

@@ -1,17 +1,18 @@
 #include "GraphNode.h"
+#include "GraphEdge.h"
 
-GraphNode::GraphNode(int p_index) : m_index(p_index) {
-
+GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_gCost = 0;
 	m_fCost = 0;
 	m_isObstacle = false;
+	m_wireframeColor = gv::nodeWireframeColor;
 }
 
 GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameObject(p_position) {
-
 	m_gCost = 0;
 	m_fCost = 0;
 	m_isObstacle = false;
+	m_wireframeColor = gv::nodeWireframeColor;
 }
 
 void GraphNode::setIndex(int p_index) {
@@ -51,6 +52,14 @@ bool GraphNode::isObstacle(void) const {
 	return m_isObstacle;
 }
 
+void GraphNode::addEdge(GraphEdge* p_edge) {
+	m_edges.push_back(p_edge);
+}
+
+const std::vector<GraphEdge*>& GraphNode::getEdges() const {
+	return m_edges;
+}
+
 void GraphNode::addConnectedNode(GraphNode* p_node) {
 	m_connectedNodes.push_back(p_node);
 }
@@ -68,8 +77,9 @@ void GraphNode::render() {
 }
 
 void GraphNode::renderWireframe(){
-	if (m_isObstacle) m_wireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
-	else		      m_wireframeColor = Vector3D(0.2f, 0.8f, 0.2f);
+
+	/*if (m_isObstacle) m_wireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
+	else		      m_wireframeColor = Vector3D(0.2f, 0.8f, 0.2f);*/
 
 	if (m_isObstacle)
 	GameObject::renderWireframe();

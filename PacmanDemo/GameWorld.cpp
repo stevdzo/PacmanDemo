@@ -1,4 +1,6 @@
 #include "GameWorld.h"
+#include "Graph.h"
+#include "InputManager.h"
 
 void GameWorld::init() {
 	std::cout << "***********************************" << std::endl;
@@ -10,15 +12,17 @@ void GameWorld::init() {
 	glEnable(GL_TEXTURE_2D);
 	glShadeModel(GL_SMOOTH);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);	
 
-	m_graph = new Graph();
+	m_graph = Graph::getInstance();
+	
+	m_player = new Player();
 
-	m_player = GameObject(Vector2D(gv::screenWidth/2.0f, gv::screenWidth/2.0f));
+	m_inputManager = InputManager::getInstance(m_player);
 }
 
 void GameWorld::update(float p_deltaTime) {
-	m_player.update(p_deltaTime);
+	m_player->update(p_deltaTime);
 }
 
 void GameWorld::render() {
@@ -27,23 +31,21 @@ void GameWorld::render() {
 
 	m_graph->renderWireframe();
 
-	m_player.renderWireframe();
+	m_player->renderWireframe();
 
 	glutSwapBuffers();
 }
 
-void GameWorld::keyboard(int, int, int) {
+void GameWorld::keyboard(int p_key, int p_x, int p_y) {
+	m_inputManager->keyboard(p_key, p_x, p_y);
 }
 
-void GameWorld::keyboardUp(int, int, int) {
+void GameWorld::keyboardUp(int p_key, int p_x, int p_y) {
+	m_inputManager->keyboardUp(p_key, p_x, p_y);
 }
 
 void GameWorld::mouse(int p_button, int p_state, int p_x, int p_y) {
-	if (p_button == GLUT_LEFT_BUTTON && p_state == GLUT_UP) {
-		gv::toggleWireframe = !gv::toggleWireframe;
-
-		std::cout << gv::toggleWireframe << std::endl;
-	}
+	m_inputManager->mouse(p_button, p_state, p_x, p_y);
 }
 
 void GameWorld::reshape(int p_w, int p_h) {

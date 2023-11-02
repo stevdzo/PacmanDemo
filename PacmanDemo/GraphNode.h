@@ -19,6 +19,8 @@ struct Index2D {
 	}
 };
 
+class GraphEdge;
+
 class GraphNode : public GameObject {
 
 private: 
@@ -29,6 +31,7 @@ private:
 
 	bool m_isObstacle;
 
+	std::vector<GraphEdge*> m_edges;
 	std::vector<GraphNode*> m_connectedNodes;
 
 public:
@@ -50,8 +53,8 @@ public:
 	void isObstacle(bool);
 	bool isObstacle(void) const;
 
-	/*void addEdge(GraphEdge* p_edge);
-	const std::vector<GraphEdge*>& getEdges() const;*/
+	void addEdge(GraphEdge* p_edge);
+	const std::vector<GraphEdge*>& getEdges() const;
 
 	void addConnectedNode(GraphNode*);
 	const std::vector<GraphNode*>& getConnectedNodes() const;
@@ -59,6 +62,5 @@ public:
 	void update(GLfloat p_deltaTime) override;
 	void render() override;
 	void renderWireframe() override;
-
 };
 #endif

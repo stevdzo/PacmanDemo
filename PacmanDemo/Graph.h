@@ -3,33 +3,44 @@
 
 #include "GraphNode.h"
 
+// Singleton class
 class Graph {
 
 private:
 
-	Matrix<GraphNode*> m_nodeMatrix;
+	static Graph* instance;
 
-	//void addEdge(GraphEdge* p_edge);
+	Matrix<GraphNode*> m_nodeMatrix;
+	std::vector<GraphNode*> m_nodeVector;
+
 	void initNodes();
 	void initEdges();
 	void initGraph();
 
+	Graph();
+
 public:
 
-	Graph();
+	static Graph* getInstance();
+
 	~Graph();
 
 	Matrix<GraphNode*> getNodes();
+	std::vector<GraphNode*> getNodeVector();
+	
+	int getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction) const;
+
+	GraphNode* getNodeByPosition(Vector2D p_position);
 
 	void render();
 	void renderWireframe();
 
 	template<typename T>
-	std::vector<T*> getMatrixAsVector(const std::vector<std::vector<T*>>& p_matrix);
+	std::vector<T*> getMatrixAsVector(const Matrix<T*> p_matrix);
 };
 
 template<typename T>
-inline std::vector<T*> Graph::getMatrixAsVector(const std::vector<std::vector<T*>>& p_matrix) {
+inline std::vector<T*> Graph::getMatrixAsVector(const Matrix<T*> p_matrix) {
 	std::vector<T*> result;
 	int index = 0;
 	for (const auto& row : p_matrix) {

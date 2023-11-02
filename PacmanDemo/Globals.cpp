@@ -1,4 +1,6 @@
 #include "Globals.h"
+#include "Vector2D.h"
+#include "Vector3D.h"
 
 namespace gv {
 
@@ -42,5 +44,12 @@ namespace gv {
 		{_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _}
 	};
 
-	bool toggleWireframe = false;
+	bool toggleWireframe = true;
+
+	Vector2D defaultSize = Vector2D(32.0f, 32.0f);
+
+	Vector3D defaultWireframeColor = Vector3D(1.0f, 1.0f, 1.0f);
+	Vector3D gameObjectWireframeColor = Vector3D(0.2f, 0.8f, 0.2f);
+	Vector3D nodeWireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
+	Vector3D edgeWireframeColor = Vector3D(0.2f, 0.8f, 0.8f);
 }
