@@ -18,15 +18,15 @@ static void idleCallback(void) {
 }
 
 static void keyboardCallback(unsigned char p_key, int p_x, int p_y) {
-	//world->keyboard(p_key, p_x, p_y);
+	world.keyboard(p_key, p_x, p_y);
 }
 
 static void keyboardUpCallback(unsigned char p_key, int p_x, int p_y) {
-	//world->keyboardUp(p_key, p_x, p_y);
+	world.keyboardUp(p_key, p_x, p_y);
 }
 
 static void mouseCallback(int p_button, int p_state, int p_x, int p_y) {
-	//world->mouse(p_button, p_state, p_x, p_y);
+	world.mouse(p_button, p_state, p_x, p_y);
 }
 
 int glutMain(int p_argc, char** p_argv, int p_width, int p_height, const char* p_title) {

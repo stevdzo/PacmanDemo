@@ -1,13 +1,15 @@
 #ifndef _GAMEWORLD_H
 #define _GAMEWORLD_H
 
-#include "GameObject.h"
+#include "Graph.h"
 
 class GameWorld {
 
 private:
 
 	GameObject m_player;
+
+	Graph* m_graph;
 
 	float m_deltaTime;
 	float m_previousTime;

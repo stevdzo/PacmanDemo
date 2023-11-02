@@ -12,6 +12,8 @@ void GameWorld::init() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glDisable(GL_DEPTH_TEST);
 
+	m_graph = new Graph();
+
 	m_player = GameObject(Vector2D(gv::screenWidth/2.0f, gv::screenWidth/2.0f));
 }
 
@@ -22,6 +24,8 @@ void GameWorld::update(float p_deltaTime) {
 void GameWorld::render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	m_graph->renderWireframe();
 
 	m_player.renderWireframe();
 
@@ -35,6 +39,11 @@ void GameWorld::keyboardUp(int, int, int) {
 }
 
 void GameWorld::mouse(int p_button, int p_state, int p_x, int p_y) {
+	if (p_button == GLUT_LEFT_BUTTON && p_state == GLUT_UP) {
+		gv::toggleWireframe = !gv::toggleWireframe;
+
+		std::cout << gv::toggleWireframe << std::endl;
+	}
 }
 
 void GameWorld::reshape(int p_w, int p_h) {

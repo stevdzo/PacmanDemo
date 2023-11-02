@@ -23,6 +23,10 @@ public:
 	virtual void render();
 	virtual void renderWireframe();
 
+	void setPosition(Vector2D p_position);
+	Vector2D getPosition() const;
 
+	void setSize(Vector2D p_size);
+	Vector2D getSize() const;
 };
 #endif
