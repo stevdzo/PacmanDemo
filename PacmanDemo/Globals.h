@@ -34,8 +34,12 @@ namespace gv {
 	constexpr const int columns = 32; // 31 + 1
 
 	extern const int map[rows][columns];
+	extern const int dots[rows - 1][columns - 1];
 
 	extern bool toggleWireframe;
+
+	extern const float directionChangeDistanceThreshold;
+	extern const float turnBufferDistanceThreshold;
 
 	extern Vector2D defaultSize;
 

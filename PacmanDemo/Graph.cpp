@@ -10,8 +10,15 @@ void Graph::initNodes() {
     for (unsigned int row = 0; row < gv::rows; row++) {
         for (unsigned int col = 0; col < gv::columns; col++) {
             GraphNode* node = new GraphNode(index, Vector2D(row * gv::nodeSize + gv::nodeRenderOffset, col * gv::nodeSize + gv::nodeRenderOffset));
-            if (gv::map[row][col] != 1) {
+            if (gv::map[row][col] == -1) {
                 node->isObstacle(true);
+            }
+            if (gv::map[row][col] == 0) {
+                
+            }
+            if (gv::map[row][col] == 2) {
+
+                node->setPosition(node->getPosition() + Vector2D(16.0f, 0.0f));
             }
             m_nodeMatrix[row][col] = node;
             m_nodeVector.push_back(node);

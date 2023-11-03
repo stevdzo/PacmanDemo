@@ -2,6 +2,7 @@
 #define _PLAYER_H
 
 #include "Entity.h"
+#include "Dot.h"
 
 class Player : public Entity {
 
@@ -16,6 +17,8 @@ public:
 	void update(float p_deltaTime) override;
 	void render() override;
 	void renderWireframe() override;
+
+	void eatDot(std::vector<Dot*>&);
 
 	void onPlayerMoveRight();
 	void onPlayerMoveLeft();

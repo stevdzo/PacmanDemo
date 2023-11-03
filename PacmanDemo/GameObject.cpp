@@ -29,7 +29,7 @@ void GameObject::renderWireframe() {
 			glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
 			glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
 			glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
-		glEnd();
+		glEnd();		
 	}
 }
 

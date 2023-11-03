@@ -2,6 +2,7 @@
 #define _GAMEWORLD_H
 
 #include "Player.h"
+#include "Dot.h"
 
 class Graph;
 class InputManager;
@@ -12,6 +13,8 @@ private:
 
 	Player* m_player;
 
+	std::vector<Dot*> m_dots;
+
 	Graph* m_graph;
 	InputManager* m_inputManager;
 
@@ -21,6 +24,8 @@ private:
 public:
 
 	void init();
+
+	void initDots();
 
 	void update(float p_deltaTime);
 	void render();

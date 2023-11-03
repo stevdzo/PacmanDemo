@@ -13,6 +13,16 @@ protected:
 
 	float m_speed;
 
+	bool m_isMoving;
+
+	Direction m_currentDirection;
+	Direction m_desiredDirection;
+
+	virtual int getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction) const;
+	virtual GraphNode* getNodeByIndex(int p_index) const;
+	virtual GraphNode* getNodeByPosition() const;
+	virtual void setVelocityByDirection();
+
 public:
 
 	Entity();
@@ -27,6 +37,6 @@ public:
 	virtual GLboolean onEntityMoveUp();
 	virtual GLboolean onEntityMoveDown();
 	virtual GLboolean onEntityMoveStop();
-	virtual GLboolean onEntityMovement(GLint = 0);
+	virtual GLboolean onEntityMovement(GLint = 0);	
 };
 #endif

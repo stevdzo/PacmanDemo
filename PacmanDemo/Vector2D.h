@@ -22,6 +22,9 @@ public:
 	const bool operator==(const Vector2D&) const;
 	const bool operator!=(const Vector2D&) const;
 
+	const float magnitude();
+	const float distanceTo(const Vector2D& p_v1) const;
+
 	const float* toArray();
 };
 #endif

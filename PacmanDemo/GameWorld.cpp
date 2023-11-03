@@ -16,13 +16,34 @@ void GameWorld::init() {
 
 	m_graph = Graph::getInstance();
 	
+	initDots();
+
 	m_player = new Player();
 
 	m_inputManager = InputManager::getInstance(m_player);
 }
 
+void GameWorld::initDots() {
+	for (size_t row = 0; row < gv::rows; row++) {
+		for (size_t col = 0; col < gv::columns; col++) {
+			if (gv::dots[row][col] == 1) {
+				Dot* dot = new Dot(DotType::small);
+				dot->setPosition(Vector2D(row * gv::nodeSize + dot->getSize().x * 2, col * gv::nodeSize + dot->getSize().y * 2));
+				m_dots.push_back(dot);
+			}
+			if (gv::dots[row][col] == 2) {
+				Dot* dot = new Dot(DotType::big);
+				dot->setPosition(Vector2D(row * gv::nodeSize + dot->getSize().x / 2, col * gv::nodeSize + dot->getSize().y / 2));
+				m_dots.push_back(dot);
+			}
+		}
+	}
+}
+
 void GameWorld::update(float p_deltaTime) {
 	m_player->update(p_deltaTime);
+
+	m_player->eatDot(m_dots);
 }
 
 void GameWorld::render() {
@@ -30,6 +51,11 @@ void GameWorld::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_graph->renderWireframe();
+
+	for (auto& dot : m_dots) {
+
+		dot->renderWireframe();
+	}
 
 	m_player->renderWireframe();
 

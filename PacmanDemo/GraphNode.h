@@ -30,6 +30,8 @@ private:
 	int m_fCost;
 
 	bool m_isObstacle;
+	bool m_isIntersection;
+	bool m_isCorner;
 
 	std::vector<GraphEdge*> m_edges;
 	std::vector<GraphNode*> m_connectedNodes;
@@ -52,6 +54,12 @@ public:
 
 	void isObstacle(bool);
 	bool isObstacle(void) const;
+
+	void isIntersection(bool);
+	bool isIntersection(void) const;
+
+	void isCorner(bool);
+	bool isCorner(void) const;
 
 	void addEdge(GraphEdge* p_edge);
 	const std::vector<GraphEdge*>& getEdges() const;
