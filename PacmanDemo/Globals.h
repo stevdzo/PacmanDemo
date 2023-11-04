@@ -13,7 +13,7 @@ class Vector3D;
 template <typename T>
 using Matrix = std::vector<std::vector<T>>;
 
-enum class Direction {
+enum Direction {
 	none = 0,
 	up = 1,
 	down = 2,

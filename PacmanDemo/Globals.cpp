@@ -77,8 +77,8 @@ namespace gv {
 
 	bool toggleWireframe = true;
 
-	const float directionChangeDistanceThreshold = 0.18f;
-	const float turnBufferDistanceThreshold = 30.0f;
+	const float directionChangeDistanceThreshold = 0.3f;
+	const float turnBufferDistanceThreshold = 32.0f;
 
 	Vector2D defaultSize = Vector2D(32.0f, 32.0f);
 

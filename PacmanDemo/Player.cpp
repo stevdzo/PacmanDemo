@@ -20,10 +20,23 @@ void Player::update(float p_deltaTime) {
 
 		GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
 
+		//std::cout << m_position.distanceTo(m_currentNode->getPosition()) << std::endl;
+
+		std::cout << m_currentDirection << std::endl;
+		std::cout << m_desiredDirection << std::endl;
+
 		if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
-			if (nextNode->isObstacle()) m_currentDirection = Direction::none;
-			else                        m_currentDirection = m_desiredDirection;
+			if (nextNode->isObstacle()) {
+				if (m_currentDirection == m_desiredDirection) {
+					m_currentDirection = Direction::none; 
+					
+				} else 
+					m_desiredDirection = m_currentDirection;
+			}
+			else
+				m_currentDirection = m_desiredDirection;
 		}
+
 		setVelocityByDirection();
 
 		m_currentNode = getNodeByPosition();
@@ -39,13 +52,13 @@ void Player::renderWireframe() {
 
 	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
 
-	glPointSize(16.0f);
+	/*glPointSize(16.0f);
 	glBegin(GL_POINTS);
 	glColor3f(1.0, 0.0, 1.0);
 	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
-	glEnd();
+	glEnd();*/
 
-	if (gv::toggleWireframe) {
+	/*if (gv::toggleWireframe) {
 		glBegin(GL_POLYGON);
 		glColor3fv(m_wireframeColor.toArray());
 		glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
@@ -53,7 +66,17 @@ void Player::renderWireframe() {
 		glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
 		glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
 		glEnd();
+	}*/
+
+	glBegin(GL_TRIANGLE_FAN);
+	glColor3fv(m_wireframeColor.toArray());
+	for (int i = 0; i <= 360; ++i) {
+		float theta = 2.0f * 3.14159 * float(i) / float(360);
+		float x = m_position.x + 15 * cos(theta);
+		float y = m_position.y + 15 * sin(theta);
+		glVertex2f(x, y);
 	}
+	glEnd();
 }
 
 void Player::eatDot(std::vector<Dot*>& p_dots) {
@@ -68,9 +91,8 @@ void Player::onPlayerMovement(int p_key) {
 
 	int index = -1;
 
-	//m_isMoving = true;
 
-	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
+	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_currentDirection));
 
 	if (p_key == '2') {
 		m_currentNode = getNodeByIndex(423);
@@ -88,11 +110,11 @@ void Player::onPlayerMovement(int p_key) {
 			m_currentDirection = Direction::right;
 		}
 		else {
-			if (m_currentNode->isIntersection()) {			
+			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::right;
 				}
-				else {
+				else {					
 					m_desiredDirection = Direction::left;
 					m_currentDirection = Direction::left;
 				}
@@ -105,7 +127,7 @@ void Player::onPlayerMovement(int p_key) {
 			m_currentDirection = Direction::left;
 		}
 		else {
-			if (m_currentNode->isIntersection()) {			
+			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::left;
 				}
@@ -122,7 +144,7 @@ void Player::onPlayerMovement(int p_key) {
 			m_currentDirection = m_desiredDirection;
 		}
 		else {
-			if (m_currentNode->isIntersection()) {						
+			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::up;
 				}
@@ -139,7 +161,7 @@ void Player::onPlayerMovement(int p_key) {
 			m_currentDirection = m_desiredDirection;
 		}
 		else {
-			if (m_currentNode->isIntersection()) {				
+			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::down;
 				}
