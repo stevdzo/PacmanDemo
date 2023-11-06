@@ -4,6 +4,8 @@ Player::Player() : Entity() {
 	m_score = 0;
 	m_speed = 150.0f;
 
+	m_currentNode = getNodeByIndex(441);
+	m_position = m_currentNode->getPosition();
 	m_position += Vector2D(gv::nodeSize/2.0f, 0.0f);
 	m_isMoving = true;
 	m_currentDirection = Direction::left;
@@ -18,28 +20,29 @@ void Player::update(float p_deltaTime) {
 
 		m_position += m_velocity * (m_speed * p_deltaTime);
 
-		GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
+		int index = getAdjacentNodeIndex(m_currentNode, m_desiredDirection);
 
-		//std::cout << m_position.distanceTo(m_currentNode->getPosition()) << std::endl;
+		if (index < gv::rows * gv::columns) {
+			GraphNode* nextNode = getNodeByIndex(index);
 
-		std::cout << m_currentDirection << std::endl;
-		std::cout << m_desiredDirection << std::endl;
+			if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
+				if (nextNode && (nextNode->isEmptyNode() || nextNode->isObstacle())) {
+					if (m_currentDirection == m_desiredDirection) {
+						m_currentDirection = Direction::none;
 
-		if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
-			if (nextNode->isObstacle()) {
-				if (m_currentDirection == m_desiredDirection) {
-					m_currentDirection = Direction::none; 
-					
-				} else 
-					m_desiredDirection = m_currentDirection;
+					}
+					else
+						m_desiredDirection = m_currentDirection;
+				}
+				else
+					m_currentDirection = m_desiredDirection;
 			}
-			else
-				m_currentDirection = m_desiredDirection;
+
+			setVelocityByDirection();
+			checkForPortal();
+
+			m_currentNode = getNodeByPosition();
 		}
-
-		setVelocityByDirection();
-
-		m_currentNode = getNodeByPosition();
 	}
 }
 
@@ -50,9 +53,9 @@ void Player::render() {
 void Player::renderWireframe() {
 	//Entity::renderWireframe();
 
-	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
+	/*GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
 
-	/*glPointSize(16.0f);
+	glPointSize(16.0f);
 	glBegin(GL_POINTS);
 	glColor3f(1.0, 0.0, 1.0);
 	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
@@ -80,9 +83,10 @@ void Player::renderWireframe() {
 }
 
 void Player::eatDot(std::vector<Dot*>& p_dots) {
-	for (auto& dot : p_dots) {
-		if (m_position.distanceTo(dot->getPosition()) < 8.0f) {
-			p_dots.erase(std::remove(p_dots.begin(), p_dots.end(), dot), p_dots.end());
+	for (auto it = p_dots.begin(); it != p_dots.end(); ++it) {
+		if (m_position.distanceTo((*it)->getPosition()) < gv::eatDistanceThreshold) {
+			delete* it;
+			it = p_dots.erase(it);
 		}
 	}
 }
@@ -91,11 +95,10 @@ void Player::onPlayerMovement(int p_key) {
 
 	int index = -1;
 
-
 	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_currentDirection));
 
 	if (p_key == '2') {
-		m_currentNode = getNodeByIndex(423);
+		m_currentNode = getNodeByIndex(441);
 		m_position = m_currentNode->getPosition();
 		m_position += Vector2D(gv::nodeSize / 2.0f, 0.0f);
 		m_isMoving = true;
@@ -115,8 +118,8 @@ void Player::onPlayerMovement(int p_key) {
 					m_desiredDirection = Direction::right;
 				}
 				else {					
-					m_desiredDirection = Direction::left;
-					m_currentDirection = Direction::left;
+					/*m_desiredDirection = Direction::left;
+					m_currentDirection = Direction::left;*/
 				}
 			}
 		}
@@ -132,8 +135,8 @@ void Player::onPlayerMovement(int p_key) {
 					m_desiredDirection = Direction::left;
 				}
 				else {
-					m_desiredDirection = Direction::right;
-					m_currentDirection = Direction::right;
+					/*m_desiredDirection = Direction::right;
+					m_currentDirection = Direction::right;*/
 				}
 			}
 		}
@@ -149,8 +152,8 @@ void Player::onPlayerMovement(int p_key) {
 					m_desiredDirection = Direction::up;
 				}
 				else {
-					m_desiredDirection = Direction::down;
-					m_currentDirection = Direction::down;
+					/*m_desiredDirection = Direction::down;
+					m_currentDirection = Direction::down;*/
 				}
 			}
 		}
@@ -166,8 +169,8 @@ void Player::onPlayerMovement(int p_key) {
 					m_desiredDirection = Direction::down;
 				}
 				else {
-					m_desiredDirection = Direction::up;
-					m_currentDirection = Direction::up;
+					/*m_desiredDirection = Direction::up;
+					m_currentDirection = Direction::up;*/
 				}
 			}
 		}

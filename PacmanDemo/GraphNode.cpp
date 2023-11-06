@@ -4,6 +4,7 @@
 GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_gCost = 0;
 	m_fCost = 0;
+	m_isEmptyNode = false;
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
@@ -13,6 +14,7 @@ GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameObject(p_position) {
 	m_gCost = 0;
 	m_fCost = 0;
+	m_isEmptyNode = false;
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
@@ -48,6 +50,14 @@ int GraphNode::getFCost(void) const {
 	return m_fCost;
 }
 
+void GraphNode::isEmptyNode(bool p_emptyNode) {
+	m_isEmptyNode = p_emptyNode;
+}
+
+bool GraphNode::isEmptyNode(void) const {
+	return m_isEmptyNode;
+}
+
 void GraphNode::isObstacle(bool p_isObstacle) {
 	m_isObstacle = p_isObstacle;
 }
@@ -74,7 +84,7 @@ bool GraphNode::isIntersection(void) const {
 	if (m_edges.size() == 2) {
 		int indexCount = 0;
 		for (auto& node : m_connectedNodes) {
-			if (!node->isObstacle()) {
+			if (!node->isEmptyNode() && !node->isObstacle()) {
 				indexCount += node->getIndex();
 			}
 		}
@@ -114,7 +124,7 @@ void GraphNode::renderWireframe(){
 	/*if (m_isObstacle) m_wireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
 	else		      m_wireframeColor = Vector3D(0.2f, 0.8f, 0.2f);*/
 
-	if (m_isObstacle)
+	if (!m_isEmptyNode && m_isObstacle)
 	GameObject::renderWireframe();
 	/*else {
 		glPointSize(5.0f);

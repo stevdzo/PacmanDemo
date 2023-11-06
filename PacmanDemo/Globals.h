@@ -30,8 +30,11 @@ namespace gv {
 	extern const float nodeSize;
 	extern const float nodeRenderOffset;
 
-	constexpr const int rows = 29; // 28 + 1
-	constexpr const int columns = 32; // 31 + 1
+	extern const int leftPortalIndex;
+	extern const int rightPortalIndex;
+
+	constexpr const int rows = 30; // 28 + 1
+	constexpr const int columns = 31; // 31 + 1
 
 	extern const int map[rows][columns];
 	extern const int dots[rows - 1][columns - 1];
@@ -40,6 +43,7 @@ namespace gv {
 
 	extern const float directionChangeDistanceThreshold;
 	extern const float turnBufferDistanceThreshold;
+	extern const float eatDistanceThreshold;	
 
 	extern Vector2D defaultSize;
 

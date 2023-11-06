@@ -22,6 +22,7 @@ protected:
 	virtual GraphNode* getNodeByIndex(int p_index) const;
 	virtual GraphNode* getNodeByPosition() const;
 	virtual void setVelocityByDirection();
+	virtual void checkForPortal();
 
 public:
 

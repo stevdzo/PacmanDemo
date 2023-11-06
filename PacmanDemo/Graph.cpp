@@ -9,17 +9,19 @@ void Graph::initNodes() {
     int index = 0;
     for (unsigned int row = 0; row < gv::rows; row++) {
         for (unsigned int col = 0; col < gv::columns; col++) {
-            GraphNode* node = new GraphNode(index, Vector2D(row * gv::nodeSize + gv::nodeRenderOffset, col * gv::nodeSize + gv::nodeRenderOffset));
+            GraphNode* node = new GraphNode(index, Vector2D(row * gv::nodeSize + gv::nodeRenderOffset, col * gv::nodeSize + gv::nodeRenderOffset) - Vector2D(32.0f, 0.0f));
             if (gv::map[row][col] == -1) {
                 node->isObstacle(true);
             }
             if (gv::map[row][col] == 0) {
-                
+
+                node->isEmptyNode(true);
             }
             if (gv::map[row][col] == 2) {
-
+                
                 node->setPosition(node->getPosition() + Vector2D(16.0f, 0.0f));
             }
+         
             m_nodeMatrix[row][col] = node;
             m_nodeVector.push_back(node);
             index++;
@@ -40,7 +42,9 @@ void Graph::initEdges() {
                         row + i < gv::rows &&
                         col + j >= 0 &&
                         col + j < gv::columns) {
-                        if (!m_nodeMatrix[row][col]->isObstacle() &&
+                        if (!m_nodeMatrix[row][col]->isEmptyNode() &&
+                            !m_nodeMatrix[row + i][col + j]->isEmptyNode() &&
+                            !m_nodeMatrix[row][col]->isObstacle() &&
                             !m_nodeMatrix[row + i][col + j]->isObstacle()) {
                             GraphEdge* edge = new GraphEdge(m_nodeMatrix[row][col], m_nodeMatrix[row + i][col + j]);
                             m_nodeMatrix[row][col]->addEdge(edge);
@@ -124,7 +128,7 @@ int Graph::getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction)
 
 GraphNode* Graph::getNodeByPosition(Vector2D p_position) {
     return m_nodeMatrix
-        [std::floor(p_position.x / gv::nodeSize)]
+        [std::floor((p_position.x + gv::nodeSize) / gv::nodeSize)]
         [std::floor(p_position.y / gv::nodeSize)];
 }
 

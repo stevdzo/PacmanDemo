@@ -37,9 +37,16 @@ void Entity::setVelocityByDirection() {
     }
 }
 
+void Entity::checkForPortal() {
+    if (m_currentNode->getIndex() == gv::leftPortalIndex && m_currentDirection == Direction::left)
+        m_position = getNodeByIndex(gv::rightPortalIndex)->getPosition();
+    if (m_currentNode->getIndex() == gv::rightPortalIndex && m_currentDirection == Direction::right)
+        m_position = getNodeByIndex(gv::leftPortalIndex)->getPosition();
+}
+
 Entity::Entity(): GameObject() {
 
-    m_currentNode = getNodeByIndex(423);
+    m_currentNode = getNodeByIndex(410);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -50,7 +57,7 @@ Entity::Entity(): GameObject() {
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 
-    m_currentNode = getNodeByIndex(429);
+    m_currentNode = getNodeByIndex(410);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;

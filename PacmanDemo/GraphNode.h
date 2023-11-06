@@ -29,6 +29,7 @@ private:
 	int m_gCost;
 	int m_fCost;
 
+	bool m_isEmptyNode;
 	bool m_isObstacle;
 	bool m_isIntersection;
 	bool m_isCorner;
@@ -51,6 +52,9 @@ public:
 
 	void setFCost(int);
 	int getFCost(void) const;
+
+	void isEmptyNode(bool);
+	bool isEmptyNode(void) const;
 
 	void isObstacle(bool);
 	bool isObstacle(void) const;
