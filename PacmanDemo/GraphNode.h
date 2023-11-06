@@ -19,6 +19,13 @@ struct Index2D {
 	}
 };
 
+enum class NodeType {
+
+	none = 0,
+	obstacle = 1,
+	valid = 2
+};
+
 class GraphEdge;
 
 class GraphNode : public GameObject {
@@ -28,11 +35,16 @@ private:
 	int m_index;
 	int m_gCost;
 	int m_fCost;
+	int m_hCost;
+
+	NodeType m_nodeType;
 
 	bool m_isEmptyNode;
 	bool m_isObstacle;
 	bool m_isIntersection;
 	bool m_isCorner;
+
+	GraphNode* m_parentNode;
 
 	std::vector<GraphEdge*> m_edges;
 	std::vector<GraphNode*> m_connectedNodes;
@@ -53,6 +65,12 @@ public:
 	void setFCost(int);
 	int getFCost(void) const;
 
+	void setHCost(int);
+	int getHCost(void) const;
+
+	void setNodeType(NodeType p_nodeType);
+	NodeType getNodeType(void) const;
+
 	void isEmptyNode(bool);
 	bool isEmptyNode(void) const;
 
@@ -65,6 +83,9 @@ public:
 	void isCorner(bool);
 	bool isCorner(void) const;
 
+	void setParent(GraphNode* p_node);
+	GraphNode* getParent(void) const;
+
 	void addEdge(GraphEdge* p_edge);
 	const std::vector<GraphEdge*>& getEdges() const;
 
@@ -74,5 +95,6 @@ public:
 	void update(GLfloat p_deltaTime) override;
 	void render() override;
 	void renderWireframe() override;
+	void renderNodeFromPath();
 };
 #endif

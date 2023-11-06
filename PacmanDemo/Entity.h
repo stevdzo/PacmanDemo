@@ -33,6 +33,8 @@ public:
 	virtual void render();
 	virtual void renderWireframe();
 
+	GraphNode* getCurrentNode() const;
+
 	virtual GLboolean onEntityMoveRight();
 	virtual GLboolean onEntityMoveLeft();
 	virtual GLboolean onEntityMoveUp();

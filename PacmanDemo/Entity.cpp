@@ -46,7 +46,7 @@ void Entity::checkForPortal() {
 
 Entity::Entity(): GameObject() {
 
-    m_currentNode = getNodeByIndex(410);
+    m_currentNode = getNodeByIndex(453);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -57,7 +57,7 @@ Entity::Entity(): GameObject() {
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 
-    m_currentNode = getNodeByIndex(410);
+    m_currentNode = getNodeByIndex(453);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -67,6 +67,16 @@ Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 
 void Entity::update(float p_deltaTime) {
     GameObject::update(p_deltaTime);
+
+    m_position += m_velocity * (m_speed * p_deltaTime);
+
+
+
+
+    setVelocityByDirection();
+    checkForPortal();
+
+    m_currentNode = getNodeByPosition();
 }
 
 void Entity::render() {
@@ -75,6 +85,10 @@ void Entity::render() {
 
 void Entity::renderWireframe() {
     GameObject::renderWireframe();
+}
+
+GraphNode* Entity::getCurrentNode() const {
+    return m_currentNode;
 }
 
 GLboolean Entity::onEntityMoveRight() {

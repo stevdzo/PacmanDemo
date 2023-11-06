@@ -9,6 +9,7 @@ class Player : public Entity {
 private:
 
 	int m_score;
+	int m_health;
 
 public:
 

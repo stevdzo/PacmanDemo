@@ -20,6 +20,10 @@ void GameWorld::init() {
 
 	m_player = new Player();
 
+	m_enemy = new Enemy();	
+
+	m_enemy->findShortestPath(Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[866]);
+
 	m_inputManager = InputManager::getInstance(m_player);
 }
 
@@ -42,8 +46,11 @@ void GameWorld::initDots() {
 
 void GameWorld::update(float p_deltaTime) {
 	m_player->update(p_deltaTime);
+	m_enemy->update(p_deltaTime);
 
 	m_player->eatDot(m_dots);
+
+	//m_enemy->findShortestPath(m_player->getCurrentNode());
 }
 
 void GameWorld::render() {
@@ -58,6 +65,7 @@ void GameWorld::render() {
 	}
 
 	m_player->renderWireframe();
+	m_enemy->renderWireframe();
 
 	glutSwapBuffers();
 }

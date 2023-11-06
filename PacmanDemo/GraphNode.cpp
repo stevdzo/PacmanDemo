@@ -3,7 +3,11 @@
 
 GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_gCost = 0;
+	m_hCost = 0;
 	m_fCost = 0;
+
+	m_nodeType = NodeType::none;
+
 	m_isEmptyNode = false;
 	m_isObstacle = false;
 	m_isIntersection = false;
@@ -13,7 +17,11 @@ GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 
 GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameObject(p_position) {
 	m_gCost = 0;
+	m_hCost = 0;
 	m_fCost = 0;
+
+	m_nodeType = NodeType::none;
+
 	m_isEmptyNode = false;
 	m_isObstacle = false;
 	m_isIntersection = false;
@@ -50,12 +58,29 @@ int GraphNode::getFCost(void) const {
 	return m_fCost;
 }
 
+void GraphNode::setHCost(int p_hCost) {
+	m_hCost = p_hCost;
+}
+
+int GraphNode::getHCost(void) const {
+	return m_hCost;
+}
+
+void GraphNode::setNodeType(NodeType p_nodeType) {
+	m_nodeType = p_nodeType;
+}
+
+NodeType GraphNode::getNodeType(void) const {
+	return m_nodeType;
+}
+
 void GraphNode::isEmptyNode(bool p_emptyNode) {
 	m_isEmptyNode = p_emptyNode;
 }
 
 bool GraphNode::isEmptyNode(void) const {
-	return m_isEmptyNode;
+	return m_nodeType == NodeType::none;
+	//return m_isEmptyNode;
 }
 
 void GraphNode::isObstacle(bool p_isObstacle) {
@@ -63,7 +88,8 @@ void GraphNode::isObstacle(bool p_isObstacle) {
 }
 
 bool GraphNode::isObstacle(void) const {
-	return m_isObstacle;
+	return m_nodeType == NodeType::obstacle;
+	//return m_isObstacle;
 }
 
 void GraphNode::isIntersection(bool p_isIntersection) {
@@ -79,20 +105,32 @@ void GraphNode::isCorner(bool p_isCorner) {
 	m_isCorner = p_isCorner;
 }
 
+void GraphNode::setParent(GraphNode* p_node) {
+	m_parentNode = p_node;
+}
+
+GraphNode* GraphNode::getParent(void) const {
+	return m_parentNode;
+}
+
 bool GraphNode::isIntersection(void) const {
-	//return m_isCorner;
-	if (m_edges.size() == 2) {
-		int indexCount = 0;
-		for (auto& node : m_connectedNodes) {
-			if (!node->isEmptyNode() && !node->isObstacle()) {
-				indexCount += node->getIndex();
-			}
-		}
-		if (indexCount / 2 == m_index) {
-			return false;
-		}
+
+	int numberOfObstacles = 0;
+
+	if (m_edges.size() > 2) {
 		return true;
 	}
+
+	for (auto& node : m_connectedNodes) {
+		if (node->isObstacle()) {
+			numberOfObstacles++;
+		}
+	}
+
+	if (numberOfObstacles == 2) {
+		return true;
+	}
+	return false;
 }
 
 void GraphNode::addEdge(GraphEdge* p_edge) {
@@ -124,7 +162,7 @@ void GraphNode::renderWireframe(){
 	/*if (m_isObstacle) m_wireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
 	else		      m_wireframeColor = Vector3D(0.2f, 0.8f, 0.2f);*/
 
-	if (!m_isEmptyNode && m_isObstacle)
+	if (!isEmptyNode() && isObstacle())
 	GameObject::renderWireframe();
 	/*else {
 		glPointSize(5.0f);
@@ -133,4 +171,16 @@ void GraphNode::renderWireframe(){
 		glVertex2f(m_position.x, m_position.y);
 		glEnd();
 	}*/
+}
+
+void GraphNode::renderNodeFromPath() {
+	if (gv::toggleWireframe) {
+		glBegin(GL_POLYGON);
+		glColor3fv(m_wireframeColor.toArray());
+		glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
+		glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
+		glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
+		glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
+		glEnd();
+	}
 }

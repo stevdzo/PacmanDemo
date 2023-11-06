@@ -1,5 +1,4 @@
 #include "Vector2D.h"
-#include <math.h>
 
 Vector2D::Vector2D() {
 	x = 0.0f;
@@ -55,7 +54,7 @@ const float Vector2D::magnitude() {
 	return sqrt(x * x + y * y);
 }
 
-const float Vector2D::distanceTo(const Vector2D& p_v1) const {
+const float Vector2D::distanceTo(const Vector2D& p_v1) {
 
 	float x = this->x - p_v1.x;
 	float y = this->y - p_v1.y;

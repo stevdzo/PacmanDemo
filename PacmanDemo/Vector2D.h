@@ -1,6 +1,8 @@
 #ifndef _VECTOR_2D
 #define _VECTOR_2D
 
+#include <math.h>
+
 class Vector2D {
 
 public:
@@ -23,7 +25,7 @@ public:
 	const bool operator!=(const Vector2D&) const;
 
 	const float magnitude();
-	const float distanceTo(const Vector2D& p_v1) const;
+	const float distanceTo(const Vector2D& p_v1);
 
 	const float* toArray();
 };

@@ -14,36 +14,23 @@ Player::Player() : Entity() {
 }
 
 void Player::update(float p_deltaTime) {
-	//Entity::update(p_deltaTime); 
 
-	if (m_isMoving) {
+	int index = getAdjacentNodeIndex(m_currentNode, m_desiredDirection);
+	GraphNode* nextNode = getNodeByIndex(index);
 
-		m_position += m_velocity * (m_speed * p_deltaTime);
-
-		int index = getAdjacentNodeIndex(m_currentNode, m_desiredDirection);
-
-		if (index < gv::rows * gv::columns) {
-			GraphNode* nextNode = getNodeByIndex(index);
-
-			if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
-				if (nextNode && (nextNode->isEmptyNode() || nextNode->isObstacle())) {
-					if (m_currentDirection == m_desiredDirection) {
-						m_currentDirection = Direction::none;
-
-					}
-					else
-						m_desiredDirection = m_currentDirection;
-				}
-				else
-					m_currentDirection = m_desiredDirection;
+	if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
+		if (nextNode && (nextNode->isEmptyNode() || nextNode->isObstacle())) {
+			if (m_currentDirection == m_desiredDirection) {
+				m_currentDirection = Direction::none;
 			}
-
-			setVelocityByDirection();
-			checkForPortal();
-
-			m_currentNode = getNodeByPosition();
+			else
+				m_desiredDirection = m_currentDirection;
 		}
+		else
+			m_currentDirection = m_desiredDirection;
 	}
+
+	Entity::update(p_deltaTime);
 }
 
 void Player::render() {
@@ -83,17 +70,20 @@ void Player::renderWireframe() {
 }
 
 void Player::eatDot(std::vector<Dot*>& p_dots) {
-	for (auto it = p_dots.begin(); it != p_dots.end(); ++it) {
+	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < gv::eatDistanceThreshold) {
 			delete* it;
 			it = p_dots.erase(it);
 		}
+		else ++it;
 	}
 }
 
 void Player::onPlayerMovement(int p_key) {
 
 	int index = -1;
+
+	std::cout << m_position.distanceTo(m_currentNode->getPosition()) << std::endl;
 
 	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_currentDirection));
 
@@ -148,6 +138,7 @@ void Player::onPlayerMovement(int p_key) {
 		}
 		else {
 			if (m_currentNode->isIntersection()) {
+					
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::up;
 				}

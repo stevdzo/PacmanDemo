@@ -3,15 +3,14 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <set>
 
 #include "glut.h"
 #include "inc/fmod.hpp"
 
 class Vector2D;
 class Vector3D;
-
-template <typename T>
-using Matrix = std::vector<std::vector<T>>;
 
 enum Direction {
 	none = 0,
@@ -20,6 +19,9 @@ enum Direction {
 	left = 3,
 	right = 4
 };
+
+template <typename T>
+using Matrix = std::vector<std::vector<T>>;
 
 namespace gv {
 
@@ -37,7 +39,7 @@ namespace gv {
 	constexpr const int columns = 31; // 31 + 1
 
 	extern const int map[rows][columns];
-	extern const int dots[rows - 1][columns - 1];
+	extern const int dots[rows][columns];
 
 	extern bool toggleWireframe;
 

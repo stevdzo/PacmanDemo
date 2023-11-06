@@ -2,6 +2,7 @@
 #define _GAMEWORLD_H
 
 #include "Player.h"
+#include "Enemy.h"
 #include "Dot.h"
 
 class Graph;
@@ -12,6 +13,8 @@ class GameWorld {
 private:
 
 	Player* m_player;
+
+	Enemy* m_enemy;
 
 	std::vector<Dot*> m_dots;
 
