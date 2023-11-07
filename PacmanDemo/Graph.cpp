@@ -99,7 +99,7 @@ std::vector<GraphNode*> Graph::getNodeVector() {
     return m_nodeVector;
 }
 
-int Graph::getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction) const {
+int Graph::getNodeIndexByDirection(GraphNode* p_currentNode, Direction p_direction) const {
 
     GLint numRows = m_nodeMatrix.size();
     if (numRows == 0) {
@@ -120,23 +120,46 @@ int Graph::getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction)
             adjacentCol++;
         }
     }
-    else if (p_direction == Direction::down) {
+    if (p_direction == Direction::down) {
         if (currentIndex2D.row < numRows - 1) {
             adjacentCol--;
         }
     }
-    else if (p_direction == Direction::left) {
+    if (p_direction == Direction::left) {
         if (currentIndex2D.col > 0) {
             adjacentRow--;
         }
     }
-    else if (p_direction == Direction::right) {
+    if (p_direction == Direction::right) {
         if (currentIndex2D.col < numCols - 1) {
             adjacentRow++;
         }
     }
     GLint adjacentIndex = adjacentRow * numCols + adjacentCol;
     return adjacentIndex;
+}
+
+Direction Graph::getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targetNode) const {
+
+    if (!p_currentNode || !p_targetNode)
+        return Direction::none;
+
+    Index2D currentIndex2D = p_currentNode->getIndexAs2D();
+    Index2D targetIndex2D = p_targetNode->getIndexAs2D();
+
+    if (currentIndex2D.row > targetIndex2D.row)
+        return Direction::left;
+
+    if (currentIndex2D.row < targetIndex2D.row)
+        return Direction::right;
+
+    if (currentIndex2D.col > targetIndex2D.col)
+        return Direction::down;
+
+    if (currentIndex2D.col < targetIndex2D.col)
+        return Direction::up;
+   
+    return Direction::none;
 }
 
 GraphNode* Graph::getNodeByPosition(Vector2D p_position) {

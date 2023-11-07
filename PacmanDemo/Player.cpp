@@ -2,6 +2,7 @@
 
 Player::Player() : Entity() {
 	m_score = 0;
+	//m_speed = 0.0f;
 	m_speed = 150.0f;
 
 	m_currentNode = getNodeByIndex(441);
@@ -14,23 +15,23 @@ Player::Player() : Entity() {
 }
 
 void Player::update(float p_deltaTime) {
-
-	int index = getAdjacentNodeIndex(m_currentNode, m_desiredDirection);
-	GraphNode* nextNode = getNodeByIndex(index);
-
-	if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
-		if (nextNode && (nextNode->isEmptyNode() || nextNode->isObstacle())) {
-			if (m_currentDirection == m_desiredDirection) {
-				m_currentDirection = Direction::none;
-			}
-			else
-				m_desiredDirection = m_currentDirection;
-		}
-		else
-			m_currentDirection = m_desiredDirection;
-	}
-
 	Entity::update(p_deltaTime);
+
+	int index = getNodeIndexByDirection(m_desiredDirection);
+	m_nextNode = getNodeByIndex(index);
+
+	updateDirection();
+
+	/*if (getDirectionByNode() == left) 
+		std::cout << "left" << std::endl;
+	if (getDirectionByNode() == right)
+		std::cout << "right" << std::endl;
+	if (getDirectionByNode() == up)
+		std::cout << "up" << std::endl;
+	if (getDirectionByNode() == down)
+		std::cout << "down" << std::endl;*/
+
+	
 }
 
 void Player::render() {
@@ -85,7 +86,7 @@ void Player::onPlayerMovement(int p_key) {
 
 	std::cout << m_position.distanceTo(m_currentNode->getPosition()) << std::endl;
 
-	GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_currentDirection));
+	GraphNode* nextNode = getNodeByIndex(getNodeIndexByDirection(m_currentDirection));
 
 	if (p_key == '2') {
 		m_currentNode = getNodeByIndex(441);

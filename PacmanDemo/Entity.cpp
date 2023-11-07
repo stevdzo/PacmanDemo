@@ -1,8 +1,8 @@
 #include "Entity.h"
 
 // Gets the node positioned next to current node by given direction
-int Entity::getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction) const {   
-    return Graph::getInstance()->getAdjacentNodeIndex(p_currentNode, p_direction);
+int Entity::getNodeIndexByDirection(Direction p_direction) const {
+    return Graph::getInstance()->getNodeIndexByDirection(m_currentNode, p_direction);
 }
 
 // Gets the node from graph by index
@@ -13,6 +13,15 @@ GraphNode* Entity::getNodeByIndex(int p_index) const {
 // Gets the node from graph by current position of entity
 GraphNode* Entity::getNodeByPosition() const {
     return Graph::getInstance()->getNodeByPosition(m_position);
+}
+
+GraphNode* Entity::getNodeByPosition(Vector2D p_position) const {
+    return Graph::getInstance()->getNodeByPosition(p_position);
+}
+
+// Gets the direction between current and next node
+Direction Entity::getDirectionByNode() const {
+    return Graph::getInstance()->getDirectionByNode(m_currentNode, m_nextNode);
 }
 
 void Entity::setVelocityByDirection() {
@@ -44,8 +53,27 @@ void Entity::checkForPortal() {
         m_position = getNodeByIndex(gv::leftPortalIndex)->getPosition();
 }
 
-Entity::Entity(): GameObject() {
+void Entity::updateDirection() {
 
+    if (m_position.distanceTo(m_currentNode->getPosition()) <= gv::directionChangeDistanceThreshold) {
+        if (!isValidDirection()) {
+            if (m_currentDirection == m_desiredDirection) {
+                m_currentDirection = Direction::none;
+            }
+            else
+                m_desiredDirection = m_currentDirection;
+        }
+        else
+            m_currentDirection = m_desiredDirection;
+    }
+}
+
+bool Entity::isValidDirection() const {
+    return !(m_nextNode && (m_nextNode->isEmptyNode() || m_nextNode->isObstacle()));
+}
+
+Entity::Entity(): GameObject() {
+    
     m_currentNode = getNodeByIndex(453);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
@@ -68,15 +96,15 @@ Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 void Entity::update(float p_deltaTime) {
     GameObject::update(p_deltaTime);
 
+    Vector2D previousPosition = m_position;
+
     m_position += m_velocity * (m_speed * p_deltaTime);
-
-
-
 
     setVelocityByDirection();
     checkForPortal();
 
     m_currentNode = getNodeByPosition();
+    m_previousNode = getNodeByPosition(previousPosition); 
 }
 
 void Entity::render() {
@@ -89,6 +117,14 @@ void Entity::renderWireframe() {
 
 GraphNode* Entity::getCurrentNode() const {
     return m_currentNode;
+}
+
+GraphNode* Entity::getNextNode() const {
+    return m_nextNode;
+}
+
+GraphNode* Entity::getPreviousNode() const {
+    return m_previousNode;
 }
 
 GLboolean Entity::onEntityMoveRight() {

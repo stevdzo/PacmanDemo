@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <set>
+#include <random>
 
 #include "glut.h"
 #include "inc/fmod.hpp"

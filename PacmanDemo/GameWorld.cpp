@@ -14,15 +14,15 @@ void GameWorld::init() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glDisable(GL_DEPTH_TEST);	
 
+	srand(time(NULL));
+
 	m_graph = Graph::getInstance();
 	
 	initDots();
 
 	m_player = new Player();
 
-	m_enemy = new Enemy();	
-
-	m_enemy->findShortestPath(Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[866]);
+	m_enemy = new Enemy(m_player);	
 
 	m_inputManager = InputManager::getInstance(m_player);
 }
@@ -49,8 +49,6 @@ void GameWorld::update(float p_deltaTime) {
 	m_enemy->update(p_deltaTime);
 
 	m_player->eatDot(m_dots);
-
-	//m_enemy->findShortestPath(m_player->getCurrentNode());
 }
 
 void GameWorld::render() {
@@ -64,8 +62,10 @@ void GameWorld::render() {
 		dot->renderWireframe();
 	}
 
-	m_player->renderWireframe();
+	
 	m_enemy->renderWireframe();
+
+	m_player->renderWireframe();
 
 	glutSwapBuffers();
 }

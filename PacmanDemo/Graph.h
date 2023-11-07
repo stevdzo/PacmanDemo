@@ -28,7 +28,8 @@ public:
 	Matrix<GraphNode*> getNodes();
 	std::vector<GraphNode*> getNodeVector();
 	
-	int getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction) const;
+	int getNodeIndexByDirection(GraphNode* p_currentNode, Direction p_direction) const;
+	Direction getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targetNode) const;
 
 	GraphNode* getNodeByPosition(Vector2D p_position);
 

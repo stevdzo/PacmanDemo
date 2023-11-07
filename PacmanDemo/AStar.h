@@ -7,15 +7,6 @@ class AStar {
 
 private:
 
-	Graph* m_graph;
-
-	std::vector<GraphNode*> m_path;
-
-	GraphNode* m_startNode;
-	GraphNode* m_targetNode;
-
-	int fCost, gCost, heuristic;
-
 	GraphNode* findNodeWithLowestCost(std::set<GraphNode*>& p_nodes);
 	GraphNode* findNodeWithHighestCost(std::set<GraphNode*>& p_nodes);
 
@@ -27,8 +18,8 @@ public:
 	void update(float p_deltaTime);
 	void render();
 
-	void setStartNode(GraphNode* p_startNode);
-	void setTargetNode(GraphNode* p_targetNode);
+	/*void setStartNode(GraphNode* p_startNode);
+	void setTargetNode(GraphNode* p_targetNode);*/
 
 	std::vector<GraphNode*> findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode);
 };

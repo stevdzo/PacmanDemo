@@ -8,6 +8,8 @@ class Entity : public GameObject {
 protected:
 
 	GraphNode* m_currentNode;
+	GraphNode* m_nextNode;
+	GraphNode* m_previousNode;
 
 	Vector2D m_velocity;
 
@@ -18,11 +20,15 @@ protected:
 	Direction m_currentDirection;
 	Direction m_desiredDirection;
 
-	virtual int getAdjacentNodeIndex(GraphNode* p_currentNode, Direction p_direction) const;
+	virtual int getNodeIndexByDirection(Direction p_direction) const;
 	virtual GraphNode* getNodeByIndex(int p_index) const;
 	virtual GraphNode* getNodeByPosition() const;
+	virtual GraphNode* getNodeByPosition(Vector2D p_position) const;
+	virtual Direction getDirectionByNode() const;
 	virtual void setVelocityByDirection();
 	virtual void checkForPortal();
+	virtual void updateDirection();
+	virtual bool isValidDirection() const;
 
 public:
 
@@ -34,6 +40,8 @@ public:
 	virtual void renderWireframe();
 
 	GraphNode* getCurrentNode() const;
+	GraphNode* getNextNode() const;
+	GraphNode* getPreviousNode() const;
 
 	virtual GLboolean onEntityMoveRight();
 	virtual GLboolean onEntityMoveLeft();
