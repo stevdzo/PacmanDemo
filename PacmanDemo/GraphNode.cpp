@@ -12,7 +12,7 @@ GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
-	m_wireframeColor = gv::nodeWireframeColor;
+	m_wireframeColor = nodeWireframeColor;
 }
 
 GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameObject(p_position) {
@@ -26,7 +26,7 @@ GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameO
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
-	m_wireframeColor = gv::nodeWireframeColor;
+	m_wireframeColor = nodeWireframeColor;
 }
 
 void GraphNode::setIndex(int p_index) {
@@ -38,8 +38,8 @@ int GraphNode::getIndex(void) const {
 }
 
 Index2D GraphNode::getIndexAs2D(void) const {
-	return Index2D(m_index / gv::columns,
-				   m_index % gv::columns);
+	return Index2D(m_index / columns,
+				   m_index % columns);
 }
 
 void GraphNode::setGCost(int p_gCost) {
@@ -115,20 +115,23 @@ GraphNode* GraphNode::getParent(void) const {
 
 bool GraphNode::isIntersection(void) const {
 
-	int numberOfObstacles = 0;
+	int indexSum = 0;
 
 	if (m_edges.size() > 2) {
 		return true;
 	}
 
-	for (auto& node : m_connectedNodes) {
-		if (node->isObstacle()) {
-			numberOfObstacles++;
-		}
-	}
+	if (m_edges.size() == 2) {
 
-	if (numberOfObstacles == 2) {
-		return true;
+		for (auto& node : m_connectedNodes) {
+			if (node->isObstacle()) {
+				indexSum += node->getIndex();
+			}
+		}
+
+		if (indexSum / 2 != m_index) {
+			return true;
+		}
 	}
 	return false;
 }
@@ -174,7 +177,7 @@ void GraphNode::renderWireframe(){
 }
 
 void GraphNode::renderNodeFromPath() {
-	if (gv::toggleWireframe) {
+	if (toggleWireframe) {
 		glBegin(GL_POLYGON);
 		glColor3fv(m_wireframeColor.toArray());
 		glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);

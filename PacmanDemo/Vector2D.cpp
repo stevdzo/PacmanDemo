@@ -10,6 +10,22 @@ Vector2D::Vector2D(float p_x, float p_y) {
 	y = p_y;
 }
 
+const Vector2D Vector2D::add(const Vector2D& p_v) {
+	return Vector2D(x + p_v.x, y + p_v.y);
+}
+
+const Vector2D Vector2D::subtract(const Vector2D& p_v) {
+	return Vector2D(x - p_v.x, y - p_v.y);
+}
+
+const Vector2D Vector2D::multiply(const Vector2D& p_v) {
+	return Vector2D(x * p_v.x, y * p_v.y);
+}
+
+const Vector2D Vector2D::divide(const Vector2D& p_v) {
+	return Vector2D(x / p_v.x, y / p_v.y);
+}
+
 const Vector2D Vector2D::operator+(const Vector2D& p_v) {
 	return Vector2D(x + p_v.x, y + p_v.y);
 }

@@ -31,13 +31,13 @@ void Dot::update(float p_deltaTime) {
 }
 
 void Dot::render() {
-    GameObject::render();
+    //GameObject::render();
 }
 
 void Dot::renderWireframe() {
 
     GameObject::renderWireframe();
-    if (gv::toggleWireframe) {       
+    if (toggleWireframe) {       
         glBegin(GL_POLYGON);
         glColor3fv(m_wireframeColor.toArray());
         glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);

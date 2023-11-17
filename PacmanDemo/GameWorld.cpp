@@ -4,7 +4,7 @@
 
 void GameWorld::init() {
 	std::cout << "***********************************" << std::endl;
-	std::cout << "*** OpenGL Pacman demo - Stevan ***" << std::endl;
+	std::cout << "*** OpenGL Pacman demo ~ Stevan ***" << std::endl;
 	std::cout << "***********************************" << std::endl;
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -14,30 +14,34 @@ void GameWorld::init() {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glDisable(GL_DEPTH_TEST);	
 
-	srand(time(NULL));
+	srand(time(0));
 
 	m_graph = Graph::getInstance();
 	
 	initDots();
 
-	m_player = new Player();
+	m_background = new GameObject(Sprite("resources/mazelevel.png", 1, 1, false));
+	m_background->setPosition(Vector2D(screenWidth/2, screenHeight/2));
+	m_background->setSize(Vector2D(screenWidth, screenHeight));
 
-	m_enemy = new Enemy(m_player);	
+	m_player = new Player(Sprite("resources/pacman.png", 3, 4));
+
+	m_blinky = new Enemy(Sprite("resources/ghost_red.png", 2, 4), m_player);
 
 	m_inputManager = InputManager::getInstance(m_player);
 }
 
 void GameWorld::initDots() {
-	for (size_t row = 0; row < gv::rows; row++) {
-		for (size_t col = 0; col < gv::columns; col++) {
-			if (gv::dots[row][col] == 1) {
+	for (size_t row = 0; row < rows; row++) {
+		for (size_t col = 0; col < columns; col++) {
+			if (dots[row][col] == 1) {
 				Dot* dot = new Dot(DotType::small);
-				dot->setPosition(Vector2D(row * gv::nodeSize + dot->getSize().x * 2, col * gv::nodeSize + dot->getSize().y * 2));
+				dot->setPosition(Vector2D(row * nodeSize + dot->getSize().x * 2, col * nodeSize + dot->getSize().y * 2));
 				m_dots.push_back(dot);
 			}
-			if (gv::dots[row][col] == 2) {
+			if (dots[row][col] == 2) {
 				Dot* dot = new Dot(DotType::big);
-				dot->setPosition(Vector2D(row * gv::nodeSize + dot->getSize().x / 2, col * gv::nodeSize + dot->getSize().y / 2));
+				dot->setPosition(Vector2D(row * nodeSize + dot->getSize().x / 2, col * nodeSize + dot->getSize().y / 2));
 				m_dots.push_back(dot);
 			}
 		}
@@ -46,7 +50,7 @@ void GameWorld::initDots() {
 
 void GameWorld::update(float p_deltaTime) {
 	m_player->update(p_deltaTime);
-	m_enemy->update(p_deltaTime);
+	m_blinky->update(p_deltaTime);
 
 	m_player->eatDot(m_dots);
 }
@@ -54,6 +58,8 @@ void GameWorld::update(float p_deltaTime) {
 void GameWorld::render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	m_background->render();
 
 	m_graph->renderWireframe();
 
@@ -63,9 +69,13 @@ void GameWorld::render() {
 	}
 
 	
-	m_enemy->renderWireframe();
+	m_blinky->renderWireframe();
+
+	m_blinky->render();
 
 	m_player->renderWireframe();
+
+	m_player->render();
 
 	glutSwapBuffers();
 }

@@ -4,7 +4,6 @@ AStar::AStar() {
 
 }
 
-
 void AStar::update(float p_deltaTime) {
 }
 
@@ -46,6 +45,7 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 				continue;
 			}
 			else {		
+
 				adjNode->setParent(currentNode);
 
 				adjNode->setGCost(currentNode->getGCost() + 1);
@@ -60,15 +60,14 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 GraphNode* AStar::findNodeWithLowestCost(std::set<GraphNode*>& p_nodes) {
 
 	GraphNode* lowestCostNode = nullptr;
-	int lowestFCost = std::numeric_limits<int>::max();
+	int lowestCost = std::numeric_limits<int>::max();
 
 	for (auto* node : p_nodes) {
-		if (node->getFCost() < lowestFCost) {
-			lowestFCost = node->getFCost();
+		if (node->getFCost() < lowestCost) {
+			lowestCost = node->getFCost();
 			lowestCostNode = node;			
 		}
 	}
-
 	return lowestCostNode;
 }
 

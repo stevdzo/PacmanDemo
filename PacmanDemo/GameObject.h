@@ -1,13 +1,16 @@
 #ifndef _GAMEOBJECT_H
 #define _GAMEOBJECT_H
 
-#include "Globals.h"
+#include "Sprite.h"
 #include "Vector2D.h"
 #include "Vector3D.h"
+#include "Globals.h"
 
 class GameObject {
 
 protected:
+
+	Sprite m_sprite;
 
 	Vector2D m_position;
 	Vector2D m_size;
@@ -17,6 +20,7 @@ protected:
 public:
 
 	GameObject();
+	GameObject(Sprite p_sprite);
 	GameObject(Vector2D p_position);
 
 	virtual void update(float p_deltaTime);

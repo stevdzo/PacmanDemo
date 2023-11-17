@@ -12,9 +12,11 @@ class GameWorld {
 
 private:
 
+	GameObject* m_background;
+
 	Player* m_player;
 
-	Enemy* m_enemy;
+	Enemy* m_blinky;
 
 	std::vector<Dot*> m_dots;
 

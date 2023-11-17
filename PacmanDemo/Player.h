@@ -13,7 +13,7 @@ private:
 
 public:
 
-	Player();
+	Player(Sprite p_sprite);
 	
 	void update(float p_deltaTime) override;
 	void render() override;
@@ -21,11 +21,6 @@ public:
 
 	void eatDot(std::vector<Dot*>&);
 
-	void onPlayerMoveRight();
-	void onPlayerMoveLeft();
-	void onPlayerMoveUp();
-	void onPlayerMoveDown();
-	void onPlayerMoveStop();
 	void onPlayerMovement(int = 0);
 };
 #endif

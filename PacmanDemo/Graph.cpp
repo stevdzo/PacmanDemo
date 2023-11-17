@@ -5,13 +5,13 @@ Graph* Graph::instance = nullptr;
 
 void Graph::initNodes() {
     std::cout << "Initializing nodes." << std::endl;
-    m_nodeMatrix.resize(gv::rows, std::vector<GraphNode*>(gv::columns, nullptr));
+    m_nodeMatrix.resize(rows, std::vector<GraphNode*>(columns, nullptr));
     int index = 0;
-    for (unsigned int row = 0; row < gv::rows; row++) {
-        for (unsigned int col = 0; col < gv::columns; col++) {
-            GraphNode* node = new GraphNode(index, Vector2D(row * gv::nodeSize + gv::nodeRenderOffset, col * gv::nodeSize + gv::nodeRenderOffset) - Vector2D(32.0f, 0.0f));
+    for (unsigned int row = 0; row < rows; row++) {
+        for (unsigned int col = 0; col < columns; col++) {
+            GraphNode* node = new GraphNode(index, Vector2D(row * nodeSize + nodeRenderOffset, col * nodeSize + nodeRenderOffset) - Vector2D(32.0f, 0.0f));
 
-            switch (gv::map[row][col]) {
+            switch (map[row][col]) {
 
             case -1: {
                 node->isObstacle(true);
@@ -45,16 +45,16 @@ void Graph::initNodes() {
 void Graph::initEdges() {
     std::cout << "Initializing edges." << std::endl;
     int index = 0;
-    for (unsigned int row = 0; row < gv::rows; row++) {
-        for (unsigned int col = 0; col < gv::columns; col++) {
+    for (unsigned int row = 0; row < rows; row++) {
+        for (unsigned int col = 0; col < columns; col++) {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i == 0 && j == 0) continue;
                     if (abs(i) == abs(j)) continue;
                     if (row + i >= 0 &&
-                        row + i < gv::rows &&
+                        row + i < rows &&
                         col + j >= 0 &&
-                        col + j < gv::columns) {
+                        col + j < columns) {
                         if (!m_nodeMatrix[row][col]->isEmptyNode() &&
                             !m_nodeMatrix[row + i][col + j]->isEmptyNode() &&
                             !m_nodeMatrix[row][col]->isObstacle() &&
@@ -164,8 +164,8 @@ Direction Graph::getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targe
 
 GraphNode* Graph::getNodeByPosition(Vector2D p_position) {
     return m_nodeMatrix
-        [std::floor((p_position.x + gv::nodeSize) / gv::nodeSize)]
-        [std::floor(p_position.y / gv::nodeSize)];
+        [std::floor((p_position.x + nodeSize) / nodeSize)]
+        [std::floor(p_position.y / nodeSize)];
 }
 
 void Graph::render() {

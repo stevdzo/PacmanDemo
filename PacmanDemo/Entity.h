@@ -22,17 +22,21 @@ protected:
 
 	virtual int getNodeIndexByDirection(Direction p_direction) const;
 	virtual GraphNode* getNodeByIndex(int p_index) const;
+	virtual GraphNode* getNodeByDirectionFromCurrentNode(Direction p_direction) const;
+	virtual GraphNode* getNodeByDirectionFromCustomNode(GraphNode* p_node, Direction p_direction) const;
 	virtual GraphNode* getNodeByPosition() const;
 	virtual GraphNode* getNodeByPosition(Vector2D p_position) const;
-	virtual Direction getDirectionByNode() const;
+	virtual Direction getDirectionByNextNode() const;
+	virtual Direction getDirectionByGivenNode(GraphNode* p_node) const;
 	virtual void setVelocityByDirection();
 	virtual void checkForPortal();
 	virtual void updateDirection();
 	virtual bool isValidDirection() const;
+	virtual bool isOppositeDirection(Direction p_direction1, Direction p_direction2) const;
 
 public:
 
-	Entity();
+	Entity(Sprite p_sprite);
 	Entity(Vector2D p_position);
 
 	virtual void update(float p_deltaTime);
@@ -42,12 +46,5 @@ public:
 	GraphNode* getCurrentNode() const;
 	GraphNode* getNextNode() const;
 	GraphNode* getPreviousNode() const;
-
-	virtual GLboolean onEntityMoveRight();
-	virtual GLboolean onEntityMoveLeft();
-	virtual GLboolean onEntityMoveUp();
-	virtual GLboolean onEntityMoveDown();
-	virtual GLboolean onEntityMoveStop();
-	virtual GLboolean onEntityMovement(GLint = 0);	
 };
 #endif

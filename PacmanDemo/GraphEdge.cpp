@@ -1,7 +1,7 @@
 #include "GraphEdge.h"
 
 GraphEdge::GraphEdge(GraphNode* p_from, GraphNode* p_to) : m_from(p_from), m_to(p_to) {
-	m_wireframeColor = gv::edgeWireframeColor;
+	m_wireframeColor = edgeWireframeColor;
 }
 
 GraphNode* GraphEdge::getFrom() {
@@ -43,7 +43,7 @@ void GraphEdge::render() {
 }
 
 void GraphEdge::renderWireframe() {
-	if (gv::toggleWireframe) {
+	if (toggleWireframe) {
 		if (!m_from->isEmptyNode() && !m_to->isEmptyNode()) {
 			glBegin(GL_LINES);
 			glColor3fv(m_wireframeColor.toArray());

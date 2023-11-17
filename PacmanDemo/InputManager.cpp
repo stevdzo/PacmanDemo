@@ -24,12 +24,14 @@ void InputManager::keyboard(int p_key, int p_x, int p_y) {
 void InputManager::keyboardUp(int p_key, int p_x, int p_y) {
 
     if (p_key == '1') {
-        gv::toggleWireframe = !gv::toggleWireframe;
+        toggleWireframe = !toggleWireframe;
     }
 }
 
 void InputManager::mouse(int p_button, int p_state, int p_x, int p_y) {
-
+    if (p_button == GLUT_LEFT_BUTTON && p_state == GLUT_DOWN) {
+       std::cout << Graph::getInstance()->getNodeByPosition(Vector2D(p_x, p_y))->getIndex() << std::endl;
+    }
 }
 
 InputManager::~InputManager() {

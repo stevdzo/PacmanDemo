@@ -1,5 +1,5 @@
-#ifndef _VECTOR_2D
-#define _VECTOR_2D
+#ifndef _VECTOR_2D_H
+#define _VECTOR_2D_H
 
 #include <math.h>
 
@@ -12,6 +12,11 @@ public:
 	Vector2D();
 	Vector2D(float p_x, float p_y);
 
+	const Vector2D add(const Vector2D& p_v);
+	const Vector2D subtract(const Vector2D& p_v);
+	const Vector2D multiply(const Vector2D& p_v);
+	const Vector2D divide(const Vector2D& p_v);
+	
 	const Vector2D operator+(const Vector2D&);
 	const Vector2D operator-(const Vector2D&);
 	const Vector2D operator+(float);

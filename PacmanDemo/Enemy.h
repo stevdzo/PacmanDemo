@@ -6,9 +6,11 @@
 #include "AStar.h"
 
 enum class EnemyState {
-	idle = 0,
-	wander = 1,
-	follow_path = 2
+	none = 0,
+	chase = 1,
+	scatter = 2,
+	eaten = 3,
+	frightened = 4
 };
 
 class Enemy : public Entity {
@@ -19,9 +21,14 @@ private:
 
 	Player* m_player;
 
+	GraphNode* m_scatterNode;
+	GraphNode* m_eatenNode;
+
+	int m_scatterNodeIndices[3];
+
 	int m_currentNodeIndex;
 
-	bool m_pathChanged;
+	bool m_pathLooping;
 
 	EnemyState m_enemyState;
 
@@ -29,7 +36,7 @@ private:
 
 public:
 
-	Enemy(Player* m_player);
+	Enemy(Sprite p_sprite, Player* m_player);
 
 	void update(float p_deltaTime) override;
 	void render() override;
@@ -39,10 +46,20 @@ public:
 	void findShortestPath(GraphNode* p_targetNode);
 
 	void moveEnemy();
-	void wander();
 	void followPath();
+
+	void onChase();
+	void onScatter();
+	void onEaten();
+	void onFrightened();
 
 	bool onEnemyNodeChange();
 	bool onPlayerNodeChange();
+
+	bool pathCompleted();
+
+	void toggleScatterNode();
+
+	std::vector<Direction> chooseDirectionWhenFrightened();
 };
 #endif
