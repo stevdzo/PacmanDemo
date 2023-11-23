@@ -3,7 +3,6 @@
 Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 	m_score = 0;
-	//m_speed = 0.0f;
 	m_speed = 150.0f;
 
 	m_currentNode = getNodeByIndex(441);
@@ -20,6 +19,7 @@ void Player::update(float p_deltaTime) {
 
 	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 
+	setVelocityByDirection();
 	updateDirection();
 }
 
@@ -30,13 +30,21 @@ void Player::render() {
 void Player::renderWireframe() {
 	Entity::renderWireframe();
 
-	/*GraphNode* nextNode = getNodeByIndex(getAdjacentNodeIndex(m_currentNode, m_desiredDirection));
+	GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
 
 	glPointSize(16.0f);
 	glBegin(GL_POINTS);
 	glColor3f(1.0, 0.0, 1.0);
 	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
-	glEnd();*/
+	glEnd();
+
+	nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
+
+	glPointSize(16.0f);
+	glBegin(GL_POINTS);
+	glColor3f(1.0, 1.0, 0.0);
+	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
+	glEnd();
 
 	/*if (toggleWireframe) {
 		glBegin(GL_POLYGON);
@@ -85,13 +93,11 @@ void Player::onPlayerMovement(int p_key) {
 		if (m_desiredDirection == Direction::left) {
 			m_desiredDirection = Direction::right;
 			m_currentDirection = Direction::right;
-			m_sprite.setCurrentFramesRange(0, 2);
 		}
 		else {
 			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::right;
-					m_sprite.setCurrentFramesRange(0, 2);
 				}
 				else {					
 					/*m_desiredDirection = Direction::left;
@@ -104,13 +110,11 @@ void Player::onPlayerMovement(int p_key) {
 		if (m_desiredDirection == Direction::right) {
 			m_desiredDirection = Direction::left;
 			m_currentDirection = Direction::left;
-			m_sprite.setCurrentFramesRange(3, 5);
 		}
 		else {
 			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::left;
-					m_sprite.setCurrentFramesRange(3, 5);
 				}
 				else {
 					/*m_desiredDirection = Direction::right;
@@ -123,14 +127,12 @@ void Player::onPlayerMovement(int p_key) {
 		if (m_desiredDirection == Direction::down) {
 			m_desiredDirection = Direction::up;
 			m_currentDirection = m_desiredDirection;
-			m_sprite.setCurrentFramesRange(6, 8);
 		}
 		else {
 			if (m_currentNode->isIntersection()) {
 					
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::up;
-					m_sprite.setCurrentFramesRange(6, 8);
 				}
 				else {
 					/*m_desiredDirection = Direction::down;
@@ -143,19 +145,67 @@ void Player::onPlayerMovement(int p_key) {
 		if (m_desiredDirection == Direction::up) {
 			m_desiredDirection = Direction::down;
 			m_currentDirection = m_desiredDirection;
-			m_sprite.setCurrentFramesRange(9, 11);
 		}
 		else {
 			if (m_currentNode->isIntersection()) {
 				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
 					m_desiredDirection = Direction::down;
-					m_sprite.setCurrentFramesRange(9, 11);
 				}
 				else {
 					/*m_desiredDirection = Direction::up;
 					m_currentDirection = Direction::up;*/
 				}
 			}
+		}
+	}
+}
+
+void Player::setVelocityByDirection() {
+
+	switch (m_currentDirection) {
+
+	case Direction::up:
+		m_velocity = Vector2D(0.0f, 1.0f);
+		m_sprite.setCurrentFramesRange(6, 8);
+		break;
+	case Direction::down:
+		m_velocity = Vector2D(0.0f, -1.0f);
+		m_sprite.setCurrentFramesRange(9, 11);
+		break;
+	case Direction::left:
+		m_velocity = Vector2D(-1.0f, 0.0f);
+		m_sprite.setCurrentFramesRange(3, 5);
+		break;
+	case Direction::right:
+		m_velocity = Vector2D(1.0f, 0.0f);
+		m_sprite.setCurrentFramesRange(0, 2);
+		break;
+	case Direction::none:
+		m_velocity = Vector2D(0.0f, 0.0f);
+		break;
+	}
+}
+
+void Player::updateDirection() {
+
+	float dist = m_position.distanceToSq(m_currentNode->getPosition());
+	if (dist < directionChangeDistanceThreshold) {
+		if (!isValidDirection()) {
+			if (m_currentDirection == m_desiredDirection) {
+				m_currentDirection = Direction::none;
+			}
+			else m_desiredDirection = m_currentDirection;
+		}
+		else {
+			m_currentDirection = m_desiredDirection;
+
+			//// Snap the position to the current node
+			//Vector2D newPosition = m_currentNode->getPosition();
+			//m_position = newPosition;
+
+			//// Adjust the position based on the distance
+			//float displacement = sqrt(directionChangeDistanceThreshold) - sqrt(dist);
+			//m_position += m_velocity * displacement;    
 		}
 	}
 }

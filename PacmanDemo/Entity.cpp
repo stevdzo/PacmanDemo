@@ -70,22 +70,12 @@ void Entity::checkForPortal() {
 }
 
 void Entity::updateDirection() {
-
-    float dist = m_position.distanceTo(m_currentNode->getPosition());
-
-    if (dist <= directionChangeDistanceThreshold) {
-        if (!isValidDirection()) {
-            if (m_currentDirection == m_desiredDirection) {
-                m_currentDirection = Direction::none;
-            }
-            else m_desiredDirection = m_currentDirection;
-        }
-        else m_currentDirection = m_desiredDirection;
-    }   
+     
 }
 
 bool Entity::isValidDirection() const {
     return !(m_nextNode && (m_nextNode->isEmptyNode() || m_nextNode->isObstacle()));
+    //return !(m_nextNode->isEmptyNode() || m_nextNode->isObstacle());
 }
 
 bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2) const {
@@ -106,19 +96,19 @@ bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2)
 
 Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     
-    m_size = Vector2D(48.0f, 48.0f);
+    m_size = Vector2D(32.0f, 32.0f);
     m_currentNode = getNodeByIndex(453);
+    m_currentNode = getNodeByIndex(441);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
-    m_isMoving = false;
-    m_currentDirection = Direction::left;
-    m_desiredDirection = Direction::left;
+    /*m_currentDirection = Direction::left;
+    m_desiredDirection = Direction::left;*/
 }
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 
-    m_currentNode = getNodeByIndex(453);
+    m_currentNode = getNodeByIndex(453);  
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -127,17 +117,17 @@ Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 }
 
 void Entity::update(float p_deltaTime) {
-    GameObject::update(p_deltaTime);
+    //GameObject::update(p_deltaTime);
+    m_sprite.animate(p_deltaTime, m_speed / 100.0f);
 
     Vector2D previousPosition = m_position;
 
     m_position += m_velocity * (m_speed * p_deltaTime);
-  
-    setVelocityByDirection();
+
     checkForPortal();
 
     m_currentNode = getNodeByPosition();
-    m_previousNode = getNodeByPosition(previousPosition); 
+    m_previousNode = getNodeByPosition(previousPosition);
 }
 
 void Entity::render() {

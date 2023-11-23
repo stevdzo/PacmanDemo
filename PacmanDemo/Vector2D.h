@@ -31,6 +31,7 @@ public:
 
 	const float magnitude();
 	const float distanceTo(const Vector2D& p_v1);
+	const float distanceToSq(const Vector2D& p_v1);
 
 	const float* toArray();
 };

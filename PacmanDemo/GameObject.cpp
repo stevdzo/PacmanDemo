@@ -19,7 +19,7 @@ GameObject::GameObject(Vector2D p_position) : m_position(p_position) {
 }
 
 void GameObject::update(float p_deltaTime) {
-	m_sprite.animate(p_deltaTime);
+	m_sprite.animate(p_deltaTime, 1.0f);
 }
 
 void GameObject::render() {

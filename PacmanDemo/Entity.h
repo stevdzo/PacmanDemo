@@ -16,9 +16,12 @@ protected:
 	float m_speed;
 
 	bool m_isMoving;
+	
+	bool m_snap;
 
 	Direction m_currentDirection;
 	Direction m_desiredDirection;
+	Direction m_previousDirection;
 
 	virtual int getNodeIndexByDirection(Direction p_direction) const;
 	virtual GraphNode* getNodeByIndex(int p_index) const;

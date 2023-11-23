@@ -2,9 +2,8 @@
 
 Enemy::Enemy(Sprite p_sprite, Player* p_player) : Entity(p_sprite), m_player(p_player)  {
 	m_currentNodeIndex = 0;
-	m_velocity = Vector2D();
-	m_speed = 140.0f;
-	m_enemyState = EnemyState::chase;
+	m_speed = 70.0f;
+	m_enemyState = EnemyState::frightened;
 
 	m_astar = AStar();
 
@@ -18,6 +17,8 @@ Enemy::Enemy(Sprite p_sprite, Player* p_player) : Entity(p_sprite), m_player(p_p
 
 	m_currentDirection = Direction::right;
 	m_desiredDirection = Direction::right;	
+
+	m_frightenedDirectionChosen = false;
 }
 
 void Enemy::update(float p_deltaTime) {
@@ -25,7 +26,8 @@ void Enemy::update(float p_deltaTime) {
 
 	moveEnemy();	
 
-	Entity::updateDirection();
+	setVelocityByDirection();
+	updateDirection();
 }
 
 void Enemy::render() {
@@ -35,19 +37,19 @@ void Enemy::render() {
 void Enemy::renderWireframe() {
 	renderPath();
 
-	GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
-
-	glPointSize(16.0f);
-	glBegin(GL_POINTS);
-	glColor3f(1.0, 0.0, 1.0);
-	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
-	glEnd();
-
-	nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
+	GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 
 	glPointSize(16.0f);
 	glBegin(GL_POINTS);
 	glColor3f(1.0, 1.0, 0.0);
+	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
+	glEnd();
+
+	nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
+
+	glPointSize(16.0f);
+	glBegin(GL_POINTS);
+	glColor3f(1.0, 0.0, 1.0);
 	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
 	glEnd();
 
@@ -57,6 +59,49 @@ void Enemy::renderWireframe() {
 void Enemy::renderPath() {
 	for (auto& node : m_path) {
 		node->renderNodeFromPath();
+	}
+}
+
+void Enemy::setVelocityByDirection() {
+	switch (m_currentDirection) {
+
+	case Direction::up:
+		m_velocity = Vector2D(0.0f, 1.0f);
+		m_sprite.setCurrentFramesRange(4, 5);
+		break;
+	case Direction::down:
+		m_velocity = Vector2D(0.0f, -1.0f);
+		m_sprite.setCurrentFramesRange(6, 7);
+		break;
+	case Direction::left:
+		m_velocity = Vector2D(-1.0f, 0.0f);
+		m_sprite.setCurrentFramesRange(2, 3);
+		break;
+	case Direction::right:
+		m_velocity = Vector2D(1.0f, 0.0f);
+		m_sprite.setCurrentFramesRange(0, 1);
+		break;
+	case Direction::none:
+		m_velocity = Vector2D(0.0f, 0.0f);
+		break;
+	}
+}
+
+void Enemy::updateDirection() {
+
+	float dist = m_position.distanceToSq(m_currentNode->getPosition());
+
+	if (dist < directionChangeDistanceThreshold) {
+
+		if (m_enemyState == EnemyState::frightened) {
+
+
+
+		}
+		else {
+			if (m_currentNode->isIntersection())
+				m_currentDirection = m_desiredDirection;
+		}
 	}
 }
 
@@ -70,7 +115,7 @@ void Enemy::moveEnemy() {
 
 	case EnemyState::none:
 		m_currentDirection = none;
-		break;
+		break; 
 	case EnemyState::chase:
 		onChase();
 		break;
@@ -106,9 +151,9 @@ void Enemy::onChase() {
 void Enemy::onScatter() {
 	m_desiredDirection = getDirectionByNextNode();
 	if (pathCompleted()) {
-		findShortestPath(m_scatterNode);
+		findShortestPath(m_scatterNode); 
+		toggleScatterNode();
 	}
-	toggleScatterNode();
 	followPath();
 }
 
@@ -118,19 +163,28 @@ void Enemy::onEaten() {
 	followPath();
 }
 
-void Enemy::onFrightened() {
+void Enemy::onFrightened() {		
+		
+	//std::cout << m_currentDirection << std::endl;
 
-	std::vector<Direction> possibleDirections = chooseDirectionWhenFrightened();
+	if (m_currentNode->isIntersection()) {		
+		if (m_position.distanceTo(m_currentNode->getPosition()) <= directionChangeDistanceThreshold) {
+			if (!m_frightenedDirectionChosen) {
+				std::vector<Direction> possibleDirections = chooseDirectionWhenFrightened();
+				if (!possibleDirections.empty()) {
+					int randomDirection = rand() % possibleDirections.size();
+					Direction newDirection = possibleDirections[randomDirection];
+					m_desiredDirection = newDirection;
+					m_frightenedDirectionChosen = true;
 
-	if (m_currentNode->isIntersection()) {
-		if (!possibleDirections.empty()) {
-			int randomDirection = rand() % possibleDirections.size();
-
-			Direction newDirection = possibleDirections[randomDirection];
-
-			m_desiredDirection = newDirection;
+					m_previousDirection = m_currentDirection;
+					m_currentDirection = m_desiredDirection;
+					return;
+				}
+			}
 		}
-	}
+	}		
+	m_frightenedDirectionChosen = false;
 	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 }
 
@@ -147,7 +201,6 @@ bool Enemy::pathCompleted() {
 }
 
 void Enemy::toggleScatterNode() {
-
 	if (m_scatterNode == getNodeByIndex(m_scatterNodeIndices[0])) {
 		m_scatterNode = getNodeByIndex(m_scatterNodeIndices[1]);
 	}
@@ -160,13 +213,18 @@ void Enemy::toggleScatterNode() {
 }
 
 std::vector<Direction> Enemy::chooseDirectionWhenFrightened() {
-
 	std::vector<Direction> directions;
 	if (m_currentNode->isIntersection()) {
-		for (auto& node : m_currentNode->getConnectedNodes()) {	
+		std::cout << "*****************" << std::endl;
+		for (auto& node : m_currentNode->getConnectedNodes()) {
 			if (!node->isObstacle() && !node->isEmptyNode()) {
-				Direction desiredDirection = getDirectionByGivenNode(node);
+				Direction desiredDirection = getDirectionByGivenNode(node);		
+				std::cout << "-----------" << std::endl;
+				std::cout << m_previousDirection << std::endl;
 				if (!isOppositeDirection(m_currentDirection, desiredDirection)) {
+
+					
+					
 					directions.push_back(desiredDirection);
 				}
 			}

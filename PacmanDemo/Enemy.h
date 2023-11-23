@@ -30,6 +30,8 @@ private:
 
 	bool m_pathLooping;
 
+	bool m_frightenedDirectionChosen;
+
 	EnemyState m_enemyState;
 
 	std::vector<GraphNode*> m_path;
@@ -42,6 +44,9 @@ public:
 	void render() override;
 	void renderWireframe() override;
 	void renderPath();
+
+	void setVelocityByDirection() override;
+	void updateDirection() override;
 
 	void findShortestPath(GraphNode* p_targetNode);
 

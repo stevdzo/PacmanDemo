@@ -8,7 +8,7 @@ Sprite::Sprite(
 	int p_numberOfFramesY,
 	bool p_isTransparent)
 	: m_numberOfFramesX(p_numberOfFramesX),
-	m_numberOfFramesY(p_numberOfFramesY)
+	  m_numberOfFramesY(p_numberOfFramesY)
 {
 
 	m_textureIndex = 0;
@@ -51,9 +51,13 @@ void Sprite::setCurrentFrame(int p_currentFrame) {
 }
 
 void Sprite::setCurrentFramesRange(int p_start, int p_end) {
-	this->m_startingFrame = p_start;
-	this->m_endingFrame = p_end;
-	this->m_hasAnimationChanged = true;
+
+	if (this->m_startingFrame != p_start &&
+		this->m_endingFrame != p_end) {
+		this->m_startingFrame = p_start;
+		this->m_endingFrame = p_end;
+		this->m_hasAnimationChanged = true;
+	}
 }
 
 int Sprite::getTextureIndex() {
@@ -86,12 +90,10 @@ float Sprite::getAnimationDelay() {
 }
 
 float Sprite::getAnimationElapsedTime() {
-
 	return this->m_animationElapsedTime;
 }
 
 bool Sprite::isTransparent() {
-
 	return this->m_isTransparent;
 }
 
@@ -103,9 +105,9 @@ void Sprite::hasAnimationChanged(bool p_hasAnimationChanged) {
 	this->m_hasAnimationChanged = p_hasAnimationChanged;
 }
 
-void Sprite::animate(float p_deltaTime) {
+void Sprite::animate(float p_deltaTime, float p_speed) {
 
-	m_animationElapsedTime += p_deltaTime;
+	m_animationElapsedTime += p_deltaTime * p_speed;
 	if (m_animationElapsedTime >= m_animationDelay) {
 		m_currentFrame++;
 		if (m_currentFrame > m_endingFrame) m_currentFrame = m_startingFrame;

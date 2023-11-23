@@ -78,6 +78,14 @@ const float Vector2D::distanceTo(const Vector2D& p_v1) {
 	return sqrt(x * x + y * y);
 }
 
+const float Vector2D::distanceToSq(const Vector2D& p_v1) {
+
+	float x = this->x - p_v1.x;
+	float y = this->y - p_v1.y;
+
+	return (x * x + y * y);
+}
+
 const float* Vector2D::toArray() {
 	float arr[]{ x, y };
 	return arr;

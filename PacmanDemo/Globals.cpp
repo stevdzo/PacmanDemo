@@ -79,14 +79,13 @@ const int dots[rows][columns] = {
 };
 
 bool toggleWireframe = true;
-bool toggleRender = true;
+bool toggleRender = false;
 
 const float directionChangeDistanceThreshold = 0.4f;
 const float turnBufferDistanceThreshold = 32.0f;
 const float eatDistanceThreshold = 8.0f;
 
 const int blinkyScatterNodeIndices[3] = { 711, 864, 738 };
-
 
 Vector2D defaultSize = Vector2D(32.0f, 32.0f);
 

@@ -25,6 +25,7 @@ void InputManager::keyboardUp(int p_key, int p_x, int p_y) {
 
     if (p_key == '1') {
         toggleWireframe = !toggleWireframe;
+        toggleRender = !toggleRender;
     }
 }
 

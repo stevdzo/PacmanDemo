@@ -22,5 +22,8 @@ public:
 	void eatDot(std::vector<Dot*>&);
 
 	void onPlayerMovement(int = 0);
+
+	void setVelocityByDirection() override;
+	void updateDirection() override;
 };
 #endif

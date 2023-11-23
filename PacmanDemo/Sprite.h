@@ -20,6 +20,8 @@ private:
 	int m_startingFrame;
 	int m_endingFrame;
 
+	int m_animSpriteRange[1][4];
+
 	float m_animationDelay;
 	float m_animationElapsedTime;
 
@@ -49,6 +51,6 @@ public:
 	bool hasAnimationChanged();
 	void hasAnimationChanged(bool);
 
-	void animate(float);
+	void animate(float p_deltaTime, float p_speed);
 };
 #endif
