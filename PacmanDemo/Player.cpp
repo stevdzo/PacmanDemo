@@ -30,7 +30,18 @@ void Player::render() {
 void Player::renderWireframe() {
 	Entity::renderWireframe();
 
-	GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
+	auto node = Graph::getInstance()->getNodeInPlayerDirection(m_currentNode, m_currentDirection);
+
+	if (node) {
+
+		glPointSize(16.0f);
+		glBegin(GL_POINTS);
+		glColor3f(1.0, 0.0, 1.0);
+		glVertex2f(node->getPosition().x, node->getPosition().y);
+		glEnd();
+	}
+
+	/*GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
 
 	glPointSize(16.0f);
 	glBegin(GL_POINTS);
@@ -44,7 +55,7 @@ void Player::renderWireframe() {
 	glBegin(GL_POINTS);
 	glColor3f(1.0, 1.0, 0.0);
 	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
-	glEnd();
+	glEnd();*/
 
 	/*if (toggleWireframe) {
 		glBegin(GL_POLYGON);

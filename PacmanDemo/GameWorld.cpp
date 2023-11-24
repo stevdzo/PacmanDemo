@@ -20,13 +20,16 @@ void GameWorld::init() {
 	
 	initDots();
 
-	m_background = new GameObject(Sprite("resources/mazelevel.png", 1, 1, false));
+	m_background = new GameObject(Sprite(mazeFilePath, 1, 1, false));
 	m_background->setPosition(Vector2D(screenWidth/2, screenHeight/2));
 	m_background->setSize(Vector2D(screenWidth, screenHeight));
 
-	m_player = new Player(Sprite("resources/pacman.png", 3, 4));
+	m_player = new Player(Sprite(pacFilePath, 3, 4));
 
-	m_blinky = new Enemy(Sprite("resources/ghost_red.png", 2, 4), m_player);
+	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 4), blinkyScatterNodeIndices, m_player);
+	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 4), pinkyScatterNodeIndices , m_player);
+	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 4), inkyScatterNodeIndices  , m_player);
+	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 4), clydeScatterNodeIndices , m_player);
 
 	m_inputManager = InputManager::getInstance(m_player);
 }
@@ -35,12 +38,12 @@ void GameWorld::initDots() {
 	for (size_t row = 0; row < rows; row++) {
 		for (size_t col = 0; col < columns; col++) {
 			if (dots[row][col] == 1) {
-				Dot* dot = new Dot(DotType::small);
+				Dot* dot = new Dot(Sprite(smallDotFilePath, 1, 1), DotType::small);
 				dot->setPosition(Vector2D(row * nodeSize + dot->getSize().x * 2, col * nodeSize + dot->getSize().y * 2));
 				m_dots.push_back(dot);
 			}
 			if (dots[row][col] == 2) {
-				Dot* dot = new Dot(DotType::big);
+				Dot* dot = new Dot(Sprite(bigDotFilePath, 1, 1), DotType::big);
 				dot->setPosition(Vector2D(row * nodeSize + dot->getSize().x / 2, col * nodeSize + dot->getSize().y / 2));
 				m_dots.push_back(dot);
 			}
@@ -49,8 +52,14 @@ void GameWorld::initDots() {
 }
 
 void GameWorld::update(float p_deltaTime) {
+
+	globalTimer += p_deltaTime;
+
 	m_player->update(p_deltaTime);
 	m_blinky->update(p_deltaTime);
+	m_pinky->update(p_deltaTime);
+	m_inky->update(p_deltaTime);
+	m_clyde->update(p_deltaTime);
 
 	m_player->eatDot(m_dots);
 }
@@ -61,23 +70,34 @@ void GameWorld::render() {
 
 	m_background->render();
 
-	m_graph->renderWireframe();
-
 	for (auto& dot : m_dots) {
 
 		dot->renderWireframe();
-	}
-
-	
-	m_blinky->renderWireframe();
+		dot->render();
+	}	
 
 	m_blinky->render();
-
-	m_player->renderWireframe();
+	m_pinky->render();
+	//m_inky->render();
+	//m_clyde->render();
 
 	m_player->render();
 
+	renderWireframe();
+
 	glutSwapBuffers();
+}
+
+void GameWorld::renderWireframe() {
+
+	m_graph->renderWireframe();
+
+	m_blinky->renderWireframe();
+	m_pinky->renderWireframe();
+	//m_inky->renderWireframe();
+	//m_clyde->renderWireframe();
+
+	m_player->renderWireframe();
 }
 
 void GameWorld::keyboard(int p_key, int p_x, int p_y) {
@@ -119,3 +139,4 @@ void GameWorld::idle() {
 	update(m_deltaTime);
 	render();
 }
+

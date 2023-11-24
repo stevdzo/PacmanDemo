@@ -31,6 +31,8 @@ public:
 	int getNodeIndexByDirection(GraphNode* p_currentNode, Direction p_direction) const;
 	Direction getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targetNode) const;
 
+	GraphNode* getNodeInPlayerDirection(GraphNode* playerNode, Direction playerDirection) const;
+
 	GraphNode* getNodeByPosition(Vector2D p_position);
 
 	void render();

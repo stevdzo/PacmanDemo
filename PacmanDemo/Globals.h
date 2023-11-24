@@ -49,7 +49,10 @@ extern const float directionChangeDistanceThreshold;
 extern const float turnBufferDistanceThreshold;
 extern const float eatDistanceThreshold;	
 
-extern const int blinkyScatterNodeIndices[3];
+extern const int blinkyScatterNodeIndices[];
+extern const int pinkyScatterNodeIndices[];
+extern const int inkyScatterNodeIndices[];
+extern const int clydeScatterNodeIndices[];
 
 extern Vector2D defaultSize;
 
@@ -58,6 +61,19 @@ extern Vector3D gameObjectWireframeColor;
 extern Vector3D nodeWireframeColor;
 extern Vector3D edgeWireframeColor;
 
+extern const char* pacFilePath;
+extern const char* blinkyFilePath;
+extern const char* pinkyFilePath;
+extern const char* inkyFilePath;
+extern const char* clydeFilePath;
+extern const char* mazeFilePath;
+extern const char* bigDotFilePath;
+extern const char* smallDotFilePath;
+
 static float timer = 0.0f;
+
+static float globalTimer = 0.0f;
+
+static int currentLevel = 1;
 
 #endif

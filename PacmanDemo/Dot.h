@@ -18,7 +18,7 @@ private:
 
 public:
 
-	Dot(DotType p_type);
+	Dot(Sprite p_sprite, DotType p_type);
 	~Dot();
 
 	void setValue(int);

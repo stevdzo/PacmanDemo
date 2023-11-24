@@ -46,6 +46,8 @@ public:
 	virtual void render();
 	virtual void renderWireframe();
 
+	Direction getCurrentDirection() const;
+
 	GraphNode* getCurrentNode() const;
 	GraphNode* getNextNode() const;
 	GraphNode* getPreviousNode() const;

@@ -1,6 +1,6 @@
 #include "Dot.h"
 
-Dot::Dot(DotType p_type) : GameObject() {
+Dot::Dot(Sprite p_sprite, DotType p_type) : GameObject(p_sprite) {
 
     switch (p_type) {  
     case DotType::small:
@@ -31,7 +31,7 @@ void Dot::update(float p_deltaTime) {
 }
 
 void Dot::render() {
-    //GameObject::render();
+    GameObject::render();
 }
 
 void Dot::renderWireframe() {

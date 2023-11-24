@@ -11,8 +11,8 @@ const float nodeSize = 32.0f;
 const float nodeRenderOffset = nodeSize / 2.0f;
 
 const int leftPortalIndex = 16;
-//const int rightPortalIndex = 915;
-const int rightPortalIndex = 884;
+const int rightPortalIndex = 915;
+//const int rightPortalIndex = 884;
 
 const int _ = -1;
 const int map[rows][columns] = {
@@ -78,14 +78,17 @@ const int dots[rows][columns] = {
 		{_, 1, 1, 1, 1, _, _, 2, 1, 1, 1, _, _, _, _, _, _, _, _, _, _, _, 1, 1, 1, 1, 1, 2, 1, 1}
 };
 
-bool toggleWireframe = true;
-bool toggleRender = false;
+bool toggleWireframe = false;
+bool toggleRender = !toggleWireframe;
 
 const float directionChangeDistanceThreshold = 0.4f;
 const float turnBufferDistanceThreshold = 32.0f;
 const float eatDistanceThreshold = 8.0f;
 
-const int blinkyScatterNodeIndices[3] = { 711, 864, 738 };
+const int blinkyScatterNodeIndices [] = { 711, 864, 738 };
+const int pinkyScatterNodeIndices  [] = { 246, 89 , 211 };
+const int inkyScatterNodeIndices   [] = { 688, 714, 498 };
+const int clydeScatterNodeIndices  [] = { 223, 187, 405 };
 
 Vector2D defaultSize = Vector2D(32.0f, 32.0f);
 
@@ -93,3 +96,12 @@ Vector3D defaultWireframeColor = Vector3D(1.0f, 1.0f, 1.0f);
 Vector3D gameObjectWireframeColor = Vector3D(0.2f, 0.8f, 0.2f);
 Vector3D nodeWireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
 Vector3D edgeWireframeColor = Vector3D(0.2f, 0.8f, 0.8f);
+
+const char* pacFilePath      = "resources/images/pacman.png";
+const char* blinkyFilePath   = "resources/images/ghost_blinky.png";
+const char* pinkyFilePath    = "resources/images/ghost_pinky.png";
+const char* inkyFilePath     = "resources/images/ghost_inky.png";
+const char* clydeFilePath    = "resources/images/ghost_clyde.png";
+const char* mazeFilePath     = "resources/images/mazelevel.png";
+const char* bigDotFilePath   = "resources/images/dot_big.png";
+const char* smallDotFilePath = "resources/images/dot_small.png";

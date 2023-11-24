@@ -162,6 +162,45 @@ Direction Graph::getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targe
     return Direction::none;
 }
 
+GraphNode* Graph::getNodeInPlayerDirection(GraphNode* p_node, Direction p_direction) const {
+
+    if (!p_node || p_direction == Direction::none)
+        return nullptr;
+
+    const int nodesToMove = 4;
+
+    Index2D playerIndex2D = p_node->getIndexAs2D();
+
+    int targetRow = playerIndex2D.row;
+    int targetCol = playerIndex2D.col;
+
+    switch (p_direction) {
+    case Direction::up:
+        targetCol += nodesToMove;
+        break;
+    case Direction::down:
+        targetCol -= nodesToMove;
+        break;
+    case Direction::left:
+        targetRow -= nodesToMove;
+        break;
+    case Direction::right:
+        targetRow += nodesToMove;
+        break;
+    default:
+        return nullptr;
+    }
+
+    GraphNode* node = m_nodeMatrix[targetRow][targetCol];
+    if (targetRow >= 0 && targetRow < static_cast<int>(m_nodeMatrix.size()) &&
+        targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&
+        !node->isObstacle() &&
+        !node->isEmptyNode())
+        return node;
+    else return nullptr;
+
+}
+
 GraphNode* Graph::getNodeByPosition(Vector2D p_position) {
     return m_nodeMatrix
         [std::floor((p_position.x + nodeSize) / nodeSize)]

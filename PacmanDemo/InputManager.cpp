@@ -31,7 +31,7 @@ void InputManager::keyboardUp(int p_key, int p_x, int p_y) {
 
 void InputManager::mouse(int p_button, int p_state, int p_x, int p_y) {
     if (p_button == GLUT_LEFT_BUTTON && p_state == GLUT_DOWN) {
-       std::cout << Graph::getInstance()->getNodeByPosition(Vector2D(p_x, p_y))->getIndex() << std::endl;
+       std::cout << Graph::getInstance()->getNodeByPosition(Vector2D(p_x, screenHeight - p_y))->getIndex() << std::endl;
     }
 }
 

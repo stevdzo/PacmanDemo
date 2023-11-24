@@ -5,6 +5,13 @@
 #include "Player.h"
 #include "AStar.h"
 
+enum class GhostType {
+	blinky = 0,
+	pinky = 1,
+	inky = 2,
+	clyde = 3,
+};
+
 enum class EnemyState {
 	none = 0,
 	chase = 1,
@@ -20,25 +27,26 @@ private:
 	AStar m_astar;
 
 	Player* m_player;
-
+	
+	GraphNode* m_playerNode;
 	GraphNode* m_scatterNode;
-	GraphNode* m_eatenNode;
+	GraphNode* m_eatenNode;	
 
 	int m_scatterNodeIndices[3];
-
 	int m_currentNodeIndex;
-
-	bool m_pathLooping;
 
 	bool m_frightenedDirectionChosen;
 
-	EnemyState m_enemyState;
+	EnemyState m_currentEnemyState;
+	EnemyState m_previousEnemyState;
 
-	std::vector<GraphNode*> m_path;
+	GhostType m_ghostType;
+
+	std::vector<GraphNode*> m_path;	
 
 public:
 
-	Enemy(Sprite p_sprite, Player* m_player);
+	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, Player* m_player);
 
 	void update(float p_deltaTime) override;
 	void render() override;
@@ -52,6 +60,7 @@ public:
 
 	void moveEnemy();
 	void followPath();
+	void updateChaseTarget();
 
 	void onChase();
 	void onScatter();
@@ -64,6 +73,9 @@ public:
 	bool pathCompleted();
 
 	void toggleScatterNode();
+
+	void changeEnemyState(EnemyState p_enemyState);
+	void returnPreviousEnemyState();
 
 	std::vector<Direction> chooseDirectionWhenFrightened();
 };

@@ -17,6 +17,9 @@ private:
 	Player* m_player;
 
 	Enemy* m_blinky;
+	Enemy* m_pinky;
+	Enemy* m_inky;
+	Enemy* m_clyde;
 
 	std::vector<Dot*> m_dots;
 
@@ -34,6 +37,7 @@ public:
 
 	void update(float p_deltaTime);
 	void render();
+	void renderWireframe();
 
 	virtual void keyboard(int, int, int);
 	virtual void keyboardUp(int, int, int);

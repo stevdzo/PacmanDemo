@@ -98,7 +98,6 @@ Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     
     m_size = Vector2D(32.0f, 32.0f);
     m_currentNode = getNodeByIndex(453);
-    m_currentNode = getNodeByIndex(441);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -136,6 +135,10 @@ void Entity::render() {
 
 void Entity::renderWireframe() {
     GameObject::renderWireframe();
+}
+
+Direction Entity::getCurrentDirection() const {
+    return m_currentDirection;
 }
 
 GraphNode* Entity::getCurrentNode() const {
