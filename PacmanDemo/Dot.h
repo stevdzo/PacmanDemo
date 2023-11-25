@@ -24,6 +24,8 @@ public:
 	void setValue(int);
 	int getValue(void);
 
+	DotType getType() const;
+
 	void update(float p_deltaTime) override;
 	void render() override;
 	void renderWireframe() override;

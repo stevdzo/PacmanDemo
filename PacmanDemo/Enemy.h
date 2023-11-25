@@ -27,7 +27,8 @@ private:
 	AStar m_astar;
 
 	Player* m_player;
-	
+	Enemy* m_blinky; // only for inky
+
 	GraphNode* m_playerNode;
 	GraphNode* m_scatterNode;
 	GraphNode* m_eatenNode;	
@@ -76,6 +77,10 @@ public:
 
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();
+
+	void assignBlinkyToInky(Enemy* m_enemy);
+
+	EnemyState getCurrentMode() const;
 
 	std::vector<Direction> chooseDirectionWhenFrightened();
 };

@@ -23,6 +23,8 @@ private:
 
 	std::vector<Dot*> m_dots;
 
+	std::vector<Enemy*> m_ghosts;
+
 	Graph* m_graph;
 	InputManager* m_inputManager;
 

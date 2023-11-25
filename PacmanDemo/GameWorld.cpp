@@ -31,6 +31,13 @@ void GameWorld::init() {
 	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 4), inkyScatterNodeIndices  , m_player);
 	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 4), clydeScatterNodeIndices , m_player);
 
+	m_inky->assignBlinkyToInky(m_blinky);
+
+	m_ghosts.push_back(m_blinky);
+	m_ghosts.push_back(m_pinky);
+	m_ghosts.push_back(m_inky);
+	m_ghosts.push_back(m_clyde);
+
 	m_inputManager = InputManager::getInstance(m_player);
 }
 
@@ -55,6 +62,8 @@ void GameWorld::update(float p_deltaTime) {
 
 	globalTimer += p_deltaTime;
 
+	std::cout << globalTimer << std::endl;
+
 	m_player->update(p_deltaTime);
 	m_blinky->update(p_deltaTime);
 	m_pinky->update(p_deltaTime);
@@ -62,6 +71,23 @@ void GameWorld::update(float p_deltaTime) {
 	m_clyde->update(p_deltaTime);
 
 	m_player->eatDot(m_dots);
+
+	/*if (toggleFrightenedMode) {
+		for (auto& ghost : m_ghosts)
+			ghost->changeEnemyState(EnemyState::frightened);
+	}*/
+	
+	if (globalTimer > 7.0f && globalTimer < 20.0f) {
+
+		for (auto& ghost : m_ghosts)
+			if (ghost->getCurrentMode() != EnemyState::chase)
+			ghost->changeEnemyState(EnemyState::chase);
+	}
+	else if (globalTimer > 20.0f) {
+		for (auto& ghost : m_ghosts)
+			if (ghost->getCurrentMode() != EnemyState::scatter)
+			ghost->changeEnemyState(EnemyState::scatter);
+	}
 }
 
 void GameWorld::render() {
@@ -78,8 +104,8 @@ void GameWorld::render() {
 
 	m_blinky->render();
 	m_pinky->render();
-	//m_inky->render();
-	//m_clyde->render();
+	m_inky->render();
+	m_clyde->render();
 
 	m_player->render();
 
@@ -94,8 +120,8 @@ void GameWorld::renderWireframe() {
 
 	m_blinky->renderWireframe();
 	m_pinky->renderWireframe();
-	//m_inky->renderWireframe();
-	//m_clyde->renderWireframe();
+	m_inky->renderWireframe();
+	m_clyde->renderWireframe();
 
 	m_player->renderWireframe();
 }

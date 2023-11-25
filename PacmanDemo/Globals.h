@@ -45,14 +45,25 @@ extern const int dots[rows][columns];
 extern bool toggleWireframe;
 extern bool toggleRender;
 
+extern bool toggleFrightenedMode;
+
+extern bool toggleChangeMode;
+
 extern const float directionChangeDistanceThreshold;
 extern const float turnBufferDistanceThreshold;
 extern const float eatDistanceThreshold;	
+
+extern const float chaseScatterSpeed;
+extern const float eatenSpeed;
+extern const float frightenedSpeed;
 
 extern const int blinkyScatterNodeIndices[];
 extern const int pinkyScatterNodeIndices[];
 extern const int inkyScatterNodeIndices[];
 extern const int clydeScatterNodeIndices[];
+
+extern const int pinkyTargetNodeDistance;
+extern const int clydeRadiusNodeDistance;
 
 extern Vector2D defaultSize;
 

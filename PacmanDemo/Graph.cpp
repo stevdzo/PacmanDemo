@@ -99,6 +99,16 @@ std::vector<GraphNode*> Graph::getNodeVector() {
     return m_nodeVector;
 }
 
+int Graph::calculateDistanceInNodes(const GraphNode* p_node1, const GraphNode* p_node2) const {
+    if (!p_node1 || !p_node2)
+        return -1;
+
+    Index2D index1 = p_node1->getIndexAs2D();
+    Index2D index2 = p_node2->getIndexAs2D();
+
+    return (std::abs(index1.row - index2.row) + std::abs(index1.col - index2.col));
+}
+
 int Graph::getNodeIndexByDirection(GraphNode* p_currentNode, Direction p_direction) const {
 
     GLint numRows = m_nodeMatrix.size();
@@ -162,12 +172,10 @@ Direction Graph::getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targe
     return Direction::none;
 }
 
-GraphNode* Graph::getNodeInPlayerDirection(GraphNode* p_node, Direction p_direction) const {
+GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direction p_direction, const int p_tileDistance) const {
 
     if (!p_node || p_direction == Direction::none)
         return nullptr;
-
-    const int nodesToMove = 4;
 
     Index2D playerIndex2D = p_node->getIndexAs2D();
 
@@ -176,16 +184,16 @@ GraphNode* Graph::getNodeInPlayerDirection(GraphNode* p_node, Direction p_direct
 
     switch (p_direction) {
     case Direction::up:
-        targetCol += nodesToMove;
+        targetCol += p_tileDistance;
         break;
     case Direction::down:
-        targetCol -= nodesToMove;
+        targetCol -= p_tileDistance;
         break;
     case Direction::left:
-        targetRow -= nodesToMove;
+        targetRow -= p_tileDistance;
         break;
     case Direction::right:
-        targetRow += nodesToMove;
+        targetRow += p_tileDistance;
         break;
     default:
         return nullptr;
@@ -205,6 +213,39 @@ GraphNode* Graph::getNodeByPosition(Vector2D p_position) {
     return m_nodeMatrix
         [std::floor((p_position.x + nodeSize) / nodeSize)]
         [std::floor(p_position.y / nodeSize)];
+}
+
+GraphNode* Graph::calculateInkyTargetNode(const GraphNode* p_node1, const GraphNode* p_node2, const Direction p_direction) {
+
+    if (!p_node1 || !p_node2) {
+        return nullptr;
+    }
+
+    GraphNode* targetNode = getNodeInPlayerDirection(p_node1, p_direction, 2);
+
+    if (!targetNode) {
+        return nullptr;
+    }
+
+    Index2D blinkyIndex = p_node2->getIndexAs2D();
+    Index2D targetIndex = targetNode->getIndexAs2D();
+
+    int vectorX = targetIndex.row - blinkyIndex.row;
+    int vectorY = targetIndex.col - blinkyIndex.col;
+
+    int extendedVectorX = 2 * vectorX;
+    int extendedVectorY = 2 * vectorY;
+
+    int targetRow = blinkyIndex.row + extendedVectorX;
+    int targetCol = blinkyIndex.col + extendedVectorY;
+
+    GraphNode* node = m_nodeMatrix[targetRow][targetCol];
+    if (targetRow >= 0 && targetRow < static_cast<int>(m_nodeMatrix.size()) &&
+        targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&
+        !node->isObstacle() &&
+        !node->isEmptyNode())
+        return node;
+    else return nullptr;
 }
 
 void Graph::render() {

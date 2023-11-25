@@ -3,7 +3,7 @@
 Enemy::Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, Player* p_player) : Entity(p_sprite), m_ghostType(p_ghostType), m_player(p_player) {
 	m_currentNodeIndex = 0;
 	m_speed = 140.0f;
-	m_currentEnemyState = EnemyState::chase;
+	m_currentEnemyState = EnemyState::scatter;
 	m_previousEnemyState = m_currentEnemyState;
 
 	m_astar = AStar();		
@@ -41,6 +41,20 @@ void Enemy::render() {
 void Enemy::renderWireframe() {
 	renderPath();
 
+	if (m_ghostType == GhostType::inky) {
+
+		auto nextNode = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
+
+		if (nextNode) {
+
+			glPointSize(16.0f);
+			glBegin(GL_POINTS);
+			glColor3f(1.0, 1.0, 0.0);
+			glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
+			glEnd();
+		}
+
+	}
 	/*GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 
 	glPointSize(16.0f);
@@ -150,36 +164,47 @@ void Enemy::followPath() {
 void Enemy::updateChaseTarget() {
 
 	switch (m_ghostType) {
-	
+
 	case GhostType::blinky:
 
 		m_playerNode = m_player->getCurrentNode();
 
 		break;
-	case GhostType::pinky:{
-		GraphNode* node = Graph::getInstance()->getNodeInPlayerDirection(m_player->getCurrentNode(), m_player->getCurrentDirection());
+	case GhostType::pinky: {
+
+		GraphNode* node = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), pinkyTargetNodeDistance);
+		m_playerNode = node;
+	}
+	break;
+	case GhostType::inky: {
+
+		GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
 		m_playerNode = node;
 	}
 		break;
-	case GhostType::inky:
-
-		m_playerNode = m_player->getCurrentNode();
-		break;
 	case GhostType::clyde:
 
-		m_playerNode = m_player->getCurrentNode();
+		if (getDistanceInNodes(m_player->getCurrentNode()) <= clydeRadiusNodeDistance) {
+			if (!toggleFrightenedMode) changeEnemyState(EnemyState::scatter);
+		}
+		else {
+
+			if (!toggleFrightenedMode) changeEnemyState(EnemyState::chase);
+			m_playerNode = m_player->getCurrentNode();
+		}
 		break;
 	}
-
 }
 
 void Enemy::onChase() {
+	m_speed = chaseScatterSpeed;
 	m_desiredDirection = getDirectionByNextNode();
 	if (onPlayerNodeChange()) findShortestPath(m_playerNode);
 	followPath();
 }
 
 void Enemy::onScatter() {
+	m_speed = chaseScatterSpeed;
 	m_desiredDirection = getDirectionByNextNode();
 	if (pathCompleted()) {
 		findShortestPath(m_scatterNode); 
@@ -189,6 +214,7 @@ void Enemy::onScatter() {
 }
 
 void Enemy::onEaten() {
+	m_speed = eatenSpeed;
 	m_desiredDirection = getDirectionByNextNode();
 	findShortestPath(m_eatenNode);
 	followPath();
@@ -197,6 +223,8 @@ void Enemy::onEaten() {
 void Enemy::onFrightened() {		
 		
 	//std::cout << m_currentDirection << std::endl;
+
+	m_speed = frightenedSpeed;
 
 	if (m_currentNode->isIntersection()) {		
 		if (m_position.distanceTo(m_currentNode->getPosition()) <= directionChangeDistanceThreshold) {
@@ -249,6 +277,14 @@ void Enemy::changeEnemyState(EnemyState p_enemyState) {
 
 void Enemy::returnPreviousEnemyState() {
 	m_currentEnemyState = m_previousEnemyState;
+}
+
+void Enemy::assignBlinkyToInky(Enemy* p_blinky) {
+	m_blinky = p_blinky;
+}
+
+EnemyState Enemy::getCurrentMode() const {
+	return m_currentEnemyState;
 }
 
 std::vector<Direction> Enemy::chooseDirectionWhenFrightened() {

@@ -30,7 +30,7 @@ void Player::render() {
 void Player::renderWireframe() {
 	Entity::renderWireframe();
 
-	auto node = Graph::getInstance()->getNodeInPlayerDirection(m_currentNode, m_currentDirection);
+	/*auto node = Graph::getInstance()->getNodeInPlayerDirection(m_currentNode, m_currentDirection);
 
 	if (node) {
 
@@ -39,7 +39,7 @@ void Player::renderWireframe() {
 		glColor3f(1.0, 0.0, 1.0);
 		glVertex2f(node->getPosition().x, node->getPosition().y);
 		glEnd();
-	}
+	}*/
 
 	/*GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
 
@@ -81,6 +81,10 @@ void Player::renderWireframe() {
 void Player::eatDot(std::vector<Dot*>& p_dots) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {
+			if ((*it)->getType() == DotType::big) {
+				std::cout << "KHKLKDFSA" << std::endl;
+				toggleFrightenedMode = true;
+			}
 			delete* it;
 			it = p_dots.erase(it);
 		}

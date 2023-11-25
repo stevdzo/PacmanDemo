@@ -1,5 +1,9 @@
 #include "Entity.h"
 
+int Entity::getDistanceInNodes(GraphNode* m_targetNode) const {
+    return Graph::getInstance()->calculateDistanceInNodes(m_currentNode, m_targetNode);
+}
+
 // Gets the node positioned next to current node by given direction
 int Entity::getNodeIndexByDirection(Direction p_direction) const {
     return Graph::getInstance()->getNodeIndexByDirection(m_currentNode, p_direction);
@@ -20,6 +24,11 @@ GraphNode* Entity::getNodeByDirectionFromCustomNode(GraphNode* p_node, Direction
     return getNodeByIndex(Graph::getInstance()->getNodeIndexByDirection(p_node, p_direction));
 }
 
+// Gets the node from graph x nodes from current node based on current direction
+GraphNode* Entity::getNodeInDirection(GraphNode* p_node, Direction p_direction, const int p_tileDistance) const {
+    return Graph::getInstance()->getNodeInPlayerDirection(p_node, p_direction, p_tileDistance);
+}
+
 // Gets the node from graph by current position of entity
 GraphNode* Entity::getNodeByPosition() const {
     return Graph::getInstance()->getNodeByPosition(m_position);
@@ -28,6 +37,11 @@ GraphNode* Entity::getNodeByPosition() const {
 // Gets the node by given position
 GraphNode* Entity::getNodeByPosition(Vector2D p_position) const {
     return Graph::getInstance()->getNodeByPosition(p_position);
+}
+
+// Gets the node based on two targets doubling the distance (for inky)
+GraphNode* Entity::getNodeByTwoTargetsDoubled(GraphNode* p_node1, GraphNode* p_node2, Direction p_direction) const {
+    return Graph::getInstance()->calculateInkyTargetNode(p_node1, p_node2, p_direction);
 }
 
 // Gets the direction between current and next node

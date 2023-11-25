@@ -23,12 +23,15 @@ protected:
 	Direction m_desiredDirection;
 	Direction m_previousDirection;
 
+	virtual int getDistanceInNodes(GraphNode* m_targetNode) const;
 	virtual int getNodeIndexByDirection(Direction p_direction) const;
 	virtual GraphNode* getNodeByIndex(int p_index) const;
 	virtual GraphNode* getNodeByDirectionFromCurrentNode(Direction p_direction) const;
 	virtual GraphNode* getNodeByDirectionFromCustomNode(GraphNode* p_node, Direction p_direction) const;
+	virtual GraphNode* getNodeInDirection(GraphNode* p_node, Direction p_direction, const int p_tileDistance) const;
 	virtual GraphNode* getNodeByPosition() const;
-	virtual GraphNode* getNodeByPosition(Vector2D p_position) const;
+	virtual GraphNode* getNodeByPosition(Vector2D p_position) const;	
+	virtual GraphNode* getNodeByTwoTargetsDoubled(GraphNode* p_node1, GraphNode* p_node2, Direction p_direction) const;
 	virtual Direction getDirectionByNextNode() const;
 	virtual Direction getDirectionByGivenNode(GraphNode* p_node) const;
 	virtual void setVelocityByDirection();

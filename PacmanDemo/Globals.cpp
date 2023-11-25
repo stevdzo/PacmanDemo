@@ -81,14 +81,25 @@ const int dots[rows][columns] = {
 bool toggleWireframe = false;
 bool toggleRender = !toggleWireframe;
 
+bool toggleFrightenedMode = false;
+
+bool toggleChangeMode = false;
+
 const float directionChangeDistanceThreshold = 0.4f;
 const float turnBufferDistanceThreshold = 32.0f;
 const float eatDistanceThreshold = 8.0f;
+
+const float chaseScatterSpeed = 140.0f;
+const float eatenSpeed = 200.0f;
+const float frightenedSpeed = 70.0f;
 
 const int blinkyScatterNodeIndices [] = { 711, 864, 738 };
 const int pinkyScatterNodeIndices  [] = { 246, 89 , 211 };
 const int inkyScatterNodeIndices   [] = { 688, 714, 498 };
 const int clydeScatterNodeIndices  [] = { 223, 187, 405 };
+
+extern const int pinkyTargetNodeDistance = 4;
+extern const int clydeRadiusNodeDistance = 8;
 
 Vector2D defaultSize = Vector2D(32.0f, 32.0f);
 

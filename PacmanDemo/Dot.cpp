@@ -1,8 +1,8 @@
 #include "Dot.h"
 
-Dot::Dot(Sprite p_sprite, DotType p_type) : GameObject(p_sprite) {
+Dot::Dot(Sprite p_sprite, DotType p_type) : GameObject(p_sprite), m_type(p_type) {
 
-    switch (p_type) {  
+    switch (m_type) {  
     case DotType::small:
         m_size = Vector2D(8.0f, 8.0f);
         m_value = 10;
@@ -24,6 +24,10 @@ void Dot::setValue(int p_value) {
 
 int Dot::getValue(void) {
     return m_value;
+}
+
+DotType Dot::getType() const {
+    return m_type;
 }
 
 void Dot::update(float p_deltaTime) {
