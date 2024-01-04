@@ -7,6 +7,8 @@ class AStar {
 
 private:
 
+	std::vector<GraphNode*> m_path;
+
 	GraphNode* findNodeWithLowestCost(std::set<GraphNode*>& p_nodes);
 	GraphNode* findNodeWithHighestCost(std::set<GraphNode*>& p_nodes);
 

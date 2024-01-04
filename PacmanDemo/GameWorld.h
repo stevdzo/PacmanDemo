@@ -7,6 +7,8 @@
 
 class Graph;
 class InputManager;
+class AudioManager;
+class TextRenderer;
 
 class GameWorld {
 
@@ -21,12 +23,15 @@ private:
 	Enemy* m_inky;
 	Enemy* m_clyde;
 
-	std::vector<Dot*> m_dots;
+	AStar astar;
 
+	std::vector<Dot*> m_dots;
 	std::vector<Enemy*> m_ghosts;
+	std::vector<GameObject*> m_pacLives;
 
 	Graph* m_graph;
 	InputManager* m_inputManager;
+	AudioManager* m_audioManager;
 
 	float m_deltaTime;
 	float m_previousTime;
@@ -40,6 +45,7 @@ public:
 	void update(float p_deltaTime);
 	void render();
 	void renderWireframe();
+	void renderUi();
 
 	virtual void keyboard(int, int, int);
 	virtual void keyboardUp(int, int, int);

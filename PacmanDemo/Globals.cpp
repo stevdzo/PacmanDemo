@@ -2,7 +2,7 @@
 #include "Vector2D.h"
 #include "Vector3D.h"
 
-const int screenWidth = 896;
+const int screenWidth = 896+400;
 const int screenHeight = 992;
 const char* title = "Pacman Demo";
 
@@ -12,7 +12,6 @@ const float nodeRenderOffset = nodeSize / 2.0f;
 
 const int leftPortalIndex = 16;
 const int rightPortalIndex = 915;
-//const int rightPortalIndex = 884;
 
 const int _ = -1;
 const int map[rows][columns] = {
@@ -85,18 +84,32 @@ bool toggleFrightenedMode = false;
 
 bool toggleChangeMode = false;
 
-const float directionChangeDistanceThreshold = 0.4f;
-const float turnBufferDistanceThreshold = 32.0f;
+bool gameActive = false;
+
+const float directionChangeDistanceThreshold = 0.8f;
+const float turnBufferDistanceThreshold = 200.0f;
 const float eatDistanceThreshold = 8.0f;
 
-const float chaseScatterSpeed = 140.0f;
+const float gameStartTimerThreshold = 5.0f;
+
+const float chaseScatterSpeed = 88.0f * 3.0f;;
 const float eatenSpeed = 200.0f;
 const float frightenedSpeed = 70.0f;
+
+const int blinkyStartNodeIndex = 453;
+const int pinkyStartNodeIndex  = 450;
+const int inkyStartNodeIndex   = 388; // 388
+const int clydeStartNodeIndex  = 512;
 
 const int blinkyScatterNodeIndices [] = { 711, 864, 738 };
 const int pinkyScatterNodeIndices  [] = { 246, 89 , 211 };
 const int inkyScatterNodeIndices   [] = { 688, 714, 498 };
 const int clydeScatterNodeIndices  [] = { 223, 187, 405 };
+
+const int blinkyBaseNodeIndices    [] = { 0,   0,   0   };
+const int pinkyBaseNodeIndices     [] = { 449, 451, 453 };
+const int inkyBaseNodeIndices      [] = { 389, 387, 453 };
+const int clydeBaseNodeIndices     [] = { 513, 511, 453 };
 
 extern const int pinkyTargetNodeDistance = 4;
 extern const int clydeRadiusNodeDistance = 8;
@@ -108,11 +121,14 @@ Vector3D gameObjectWireframeColor = Vector3D(0.2f, 0.8f, 0.2f);
 Vector3D nodeWireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
 Vector3D edgeWireframeColor = Vector3D(0.2f, 0.8f, 0.8f);
 
-const char* pacFilePath      = "resources/images/pacman.png";
-const char* blinkyFilePath   = "resources/images/ghost_blinky.png";
-const char* pinkyFilePath    = "resources/images/ghost_pinky.png";
-const char* inkyFilePath     = "resources/images/ghost_inky.png";
-const char* clydeFilePath    = "resources/images/ghost_clyde.png";
-const char* mazeFilePath     = "resources/images/mazelevel.png";
-const char* bigDotFilePath   = "resources/images/dot_big.png";
-const char* smallDotFilePath = "resources/images/dot_small.png";
+const char* pacFilePath       = "resources/images/pacman.png";
+const char* blinkyFilePath    = "resources/images/ghost_blinky.png";
+const char* pinkyFilePath     = "resources/images/ghost_pinky.png";
+const char* inkyFilePath      = "resources/images/ghost_inky.png";
+const char* clydeFilePath     = "resources/images/ghost_clyde.png";
+const char* mazeFilePath      = "resources/images/mazelevel.png";
+const char* bigDotFilePath    = "resources/images/dot_big.png";
+const char* smallDotFilePath  = "resources/images/dot_small.png";
+
+const char* pacEatSfxFilePath = "resources/sounds/eat.wav";
+const char* introSfxFilePath  = "resources/sounds/intro_sound.wav";

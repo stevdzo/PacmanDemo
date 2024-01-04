@@ -19,6 +19,9 @@ public:
 	void render() override;
 	void renderWireframe() override;
 
+	int getScore(void) const;
+	int getHealth(void) const;
+
 	void eatDot(std::vector<Dot*>&);
 
 	void onPlayerMovement(int = 0);

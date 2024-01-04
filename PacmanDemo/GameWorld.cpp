@@ -1,6 +1,8 @@
 #include "GameWorld.h"
 #include "Graph.h"
 #include "InputManager.h"
+#include "AudioManager.h"
+#include "TextRenderer.h"
 
 void GameWorld::init() {
 	std::cout << "***********************************" << std::endl;
@@ -21,15 +23,30 @@ void GameWorld::init() {
 	initDots();
 
 	m_background = new GameObject(Sprite(mazeFilePath, 1, 1, false));
-	m_background->setPosition(Vector2D(screenWidth/2, screenHeight/2));
-	m_background->setSize(Vector2D(screenWidth, screenHeight));
+	m_background->setPosition(Vector2D((screenWidth-400)/2, screenHeight/2));
+	m_background->setSize(Vector2D(screenWidth-400, screenHeight));
 
 	m_player = new Player(Sprite(pacFilePath, 3, 4));
 
-	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 4), blinkyScatterNodeIndices, m_player);
-	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 4), pinkyScatterNodeIndices , m_player);
-	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 4), inkyScatterNodeIndices  , m_player);
-	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 4), clydeScatterNodeIndices , m_player);
+	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 4), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
+	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 4), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
+	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 4), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
+	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 4), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
+
+	m_blinky->setPositionByNode(blinkyStartNodeIndex);
+	m_pinky->setPositionByNode(pinkyStartNodeIndex);
+	m_inky->setPositionByNode(inkyStartNodeIndex);
+	m_clyde->setPositionByNode(clydeStartNodeIndex);
+
+	m_blinky->setCurrentDirection(Direction::left);
+	m_pinky->setCurrentDirection(Direction::down);
+	m_inky->setCurrentDirection(Direction::up);
+	m_clyde->setCurrentDirection(Direction::up);
+
+	m_blinky->changeEnemyState(EnemyState::scatter);
+	m_pinky->changeEnemyState(EnemyState::base);
+	m_inky->changeEnemyState(EnemyState::base);
+	m_clyde->changeEnemyState(EnemyState::base);
 
 	m_inky->assignBlinkyToInky(m_blinky);
 
@@ -38,7 +55,18 @@ void GameWorld::init() {
 	m_ghosts.push_back(m_inky);
 	m_ghosts.push_back(m_clyde);
 
+	for (size_t i = 1; i <= 3; i++) {
+		GameObject* pacImg = new GameObject(Sprite(pacFilePath, 4, 4));
+		pacImg->setPosition(Vector2D(screenWidth - (300 - 30 * i), screenHeight / 2 - 100));
+		m_pacLives.push_back(pacImg);
+	}
+
 	m_inputManager = InputManager::getInstance(m_player);
+	m_audioManager = AudioManager::getInstance();
+
+	m_audioManager->playIntroSound();
+
+	astar = AStar();
 }
 
 void GameWorld::initDots() {
@@ -60,38 +88,59 @@ void GameWorld::initDots() {
 
 void GameWorld::update(float p_deltaTime) {
 
-	globalTimer += p_deltaTime;
+	if (!gameActive)
+		gameStartTimer += p_deltaTime;
+	if (gameStartTimer > gameStartTimerThreshold) {
+		gameActive = true;
 
-	std::cout << globalTimer << std::endl;
+		m_pinky->shouldExitBase(true);
+		m_clyde->shouldExitBase(true);
 
-	m_player->update(p_deltaTime);
-	m_blinky->update(p_deltaTime);
-	m_pinky->update(p_deltaTime);
-	m_inky->update(p_deltaTime);
-	m_clyde->update(p_deltaTime);
-
-	m_player->eatDot(m_dots);
-
-	/*if (toggleFrightenedMode) {
-		for (auto& ghost : m_ghosts)
-			ghost->changeEnemyState(EnemyState::frightened);
-	}*/
-	
-	if (globalTimer > 7.0f && globalTimer < 20.0f) {
-
-		for (auto& ghost : m_ghosts)
-			if (ghost->getCurrentMode() != EnemyState::chase)
-			ghost->changeEnemyState(EnemyState::chase);
+		gameStartTimer = 0.0f;
 	}
-	else if (globalTimer > 20.0f) {
-		for (auto& ghost : m_ghosts)
-			if (ghost->getCurrentMode() != EnemyState::scatter)
-			ghost->changeEnemyState(EnemyState::scatter);
+
+	astar.findShortestPath(Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[388], 
+						   Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[453]);
+
+
+	if (gameActive) {
+
+		globalTimer += p_deltaTime;
+
+		//m_clyde->update(p_deltaTime);
+		m_inky->update(p_deltaTime);
+		//m_pinky->update(p_deltaTime);
+		//m_blinky->update(p_deltaTime);			
+
+		m_player->update(p_deltaTime);
+
+		m_player->eatDot(m_dots);
+
+		if (globalTimer > 3)
+			m_inky->shouldExitBase(true);
+
+		/*if (globalTimer > 5)
+			m_clyde->shouldExitBase(true);*/
+
+		/*if (toggleFrightenedMode) {
+			for (auto& ghost : m_ghosts)
+				ghost->changeEnemyState(EnemyState::frightened);
+		}*/
+
+		/*if (globalTimer > 7.0f && globalTimer < 20.0f) {
+			for (auto& ghost : m_ghosts)
+				if (ghost->getCurrentMode() != EnemyState::chase)
+					ghost->changeEnemyState(EnemyState::chase);
+		}
+		else if (globalTimer > 20.0f) {
+			for (auto& ghost : m_ghosts)
+				if (ghost->getCurrentMode() != EnemyState::scatter)
+					ghost->changeEnemyState(EnemyState::scatter);
+		}*/
 	}
 }
 
 void GameWorld::render() {
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_background->render();
@@ -102,14 +151,17 @@ void GameWorld::render() {
 		dot->render();
 	}	
 
-	m_blinky->render();
-	m_pinky->render();
-	m_inky->render();
 	m_clyde->render();
+	m_inky->render();
+	m_pinky->render();
+	m_blinky->render();
 
 	m_player->render();
 
+	//astar.render();
+
 	renderWireframe();
+	renderUi();
 
 	glutSwapBuffers();
 }
@@ -118,12 +170,24 @@ void GameWorld::renderWireframe() {
 
 	m_graph->renderWireframe();
 
-	m_blinky->renderWireframe();
-	m_pinky->renderWireframe();
-	m_inky->renderWireframe();
 	m_clyde->renderWireframe();
+	m_inky->renderWireframe();
+	m_pinky->renderWireframe();
+	m_blinky->renderWireframe();
 
 	m_player->renderWireframe();
+}
+
+void GameWorld::renderUi() {
+
+	TextRenderer::getInstance()->drawStrokeText((char*) "HIGH SCORE", screenWidth - 200 - 50, screenHeight / 2 + 50, 1, 1, 0);
+
+	char score[50];
+	sprintf_s(score, 50, "%i", static_cast<int>(m_player->getScore()));
+	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - 200, screenHeight/2, 1, 1, 0);
+
+	for (auto& pacLife : m_pacLives)
+		pacLife->render();
 }
 
 void GameWorld::keyboard(int p_key, int p_x, int p_y) {
@@ -165,4 +229,3 @@ void GameWorld::idle() {
 	update(m_deltaTime);
 	render();
 }
-

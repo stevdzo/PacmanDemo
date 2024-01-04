@@ -6,9 +6,10 @@
 #include <algorithm>
 #include <set>
 #include <random>
+#include <thread>
+#include <chrono>
 
-#include "glut.h"
-#include "inc/fmod.hpp"
+#include <glut.h>
 
 #define PI 3.14159
 
@@ -49,18 +50,32 @@ extern bool toggleFrightenedMode;
 
 extern bool toggleChangeMode;
 
+extern bool gameActive;
+
 extern const float directionChangeDistanceThreshold;
 extern const float turnBufferDistanceThreshold;
 extern const float eatDistanceThreshold;	
+
+extern const float gameStartTimerThreshold;
 
 extern const float chaseScatterSpeed;
 extern const float eatenSpeed;
 extern const float frightenedSpeed;
 
+extern const int blinkyStartNodeIndex;
+extern const int pinkyStartNodeIndex;
+extern const int inkyStartNodeIndex;
+extern const int clydeStartNodeIndex;
+
 extern const int blinkyScatterNodeIndices[];
 extern const int pinkyScatterNodeIndices[];
 extern const int inkyScatterNodeIndices[];
 extern const int clydeScatterNodeIndices[];
+
+extern const int blinkyBaseNodeIndices[];
+extern const int pinkyBaseNodeIndices[];
+extern const int inkyBaseNodeIndices[];
+extern const int clydeBaseNodeIndices[];
 
 extern const int pinkyTargetNodeDistance;
 extern const int clydeRadiusNodeDistance;
@@ -81,9 +96,15 @@ extern const char* mazeFilePath;
 extern const char* bigDotFilePath;
 extern const char* smallDotFilePath;
 
+extern const char* pacEatSfxFilePath;
+extern const char* introSfxFilePath;
+
 static float timer = 0.0f;
 
 static float globalTimer = 0.0f;
+static float gameStartTimer = 0.0f;
+
+
 
 static int currentLevel = 1;
 

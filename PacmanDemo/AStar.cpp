@@ -8,13 +8,15 @@ void AStar::update(float p_deltaTime) {
 }
 
 void AStar::render() {
-	//for (auto& node : m_path) {
-	//	node->renderNodeFromPath();
-	//}
+	for (auto& node : m_path) {
+		node->renderNodeFromPath();
+	}
 } 
 
 std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode) {
 	
+	if (!m_path.empty()) m_path.empty();
+
 	std::set<GraphNode*> openNodes;
 	std::set<GraphNode*> closedNodes;
 
@@ -31,6 +33,7 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 			std::vector<GraphNode*> finalPath;
 			while (currentNode != nullptr && currentNode != p_startNode) {
 				finalPath.push_back(currentNode);
+				m_path.push_back(currentNode);
 				currentNode = currentNode->getParent();
 			}
 			std::reverse(finalPath.begin(), finalPath.end());			

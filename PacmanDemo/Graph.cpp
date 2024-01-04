@@ -30,7 +30,7 @@ void Graph::initNodes() {
                 break;
             case 2: {
                 node->isObstacle(false);
-                node->setPosition(node->getPosition() + Vector2D(16.0f, 0.0f));
+                node->setPosition(node->getPosition() + Vector2D(nodeSize/2.0f, 0.0f));
                 node->setNodeType(NodeType::valid);
             }
                   break;
@@ -71,7 +71,7 @@ void Graph::initEdges() {
 }
 
 void Graph::initGraph() {
-    std::cout << "Initializing graph." << std::endl;
+    std::cout << "Initializing Graph." << std::endl;
     initNodes();
     initEdges();
 }
@@ -88,7 +88,7 @@ Graph* Graph::getInstance() {
 }
 
 Graph::~Graph() {
-    std::cout << "Deleting graph." << std::endl;
+    std::cout << "Deleting Graph." << std::endl;
 }
 
 Matrix<GraphNode*> Graph::getNodes() {

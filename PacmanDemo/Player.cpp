@@ -1,9 +1,11 @@
 #include "Player.h"
+#include <Windows.h>
 
 Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 	m_score = 0;
-	m_speed = 150.0f;
+	m_health = 3;
+	m_speed = 88.0f*3.0f;
 
 	m_currentNode = getNodeByIndex(441);
 	m_position = m_currentNode->getPosition();
@@ -78,17 +80,30 @@ void Player::renderWireframe() {
 	glEnd();*/
 }
 
+int Player::getScore(void) const {
+	return m_score;
+}
+
+int Player::getHealth(void) const {
+	return m_health;;
+}
+
 void Player::eatDot(std::vector<Dot*>& p_dots) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {
 			if ((*it)->getType() == DotType::big) {
-				std::cout << "KHKLKDFSA" << std::endl;
 				toggleFrightenedMode = true;
 			}
+			m_score += (*it)->getValue();
+
 			delete* it;
 			it = p_dots.erase(it);
+		
+			if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chEat)) 
+				AudioManager::getInstance()->playPacEatSound();					
 		}
-		else ++it;
+		else
+			++it;
 	}
 }
 
@@ -105,73 +120,24 @@ void Player::onPlayerMovement(int p_key) {
 	}
 
 	if (p_key == 'd') {
-		if (m_desiredDirection == Direction::left) {
-			m_desiredDirection = Direction::right;
-			m_currentDirection = Direction::right;
-		}
-		else {
-			if (m_currentNode->isIntersection()) {
-				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
-					m_desiredDirection = Direction::right;
-				}
-				else {					
-					/*m_desiredDirection = Direction::left;
-					m_currentDirection = Direction::left;*/
-				}
-			}
-		}
+		if (m_desiredDirection == Direction::left)
+			 m_currentDirection = Direction::right;
+		m_desiredDirection = Direction::right;
 	}
-	if (p_key == 'a') {
-		if (m_desiredDirection == Direction::right) {
-			m_desiredDirection = Direction::left;
-			m_currentDirection = Direction::left;
-		}
-		else {
-			if (m_currentNode->isIntersection()) {
-				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
-					m_desiredDirection = Direction::left;
-				}
-				else {
-					/*m_desiredDirection = Direction::right;
-					m_currentDirection = Direction::right;*/
-				}
-			}
-		}
+	if (p_key == 'a') {		
+		if (m_desiredDirection == Direction::right)
+			 m_currentDirection = Direction::left;
+		m_desiredDirection = Direction::left;
 	}
-	if (p_key == 'w') {
-		if (m_desiredDirection == Direction::down) {
-			m_desiredDirection = Direction::up;
-			m_currentDirection = m_desiredDirection;
-		}
-		else {
-			if (m_currentNode->isIntersection()) {
-					
-				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
-					m_desiredDirection = Direction::up;
-				}
-				else {
-					/*m_desiredDirection = Direction::down;
-					m_currentDirection = Direction::down;*/
-				}
-			}
-		}
+	if (p_key == 'w') {	
+		if (m_desiredDirection == Direction::down) 
+			 m_currentDirection = Direction::up;
+		m_desiredDirection = Direction::up;
 	}
 	if (p_key == 's') {
-		if (m_desiredDirection == Direction::up) {
-			m_desiredDirection = Direction::down;
-			m_currentDirection = m_desiredDirection;
-		}
-		else {
-			if (m_currentNode->isIntersection()) {
-				if (m_position.distanceTo(m_currentNode->getPosition()) <= turnBufferDistanceThreshold) {
-					m_desiredDirection = Direction::down;
-				}
-				else {
-					/*m_desiredDirection = Direction::up;
-					m_currentDirection = Direction::up;*/
-				}
-			}
-		}
+		if (m_desiredDirection == Direction::up)
+			 m_currentDirection = Direction::down;
+		m_desiredDirection = Direction::down;
 	}
 }
 
@@ -203,7 +169,8 @@ void Player::setVelocityByDirection() {
 
 void Player::updateDirection() {
 
-	float dist = m_position.distanceToSq(m_currentNode->getPosition());
+	float dist = m_position.distanceToSq(m_currentNode->getPosition());	
+
 	if (dist < directionChangeDistanceThreshold) {
 		if (!isValidDirection()) {
 			if (m_currentDirection == m_desiredDirection) {

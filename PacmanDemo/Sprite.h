@@ -1,8 +1,7 @@
 #ifndef _SPRITE_H
 #define _SPRITE_H
 
-
-#include "SOIL2.h"
+#include "SOIL.h"
 #include "Globals.h"
 
 class Sprite {

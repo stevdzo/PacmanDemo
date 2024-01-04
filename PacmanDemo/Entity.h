@@ -51,6 +51,9 @@ public:
 
 	Direction getCurrentDirection() const;
 
+	void setPositionByNode(const int p_nodeIndex);
+	void setCurrentDirection(const Direction p_direction);
+
 	GraphNode* getCurrentNode() const;
 	GraphNode* getNextNode() const;
 	GraphNode* getPreviousNode() const;

@@ -17,7 +17,8 @@ enum class EnemyState {
 	chase = 1,
 	scatter = 2,
 	eaten = 3,
-	frightened = 4
+	frightened = 4,
+	base = 5
 };
 
 class Enemy : public Entity {
@@ -32,11 +33,14 @@ private:
 	GraphNode* m_playerNode;
 	GraphNode* m_scatterNode;
 	GraphNode* m_eatenNode;	
+	GraphNode* m_baseNode;	
 
 	int m_scatterNodeIndices[3];
+	int m_baseNodeIndices[3];
 	int m_currentNodeIndex;
 
 	bool m_frightenedDirectionChosen;
+	bool m_insideBase;
 
 	EnemyState m_currentEnemyState;
 	EnemyState m_previousEnemyState;
@@ -47,7 +51,7 @@ private:
 
 public:
 
-	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, Player* m_player);
+	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, const int* p_baseNodeIndices, Player* m_player);
 
 	void update(float p_deltaTime) override;
 	void render() override;
@@ -67,6 +71,7 @@ public:
 	void onScatter();
 	void onEaten();
 	void onFrightened();
+	void onBase();
 
 	bool onEnemyNodeChange();
 	bool onPlayerNodeChange();
@@ -74,6 +79,9 @@ public:
 	bool pathCompleted();
 
 	void toggleScatterNode();
+	void toggleBaseNode();
+
+	void shouldExitBase(const bool p_insideBase);
 
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();

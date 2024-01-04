@@ -110,7 +110,7 @@ bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2)
 
 Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     
-    m_size = Vector2D(32.0f, 32.0f);
+    m_size = Vector2D(60.0f, 60.0f);
     m_currentNode = getNodeByIndex(453);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
@@ -120,18 +120,13 @@ Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
 }
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
-
-    m_currentNode = getNodeByIndex(453);  
-    m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
-    m_isMoving = false;
-    m_currentDirection = Direction::left;
 }
 
 void Entity::update(float p_deltaTime) {
     //GameObject::update(p_deltaTime);
-    m_sprite.animate(p_deltaTime, m_speed / 100.0f);
+    m_sprite.animate(p_deltaTime, m_speed * 0.01f);
 
     Vector2D previousPosition = m_position;
 
@@ -155,6 +150,16 @@ Direction Entity::getCurrentDirection() const {
     return m_currentDirection;
 }
 
+void Entity::setPositionByNode(const int p_nodeIndex) {
+    m_currentNode = getNodeByIndex(p_nodeIndex);
+    m_position = m_currentNode->getPosition();
+}
+
+void Entity::setCurrentDirection(const Direction p_direction) {
+    m_currentDirection = p_direction;
+    //setVelocityByDirection();
+}
+ 
 GraphNode* Entity::getCurrentNode() const {
     return m_currentNode;
 }
