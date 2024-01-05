@@ -91,19 +91,23 @@ void Enemy::setVelocityByDirection() {
 
 	case Direction::up:
 		m_velocity = Vector2D(0.0f, 1.0f);
-		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(4, 5);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) :
+			(m_currentEnemyState == EnemyState::eaten ? m_sprite.setCurrentFramesRange(14, 14) : m_sprite.setCurrentFramesRange(4, 5));
 		break;
 	case Direction::down:
 		m_velocity = Vector2D(0.0f, -1.0f);
-		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(6, 7);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) :
+			(m_currentEnemyState == EnemyState::eaten ? m_sprite.setCurrentFramesRange(15, 15) : m_sprite.setCurrentFramesRange(6, 7));
 		break;
 	case Direction::left:
 		m_velocity = Vector2D(-1.0f, 0.0f);
-		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(2, 3);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) :
+			(m_currentEnemyState == EnemyState::eaten ? m_sprite.setCurrentFramesRange(12, 12) : m_sprite.setCurrentFramesRange(2, 3));
 		break;
 	case Direction::right:
 		m_velocity = Vector2D(1.0f, 0.0f);
-		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(0, 1);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) :
+			(m_currentEnemyState == EnemyState::eaten ? m_sprite.setCurrentFramesRange(11, 11) : m_sprite.setCurrentFramesRange(4, 5));
 		break;
 	case Direction::none:
 		m_velocity = Vector2D(0.0f, 0.0f);

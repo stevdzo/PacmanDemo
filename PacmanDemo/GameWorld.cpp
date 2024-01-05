@@ -28,7 +28,7 @@ void GameWorld::init() {
 
 	m_player = new Player(Sprite(pacFilePath, 3, 4));
 
-	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 6), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
+	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
 	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 6), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
 	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 6), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
 	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 6), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
@@ -119,7 +119,7 @@ void GameWorld::update(float p_deltaTime) {
 
 		if (toggleFrightenedMode) {
 			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::frightened)
+				if (ghost->getCurrentMode() != EnemyState::frightened && ghost->getCurrentMode() != EnemyState::eaten)
 					ghost->changeEnemyState(EnemyState::frightened);	
 
 			frightenedTimer += p_deltaTime;
@@ -136,6 +136,7 @@ void GameWorld::update(float p_deltaTime) {
 			if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
 				AudioManager::getInstance()->m_chFrightened->stop();
 			}
+			frightenedTimer = 0.0f;
 		}
 
 		if (globalTimer > 7.0f && globalTimer < 20.0f) {

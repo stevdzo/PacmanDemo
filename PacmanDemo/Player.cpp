@@ -121,7 +121,7 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 
 	if (m_position.distanceTo(p_ghost->getPosition()) < 16) {
 
-		if (p_ghost->getCurrentMode() != EnemyState::frightened) {
+		if (p_ghost->getCurrentMode() != EnemyState::frightened && p_ghost->getCurrentMode() != EnemyState::eaten) {
 			m_health -= 1;
 			m_pacLives.erase(m_pacLives.end() - 1);
 			gameActive = false;
@@ -129,6 +129,10 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 			AudioManager::getInstance()->playDieSound();
 		}
 		else {
+
+			if (p_ghost->getCurrentMode() != EnemyState::eaten) {
+				p_ghost->changeEnemyState(EnemyState::eaten);
+			}
 
 			//Sleep(1000);
 		}

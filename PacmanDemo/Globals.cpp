@@ -101,7 +101,7 @@ const float frightenedSpeed = 70.0f;
 
 const int blinkyStartNodeIndex = 453;
 const int pinkyStartNodeIndex  = 450;
-const int inkyStartNodeIndex   = 388; // 388
+const int inkyStartNodeIndex   = 388;
 const int clydeStartNodeIndex  = 512;
 
 const int blinkyScatterNodeIndices [] = { 711, 864, 738 };
