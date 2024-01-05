@@ -4,12 +4,16 @@
 #include "Entity.h"
 #include "Dot.h"
 
+class Enemy;
+
 class Player : public Entity {
 
 private:
 
 	int m_score;
 	int m_health;
+
+	std::vector<GameObject*> m_pacLives;
 
 public:
 
@@ -23,6 +27,8 @@ public:
 	int getHealth(void) const;
 
 	void eatDot(std::vector<Dot*>&);
+
+	void onGhostCollision(Enemy* p_ghost);
 
 	void onPlayerMovement(int = 0);
 

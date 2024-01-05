@@ -32,15 +32,12 @@ Enemy::Enemy(GhostType p_ghostType,
 }
 
 void Enemy::update(float p_deltaTime) {
-	Entity::update(p_deltaTime);
-
-	updateChaseTarget();
+	Entity::update(p_deltaTime);	
 
 	moveEnemy();	
 
 	setVelocityByDirection();
 	updateDirection();
-	
 }
 
 void Enemy::render() {
@@ -94,19 +91,19 @@ void Enemy::setVelocityByDirection() {
 
 	case Direction::up:
 		m_velocity = Vector2D(0.0f, 1.0f);
-		m_sprite.setCurrentFramesRange(4, 5);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(4, 5);
 		break;
 	case Direction::down:
 		m_velocity = Vector2D(0.0f, -1.0f);
-		m_sprite.setCurrentFramesRange(6, 7);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(6, 7);
 		break;
 	case Direction::left:
 		m_velocity = Vector2D(-1.0f, 0.0f);
-		m_sprite.setCurrentFramesRange(2, 3);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(2, 3);
 		break;
 	case Direction::right:
 		m_velocity = Vector2D(1.0f, 0.0f);
-		m_sprite.setCurrentFramesRange(0, 1);
+		m_currentEnemyState == EnemyState::frightened ? m_sprite.setCurrentFramesRange(8, 9) : m_sprite.setCurrentFramesRange(0, 1);
 		break;
 	case Direction::none:
 		m_velocity = Vector2D(0.0f, 0.0f);
@@ -183,36 +180,47 @@ void Enemy::updateChaseTarget() {
 	case GhostType::pinky: {
 
 		GraphNode* node = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), pinkyTargetNodeDistance);
-		m_playerNode = node;
+		if (node)
+			m_playerNode = node;
+		else
+			m_playerNode = m_player->getCurrentNode();
 	}
 	break;
 	case GhostType::inky: {
 
 		GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
-		m_playerNode = node;
+		if (node)
+			m_playerNode = node;
+		else
+			m_playerNode = m_player->getCurrentNode();
 	}
 		break;
 	case GhostType::clyde:
 
 		if (m_currentEnemyState != EnemyState::base) {
 			if (getDistanceInNodes(m_player->getCurrentNode()) <= clydeRadiusNodeDistance) {
-				if (!toggleFrightenedMode) changeEnemyState(EnemyState::scatter);
+				if (!toggleFrightenedMode)
+					if (m_currentEnemyState != EnemyState::scatter)
+						changeEnemyState(EnemyState::scatter);
 			}
 			else {
 
-				if (!toggleFrightenedMode) changeEnemyState(EnemyState::chase);
+				if (!toggleFrightenedMode) 
+					if (m_currentEnemyState != EnemyState::chase)
+					changeEnemyState(EnemyState::chase);
 				m_playerNode = m_player->getCurrentNode();
-			}
+			}		
 		}
 		break;
 	}
 }
 
 void Enemy::onChase() {
+	updateChaseTarget();
 	m_speed = chaseScatterSpeed;
 	m_desiredDirection = getDirectionByNextNode();
 	if (onPlayerNodeChange()) findShortestPath(m_playerNode);
-	followPath();
+	followPath();	
 }
 
 void Enemy::onScatter() {	
@@ -313,13 +321,12 @@ void Enemy::toggleBaseNode() {
 	}
 	else {
 
-		if (m_currentNode == getNodeByIndex(inkyStartNodeIndex)) {
-			//m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
-			m_baseNode = m_currentNode;
-		}
+		//if (m_baseNode == getNodeByIndex(m_baseNodeIndices[0])) {
+			m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
+		//}
 
-		/*if (m_currentNode == getNodeByIndex(m_baseNodeIndices[2]))
-			changeEnemyState(EnemyState::scatter);*/
+		if (m_currentNode == m_baseNode)
+			changeEnemyState(EnemyState::scatter);
 	}
 }
 
@@ -330,6 +337,12 @@ void Enemy::shouldExitBase(const bool p_insideBase) {
 void Enemy::changeEnemyState(EnemyState p_enemyState) {
 	m_previousEnemyState = m_currentEnemyState;
 	m_currentEnemyState = p_enemyState;
+
+	if (p_enemyState == EnemyState::chase) {
+		
+		updateChaseTarget();
+		findShortestPath(m_playerNode);
+	}
 }
 
 void Enemy::returnPreviousEnemyState() {

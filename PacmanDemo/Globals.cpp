@@ -92,6 +92,9 @@ const float eatDistanceThreshold = 8.0f;
 
 const float gameStartTimerThreshold = 5.0f;
 
+const float frightenedTimerThreshold = 6.0f;
+const float frightenedFlashTimerThreshold = 4.0f;
+
 const float chaseScatterSpeed = 88.0f * 3.0f;;
 const float eatenSpeed = 200.0f;
 const float frightenedSpeed = 70.0f;
@@ -129,6 +132,9 @@ const char* clydeFilePath     = "resources/images/ghost_clyde.png";
 const char* mazeFilePath      = "resources/images/mazelevel.png";
 const char* bigDotFilePath    = "resources/images/dot_big.png";
 const char* smallDotFilePath  = "resources/images/dot_small.png";
+const char* cherryFilePath    = "resources/images/cherry.png";
 
 const char* pacEatSfxFilePath = "resources/sounds/eat.wav";
 const char* introSfxFilePath  = "resources/sounds/intro_sound.wav";
+const char* pacDieSfxFilePath = "resources/sounds/die.mp3";
+const char* frightenedSfxFilePath = "resources/sounds/frightened.wav";

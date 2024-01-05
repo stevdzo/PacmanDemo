@@ -23,15 +23,17 @@ void GameWorld::init() {
 	initDots();
 
 	m_background = new GameObject(Sprite(mazeFilePath, 1, 1, false));
-	m_background->setPosition(Vector2D((screenWidth-400)/2, screenHeight/2));
+	m_background->setPosition(Vector2D((screenWidth-400) / 2, screenHeight / 2));
 	m_background->setSize(Vector2D(screenWidth-400, screenHeight));
 
 	m_player = new Player(Sprite(pacFilePath, 3, 4));
 
-	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 4), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
-	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 4), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
-	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 4), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
-	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 4), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
+	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 6), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
+	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 6), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
+	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 6), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
+	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 6), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
+
+	m_cherry = new Drop(Sprite(cherryFilePath, 1, 1));
 
 	m_blinky->setPositionByNode(blinkyStartNodeIndex);
 	m_pinky->setPositionByNode(pinkyStartNodeIndex);
@@ -41,7 +43,7 @@ void GameWorld::init() {
 	m_blinky->setCurrentDirection(Direction::left);
 	m_pinky->setCurrentDirection(Direction::down);
 	m_inky->setCurrentDirection(Direction::up);
-	m_clyde->setCurrentDirection(Direction::up);
+	m_clyde->setCurrentDirection(Direction::down);
 
 	m_blinky->changeEnemyState(EnemyState::scatter);
 	m_pinky->changeEnemyState(EnemyState::base);
@@ -54,12 +56,6 @@ void GameWorld::init() {
 	m_ghosts.push_back(m_pinky);
 	m_ghosts.push_back(m_inky);
 	m_ghosts.push_back(m_clyde);
-
-	for (size_t i = 1; i <= 3; i++) {
-		GameObject* pacImg = new GameObject(Sprite(pacFilePath, 4, 4));
-		pacImg->setPosition(Vector2D(screenWidth - (300 - 30 * i), screenHeight / 2 - 100));
-		m_pacLives.push_back(pacImg);
-	}
 
 	m_inputManager = InputManager::getInstance(m_player);
 	m_audioManager = AudioManager::getInstance();
@@ -90,53 +86,72 @@ void GameWorld::update(float p_deltaTime) {
 
 	if (!gameActive)
 		gameStartTimer += p_deltaTime;
+
 	if (gameStartTimer > gameStartTimerThreshold) {
 		gameActive = true;
 
 		m_pinky->shouldExitBase(true);
-		m_clyde->shouldExitBase(true);
 
 		gameStartTimer = 0.0f;
 	}
 
-	astar.findShortestPath(Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[388], 
-						   Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[453]);
-
+	/*astar.findShortestPath(Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[388], 
+						   Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[453]);*/
 
 	if (gameActive) {
 
-		globalTimer += p_deltaTime;
+		if (!toggleFrightenedMode)
+			globalTimer += p_deltaTime;
 
-		//m_clyde->update(p_deltaTime);
-		m_inky->update(p_deltaTime);
-		//m_pinky->update(p_deltaTime);
-		//m_blinky->update(p_deltaTime);			
+		m_clyde->update(p_deltaTime);
+		//m_inky->update(p_deltaTime);
+		m_pinky->update(p_deltaTime);
+		m_blinky->update(p_deltaTime);			
 
 		m_player->update(p_deltaTime);
 
+		m_cherry->update(p_deltaTime);
+
 		m_player->eatDot(m_dots);
 
-		if (globalTimer > 3)
-			m_inky->shouldExitBase(true);
+		if (globalTimer > 2)
+			m_clyde->shouldExitBase(true);
 
-		/*if (globalTimer > 5)
-			m_clyde->shouldExitBase(true);*/
-
-		/*if (toggleFrightenedMode) {
+		if (toggleFrightenedMode) {
 			for (auto& ghost : m_ghosts)
-				ghost->changeEnemyState(EnemyState::frightened);
-		}*/
+				if (ghost->getCurrentMode() != EnemyState::frightened)
+					ghost->changeEnemyState(EnemyState::frightened);	
 
-		/*if (globalTimer > 7.0f && globalTimer < 20.0f) {
+			frightenedTimer += p_deltaTime;
+		}
+
+		if (frightenedTimer > frightenedTimerThreshold) {
+
+			toggleFrightenedMode = false;
+
 			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::chase)
+				if (ghost->getCurrentMode() == EnemyState::frightened)
+					ghost->returnPreviousEnemyState();
+
+			if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
+				AudioManager::getInstance()->m_chFrightened->stop();
+			}
+		}
+
+		if (globalTimer > 7.0f && globalTimer < 20.0f) {
+			for (auto& ghost : m_ghosts)
+				if (ghost->getCurrentMode() != EnemyState::chase && ghost->getCurrentMode() != EnemyState::frightened)
 					ghost->changeEnemyState(EnemyState::chase);
 		}
 		else if (globalTimer > 20.0f) {
 			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::scatter)
+				if (ghost->getCurrentMode() != EnemyState::scatter && ghost->getCurrentMode() != EnemyState::frightened)
 					ghost->changeEnemyState(EnemyState::scatter);
-		}*/
+		}
+
+		for (auto& ghost : m_ghosts) {
+			m_player->onGhostCollision(ghost);
+		}
 	}
 }
 
@@ -158,6 +173,8 @@ void GameWorld::render() {
 
 	m_player->render();
 
+	//m_cherry->render();
+
 	//astar.render();
 
 	renderWireframe();
@@ -176,6 +193,8 @@ void GameWorld::renderWireframe() {
 	m_blinky->renderWireframe();
 
 	m_player->renderWireframe();
+
+	//m_cherry->renderWireframe();
 }
 
 void GameWorld::renderUi() {
@@ -185,9 +204,6 @@ void GameWorld::renderUi() {
 	char score[50];
 	sprintf_s(score, 50, "%i", static_cast<int>(m_player->getScore()));
 	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - 200, screenHeight/2, 1, 1, 0);
-
-	for (auto& pacLife : m_pacLives)
-		pacLife->render();
 }
 
 void GameWorld::keyboard(int p_key, int p_x, int p_y) {

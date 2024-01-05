@@ -58,6 +58,9 @@ extern const float eatDistanceThreshold;
 
 extern const float gameStartTimerThreshold;
 
+extern const float frightenedTimerThreshold;
+extern const float frightenedFlashTimerThreshold;
+
 extern const float chaseScatterSpeed;
 extern const float eatenSpeed;
 extern const float frightenedSpeed;
@@ -95,15 +98,19 @@ extern const char* clydeFilePath;
 extern const char* mazeFilePath;
 extern const char* bigDotFilePath;
 extern const char* smallDotFilePath;
+extern const char* cherryFilePath;
 
 extern const char* pacEatSfxFilePath;
 extern const char* introSfxFilePath;
+extern const char* pacDieSfxFilePath;
+extern const char* frightenedSfxFilePath;
 
 static float timer = 0.0f;
 
 static float globalTimer = 0.0f;
 static float gameStartTimer = 0.0f;
 
+static float frightenedTimer = 0.0f;
 
 
 static int currentLevel = 1;

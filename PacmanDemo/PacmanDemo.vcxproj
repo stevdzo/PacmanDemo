@@ -146,6 +146,7 @@
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Dot.cpp" />
+    <ClCompile Include="Drop.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="AStar.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Dot.h" />
+    <ClInclude Include="Drop.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameObject.h" />

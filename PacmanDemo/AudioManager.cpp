@@ -32,6 +32,8 @@ bool AudioManager::loadAudio() {
 
 	result = m_system->createSound(pacEatSfxFilePath, FMOD_DEFAULT, 0, &m_sfxPacEat);
 	result = m_system->createSound(introSfxFilePath,  FMOD_DEFAULT | FMOD_2D, 0, &m_sfxIntro);
+	result = m_system->createSound(pacDieSfxFilePath, FMOD_DEFAULT, 0, &m_sfxPacDie);
+	result = m_system->createSound(frightenedSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxFrightened);
 
 	return true;
 }
@@ -43,6 +45,16 @@ void AudioManager::playPacEatSound() {
 void AudioManager::playIntroSound() {
 	FMOD::Channel* channel;
 	m_system->playSound(m_sfxIntro, 0, false, &channel);
+}
+
+void AudioManager::playDieSound() {
+	FMOD::Channel* channel;
+	m_system->playSound(m_sfxPacDie, 0, false, &m_chDie);
+}
+
+void AudioManager::playFrightenedSound() {
+	FMOD::Channel* channel;
+	m_system->playSound(m_sfxFrightened, 0, false, &m_chFrightened);
 }
 
 bool AudioManager::isPlaying(FMOD::Channel* p_channel) {

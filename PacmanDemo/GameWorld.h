@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Dot.h"
+#include "Drop.h"
 
 class Graph;
 class InputManager;
@@ -23,11 +24,12 @@ private:
 	Enemy* m_inky;
 	Enemy* m_clyde;
 
+	Drop* m_cherry;
+
 	AStar astar;
 
 	std::vector<Dot*> m_dots;
-	std::vector<Enemy*> m_ghosts;
-	std::vector<GameObject*> m_pacLives;
+	std::vector<Enemy*> m_ghosts;	
 
 	Graph* m_graph;
 	InputManager* m_inputManager;
@@ -39,7 +41,6 @@ private:
 public:
 
 	void init();
-
 	void initDots();
 
 	void update(float p_deltaTime);

@@ -24,11 +24,17 @@ public:
 
 	FMOD::Sound* m_sfxPacEat;
 	FMOD::Sound* m_sfxIntro;
+	FMOD::Sound* m_sfxPacDie;
+	FMOD::Sound* m_sfxFrightened;
 
 	FMOD::Channel* m_chEat;
+	FMOD::Channel* m_chDie;
+	FMOD::Channel* m_chFrightened;
 
 	void playPacEatSound();
 	void playIntroSound();
+	void playDieSound();
+	void playFrightenedSound();
 
 	bool isPlaying(FMOD::Channel* p_channel);
 

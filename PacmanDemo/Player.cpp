@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Enemy.h"
 #include <Windows.h>
 
 Player::Player(Sprite p_sprite) : Entity(p_sprite) {
@@ -14,6 +15,12 @@ Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 	m_currentDirection = Direction::left;
 	m_desiredDirection = Direction::left;
 	m_velocity = Vector2D(-1.0f, 0.0f);
+
+	for (size_t i = 1; i <= 3; i++) {
+		auto pacImg = new GameObject(Sprite(pacFilePath, 4, 4));
+		pacImg->setPosition(Vector2D(screenWidth - (300 - 30 * i), screenHeight / 2 - 100));
+		m_pacLives.push_back(pacImg);
+	}
 }
 
 void Player::update(float p_deltaTime) {
@@ -27,6 +34,8 @@ void Player::update(float p_deltaTime) {
 
 void Player::render() {
 	Entity::render();
+	for (auto& pacLife : m_pacLives)
+		pacLife->render();
 }
 
 void Player::renderWireframe() {
@@ -93,6 +102,7 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {
 			if ((*it)->getType() == DotType::big) {
 				toggleFrightenedMode = true;
+				AudioManager::getInstance()->playFrightenedSound();
 			}
 			m_score += (*it)->getValue();
 
@@ -104,6 +114,24 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 		}
 		else
 			++it;
+	}
+}
+
+void Player::onGhostCollision(Enemy* p_ghost) {
+
+	if (m_position.distanceTo(p_ghost->getPosition()) < 16) {
+
+		if (p_ghost->getCurrentMode() != EnemyState::frightened) {
+			m_health -= 1;
+			m_pacLives.erase(m_pacLives.end() - 1);
+			gameActive = false;
+
+			AudioManager::getInstance()->playDieSound();
+		}
+		else {
+
+			//Sleep(1000);
+		}
 	}
 }
 
