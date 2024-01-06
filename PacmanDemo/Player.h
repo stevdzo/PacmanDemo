@@ -32,6 +32,8 @@ public:
 
 	void onPlayerMovement(int = 0);
 
+	void setDefaultPosition() override;
+
 	void setVelocityByDirection() override;
 	void updateDirection() override;
 };

@@ -95,8 +95,10 @@ const float gameStartTimerThreshold = 5.0f;
 const float frightenedTimerThreshold = 6.0f;
 const float frightenedFlashTimerThreshold = 4.0f;
 
+const int respawnNodeIndex = 450;
+
 const float chaseScatterSpeed = 88.0f * 3.0f;;
-const float eatenSpeed = 200.0f;
+const float eatenSpeed = 300.0f;
 const float frightenedSpeed = 70.0f;
 
 const int blinkyStartNodeIndex = 453;
@@ -134,7 +136,17 @@ const char* bigDotFilePath    = "resources/images/dot_big.png";
 const char* smallDotFilePath  = "resources/images/dot_small.png";
 const char* cherryFilePath    = "resources/images/cherry.png";
 
-const char* pacEatSfxFilePath = "resources/sounds/eat.wav";
+const char* pacEatSfxFilePath = "resources/sounds/credit.wav";
 const char* introSfxFilePath  = "resources/sounds/intro_sound.wav";
 const char* pacDieSfxFilePath = "resources/sounds/die.mp3";
 const char* frightenedSfxFilePath = "resources/sounds/frightened.wav";
+const char* eatGhostSfxFilePath = "resources/sounds/eat_ghost.wav";
+
+float timer = 0.0f;
+float tempTimer = 0.0f;
+float globalTimer = 0.0f;
+float gameStartTimer = 0.0f;
+float frightenedTimer = 0.0f;
+
+const int initialGhostEatValue = 200;
+int currentBigDotGhostCounter = 1;

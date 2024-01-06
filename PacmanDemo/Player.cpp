@@ -101,6 +101,7 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {
 			if ((*it)->getType() == DotType::big) {
+				frightenedTimer = 0.0f;
 				toggleFrightenedMode = true;
 				AudioManager::getInstance()->playFrightenedSound();
 			}
@@ -109,8 +110,7 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 			delete* it;
 			it = p_dots.erase(it);
 		
-			if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chEat)) 
-				AudioManager::getInstance()->playPacEatSound();					
+			AudioManager::getInstance()->playPacEatSound();					
 		}
 		else
 			++it;
@@ -118,23 +118,39 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 }
 
 void Player::onGhostCollision(Enemy* p_ghost) {
-
+	
 	if (m_position.distanceTo(p_ghost->getPosition()) < 16) {
 
-		if (p_ghost->getCurrentMode() != EnemyState::frightened && p_ghost->getCurrentMode() != EnemyState::eaten) {
+		if (p_ghost->getCurrentMode() == EnemyState::chase || 
+			p_ghost->getCurrentMode() == EnemyState::scatter) {
+
+		
 			m_health -= 1;
 			m_pacLives.erase(m_pacLives.end() - 1);
 			gameActive = false;
 
 			AudioManager::getInstance()->playDieSound();
-		}
-		else {
 
-			if (p_ghost->getCurrentMode() != EnemyState::eaten) {
-				p_ghost->changeEnemyState(EnemyState::eaten);
+			return;
+
+		}
+		else if (p_ghost->getCurrentMode() == EnemyState::frightened) {
+
+			if (toggleFrightenedMode) {
+			
+				m_score += initialGhostEatValue * currentBigDotGhostCounter;
+				currentBigDotGhostCounter*=2;			
 			}
 
-			//Sleep(1000);
+			AudioManager::getInstance()->playEatGhostSound();
+			p_ghost->isEaten(true);
+			p_ghost->changeEnemyState(EnemyState::eaten);	
+			
+			return;
+
+		}
+		else if (p_ghost->getCurrentMode() == EnemyState::eaten) {
+			return;
 		}
 	}
 }
@@ -171,6 +187,12 @@ void Player::onPlayerMovement(int p_key) {
 			 m_currentDirection = Direction::down;
 		m_desiredDirection = Direction::down;
 	}
+}
+
+void Player::setDefaultPosition() {
+	m_currentNode = getNodeByIndex(441);
+	m_position = m_currentNode->getPosition();
+	m_position += Vector2D(nodeSize / 2.0f, 0.0f);
 }
 
 void Player::setVelocityByDirection() {

@@ -41,6 +41,7 @@ private:
 
 	bool m_frightenedDirectionChosen;
 	bool m_insideBase;
+	bool m_isEaten;
 
 	EnemyState m_currentEnemyState;
 	EnemyState m_previousEnemyState;
@@ -78,11 +79,17 @@ public:
 
 	bool pathCompleted();
 
+	bool isEaten(void);
+	void isEaten(bool);
+
 	void toggleScatterNode();
 	void toggleBaseNode();
 
+	void flashOnFrightened(float p_deltaTime);
+
 	void shouldExitBase(const bool p_insideBase);
 
+	void manageStateBasedOnTimer();
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();
 

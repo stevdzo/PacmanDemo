@@ -48,6 +48,9 @@ public:
 	void renderWireframe();
 	void renderUi();
 
+	void gameOver();
+	void restart();
+
 	virtual void keyboard(int, int, int);
 	virtual void keyboardUp(int, int, int);
 	virtual void mouse(int p_button, int p_state, int p_x, int p_y);

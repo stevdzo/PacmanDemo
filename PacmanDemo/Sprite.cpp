@@ -23,9 +23,6 @@ Sprite::Sprite(
 	m_animationDelay = 0.1f;
 	m_animationElapsedTime = 0.0f;
 
-	std::cout << p_numberOfFramesX << std::endl;
-	std::cout << p_numberOfFramesY << std::endl;
-
 	int texture = SOIL_load_OGL_texture(p_fileName, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
 
 	if (!texture) {

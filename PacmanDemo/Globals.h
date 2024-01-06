@@ -65,6 +65,8 @@ extern const float chaseScatterSpeed;
 extern const float eatenSpeed;
 extern const float frightenedSpeed;
 
+extern const int respawnNodeIndex;
+
 extern const int blinkyStartNodeIndex;
 extern const int pinkyStartNodeIndex;
 extern const int inkyStartNodeIndex;
@@ -104,14 +106,18 @@ extern const char* pacEatSfxFilePath;
 extern const char* introSfxFilePath;
 extern const char* pacDieSfxFilePath;
 extern const char* frightenedSfxFilePath;
+extern const char* eatGhostSfxFilePath;
 
-static float timer = 0.0f;
+extern float timer;
 
-static float globalTimer = 0.0f;
-static float gameStartTimer = 0.0f;
+extern float tempTimer;
+extern float globalTimer;
+extern float gameStartTimer;
 
-static float frightenedTimer = 0.0f;
+extern float frightenedTimer;
 
+extern const int initialGhostEatValue;
+extern int currentBigDotGhostCounter;
 
 static int currentLevel = 1;
 

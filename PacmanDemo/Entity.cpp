@@ -159,6 +159,9 @@ void Entity::setCurrentDirection(const Direction p_direction) {
     m_currentDirection = p_direction;
     //setVelocityByDirection();
 }
+
+void Entity::setDefaultPosition() {
+}
  
 GraphNode* Entity::getCurrentNode() const {
     return m_currentNode;

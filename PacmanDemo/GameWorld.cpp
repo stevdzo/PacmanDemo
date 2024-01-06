@@ -29,9 +29,9 @@ void GameWorld::init() {
 	m_player = new Player(Sprite(pacFilePath, 3, 4));
 
 	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
-	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 6), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
-	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 6), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
-	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 6), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
+	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 8), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
+	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 8), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
+	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 8), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
 
 	m_cherry = new Drop(Sprite(cherryFilePath, 1, 1));
 
@@ -84,8 +84,13 @@ void GameWorld::initDots() {
 
 void GameWorld::update(float p_deltaTime) {
 
-	if (!gameActive)
+	if (!gameActive) {
 		gameStartTimer += p_deltaTime;
+
+		/*if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chDie)) {
+			restart();
+		}*/
+	}
 
 	if (gameStartTimer > gameStartTimerThreshold) {
 		gameActive = true;
@@ -100,11 +105,16 @@ void GameWorld::update(float p_deltaTime) {
 
 	if (gameActive) {
 
-		if (!toggleFrightenedMode)
+		if (!toggleFrightenedMode) {
 			globalTimer += p_deltaTime;
 
+			for (auto& ghost : m_ghosts) {
+				ghost->manageStateBasedOnTimer();
+			}
+		}
+
 		m_clyde->update(p_deltaTime);
-		//m_inky->update(p_deltaTime);
+		//m_inky->update(p_deltaTime);  
 		m_pinky->update(p_deltaTime);
 		m_blinky->update(p_deltaTime);			
 
@@ -119,35 +129,26 @@ void GameWorld::update(float p_deltaTime) {
 
 		if (toggleFrightenedMode) {
 			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::frightened && ghost->getCurrentMode() != EnemyState::eaten)
-					ghost->changeEnemyState(EnemyState::frightened);	
-
+				if (ghost->getCurrentMode() != EnemyState::eaten) {
+					ghost->changeEnemyState(EnemyState::frightened);
+				}
 			frightenedTimer += p_deltaTime;
 		}
 
 		if (frightenedTimer > frightenedTimerThreshold) {
 
-			toggleFrightenedMode = false;
-
 			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() == EnemyState::frightened)
+				if (ghost->getCurrentMode() != EnemyState::eaten) {
 					ghost->returnPreviousEnemyState();
+				}
 
 			if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
 				AudioManager::getInstance()->m_chFrightened->stop();
 			}
 			frightenedTimer = 0.0f;
-		}
+			currentBigDotGhostCounter = 1;
 
-		if (globalTimer > 7.0f && globalTimer < 20.0f) {
-			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::chase && ghost->getCurrentMode() != EnemyState::frightened)
-					ghost->changeEnemyState(EnemyState::chase);
-		}
-		else if (globalTimer > 20.0f) {
-			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::scatter && ghost->getCurrentMode() != EnemyState::frightened)
-					ghost->changeEnemyState(EnemyState::scatter);
+			toggleFrightenedMode = false;
 		}
 
 		for (auto& ghost : m_ghosts) {
@@ -198,6 +199,23 @@ void GameWorld::renderWireframe() {
 	//m_cherry->renderWireframe();
 }
 
+void GameWorld::gameOver() {
+}
+
+void GameWorld::restart() {
+
+	m_blinky->setPositionByNode(blinkyStartNodeIndex);
+	m_pinky->setPositionByNode(pinkyStartNodeIndex);
+	m_inky->setPositionByNode(inkyStartNodeIndex);
+	m_clyde->setPositionByNode(clydeStartNodeIndex);
+
+	m_player->setDefaultPosition();
+
+	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
+		m_audioManager->playIntroSound();
+	}
+}
+
 void GameWorld::renderUi() {
 
 	TextRenderer::getInstance()->drawStrokeText((char*) "HIGH SCORE", screenWidth - 200 - 50, screenHeight / 2 + 50, 1, 1, 0);
@@ -205,6 +223,10 @@ void GameWorld::renderUi() {
 	char score[50];
 	sprintf_s(score, 50, "%i", static_cast<int>(m_player->getScore()));
 	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - 200, screenHeight/2, 1, 1, 0);
+
+	char timer[50];
+	sprintf_s(timer, 50, "%.2f", globalTimer);
+	TextRenderer::getInstance()->drawStrokeText(timer, screenWidth - 200, screenHeight / 2 - 50, 1, 1, 0);
 }
 
 void GameWorld::keyboard(int p_key, int p_x, int p_y) {

@@ -34,27 +34,31 @@ bool AudioManager::loadAudio() {
 	result = m_system->createSound(introSfxFilePath,  FMOD_DEFAULT | FMOD_2D, 0, &m_sfxIntro);
 	result = m_system->createSound(pacDieSfxFilePath, FMOD_DEFAULT, 0, &m_sfxPacDie);
 	result = m_system->createSound(frightenedSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxFrightened);
+	result = m_system->createSound(eatGhostSfxFilePath, FMOD_DEFAULT, 0, &m_sfxEatGhost);
 
 	return true;
 }
 
 void AudioManager::playPacEatSound() {
-	m_system->playSound(m_sfxPacEat, 0, false, &m_chEat);
+	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chEat))
+		m_system->playSound(m_sfxPacEat, 0, false, &m_chEat);
 }
 
 void AudioManager::playIntroSound() {
-	FMOD::Channel* channel;
-	m_system->playSound(m_sfxIntro, 0, false, &channel);
+	m_system->playSound(m_sfxIntro, 0, false, &m_chIntro);
 }
 
 void AudioManager::playDieSound() {
-	FMOD::Channel* channel;
 	m_system->playSound(m_sfxPacDie, 0, false, &m_chDie);
 }
 
 void AudioManager::playFrightenedSound() {
-	FMOD::Channel* channel;
-	m_system->playSound(m_sfxFrightened, 0, false, &m_chFrightened);
+	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
+		m_system->playSound(m_sfxFrightened, 0, false, &m_chFrightened);
+}
+
+void AudioManager::playEatGhostSound() {
+	m_system->playSound(m_sfxEatGhost, 0, false, &m_chEatGhost);
 }
 
 bool AudioManager::isPlaying(FMOD::Channel* p_channel) {
