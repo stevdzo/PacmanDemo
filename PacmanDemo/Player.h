@@ -23,10 +23,12 @@ public:
 	void render() override;
 	void renderWireframe() override;
 
+	void restart(int p_nodeIndex, Direction p_direction) override;
+
 	int getScore(void) const;
 	int getHealth(void) const;
 
-	void eatDot(std::vector<Dot*>&);
+	void eatDot(std::vector<Dot*>&, std::vector<Enemy*>& p_ghosts);
 
 	void onGhostCollision(Enemy* p_ghost);
 

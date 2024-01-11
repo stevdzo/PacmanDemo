@@ -63,8 +63,14 @@ void Graph::initEdges() {
                             m_nodeMatrix[row][col]->addEdge(edge);
                         }
                         m_nodeMatrix[row][col]->addConnectedNode(m_nodeMatrix[row + i][col + j]);
-                    }
+                    }                 
                 }
+            }
+            if (m_nodeMatrix[row][col]->getIndex() == leftPortalIndex) {
+                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[rightPortalIndex]);
+            }
+            if (m_nodeMatrix[row][col]->getIndex() == rightPortalIndex) {
+                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[leftPortalIndex]);
             }
         }
     }

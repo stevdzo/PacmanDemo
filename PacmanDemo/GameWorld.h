@@ -35,6 +35,8 @@ private:
 	InputManager* m_inputManager;
 	AudioManager* m_audioManager;
 
+	GameState m_gameState;
+
 	float m_deltaTime;
 	float m_previousTime;
 
@@ -48,9 +50,16 @@ public:
 	void renderWireframe();
 	void renderUi();
 
+	void onPausedGameState();
+	void onRunningGameState();
+	void onGameOverGameState();
+	void onLifeLostGameState();
+
 	void gameOver();
 	void restart();
 
+	virtual void keyboardSpec(int, int, int);
+	virtual void keyboardSpecUp(int, int, int);
 	virtual void keyboard(int, int, int);
 	virtual void keyboardUp(int, int, int);
 	virtual void mouse(int p_button, int p_state, int p_x, int p_y);

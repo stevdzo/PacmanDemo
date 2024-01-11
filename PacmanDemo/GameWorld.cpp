@@ -28,10 +28,10 @@ void GameWorld::init() {
 
 	m_player = new Player(Sprite(pacFilePath, 3, 4));
 
-	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, m_player);
-	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 8), pinkyScatterNodeIndices , pinkyBaseNodeIndices , m_player);
-	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 8), inkyScatterNodeIndices  , inkyBaseNodeIndices  , m_player);
-	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 8), clydeScatterNodeIndices , clydeBaseNodeIndices , m_player); 
+	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, blinkyInitialState, m_player);
+	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 8), pinkyScatterNodeIndices , pinkyBaseNodeIndices , pinkyInitialState , m_player);
+	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 8), inkyScatterNodeIndices  , inkyBaseNodeIndices  , inkyInitialState  , m_player);
+	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 8), clydeScatterNodeIndices , clydeBaseNodeIndices , clydeInitialState , m_player);
 
 	m_cherry = new Drop(Sprite(cherryFilePath, 1, 1));
 
@@ -58,7 +58,7 @@ void GameWorld::init() {
 	m_ghosts.push_back(m_clyde);
 
 	m_inputManager = InputManager::getInstance(m_player);
-	m_audioManager = AudioManager::getInstance();
+	m_audioManager = AudioManager::getInstance();	
 
 	m_audioManager->playIntroSound();
 
@@ -84,76 +84,20 @@ void GameWorld::initDots() {
 
 void GameWorld::update(float p_deltaTime) {
 
-	if (!gameActive) {
-		gameStartTimer += p_deltaTime;
-
-		/*if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chDie)) {
-			restart();
-		}*/
-	}
-
-	if (gameStartTimer > gameStartTimerThreshold) {
-		gameActive = true;
-
-		m_pinky->shouldExitBase(true);
-
-		gameStartTimer = 0.0f;
-	}
-
-	/*astar.findShortestPath(Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[388], 
-						   Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[453]);*/
-
-	if (gameActive) {
-
-		if (!toggleFrightenedMode) {
-			globalTimer += p_deltaTime;
-
-			for (auto& ghost : m_ghosts) {
-				ghost->manageStateBasedOnTimer();
-			}
-		}
-
-		m_clyde->update(p_deltaTime);
-		//m_inky->update(p_deltaTime);  
-		m_pinky->update(p_deltaTime);
-		m_blinky->update(p_deltaTime);			
-
-		m_player->update(p_deltaTime);
-
-		m_cherry->update(p_deltaTime);
-
-		m_player->eatDot(m_dots);
-
-		if (globalTimer > 2)
-			m_clyde->shouldExitBase(true);
-
-		if (toggleFrightenedMode) {
-			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::eaten) {
-					ghost->changeEnemyState(EnemyState::frightened);
-				}
-			frightenedTimer += p_deltaTime;
-		}
-
-		if (frightenedTimer > frightenedTimerThreshold) {
-
-			for (auto& ghost : m_ghosts)
-				if (ghost->getCurrentMode() != EnemyState::eaten) {
-					ghost->returnPreviousEnemyState();
-				}
-
-			if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
-				AudioManager::getInstance()->m_chFrightened->stop();
-			}
-			frightenedTimer = 0.0f;
-			currentBigDotGhostCounter = 1;
-
-			toggleFrightenedMode = false;
-		}
-
-		for (auto& ghost : m_ghosts) {
-			m_player->onGhostCollision(ghost);
-		}
+	switch (globalGameState) {
+	
+	case GameState::paused:
+		onPausedGameState();			
+		break;
+	case GameState::running:
+		onRunningGameState();
+		break;
+	case GameState::game_over:
+		onGameOverGameState();
+		break;
+	case GameState::life_lost:
+		onLifeLostGameState();
+		break;	
 	}
 }
 
@@ -204,15 +148,35 @@ void GameWorld::gameOver() {
 
 void GameWorld::restart() {
 
-	m_blinky->setPositionByNode(blinkyStartNodeIndex);
+	/*m_blinky->setPositionByNode(blinkyStartNodeIndex);
 	m_pinky->setPositionByNode(pinkyStartNodeIndex);
 	m_inky->setPositionByNode(inkyStartNodeIndex);
 	m_clyde->setPositionByNode(clydeStartNodeIndex);
 
-	m_player->setDefaultPosition();
+	m_blinky->setCurrentDirection(Direction::left);
+	m_pinky->setCurrentDirection(Direction::down);
+	m_inky->setCurrentDirection(Direction::up);
+	m_clyde->setCurrentDirection(Direction::down);
 
-	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
-		m_audioManager->playIntroSound();
+	m_blinky->changeEnemyState(EnemyState::scatter);
+	m_pinky->changeEnemyState(EnemyState::base);
+	m_inky->changeEnemyState(EnemyState::base);
+	m_clyde->changeEnemyState(EnemyState::base);
+
+	m_player->setDefaultPosition();*/
+
+	m_blinky->restart(blinkyStartNodeIndex, Direction::left);
+	m_pinky->restart(pinkyStartNodeIndex, Direction::down);
+	m_inky->restart(inkyStartNodeIndex, Direction::up);
+	m_clyde->restart(clydeStartNodeIndex, Direction::down);
+
+	m_player->restart(playerStartNodeIndex, Direction::left);
+
+	gameStartTimer += m_deltaTime;
+
+	if (gameStartTimer > 3) {
+		globalGameState = GameState::running;
+		gameStartTimer = 0;
 	}
 }
 
@@ -229,12 +193,92 @@ void GameWorld::renderUi() {
 	TextRenderer::getInstance()->drawStrokeText(timer, screenWidth - 200, screenHeight / 2 - 50, 1, 1, 0);
 }
 
+void GameWorld::keyboardSpec(int p_key, int p_x, int p_y) {
+	m_inputManager->keyboard(p_key, p_x, p_y);
+}
+
+void GameWorld::keyboardSpecUp(int p_key, int p_x, int p_y) {
+	m_inputManager->keyboardUp(p_key, p_x, p_y);
+}
+
 void GameWorld::keyboard(int p_key, int p_x, int p_y) {
 	m_inputManager->keyboard(p_key, p_x, p_y);
 }
 
 void GameWorld::keyboardUp(int p_key, int p_x, int p_y) {
 	m_inputManager->keyboardUp(p_key, p_x, p_y);
+}
+
+void GameWorld::onPausedGameState() {
+
+	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
+
+		m_pinky->shouldExitBase(true);
+
+		gameStartTimer = 0.0f;
+
+		globalGameState = GameState::running;
+	}
+}
+
+void GameWorld::onRunningGameState() {
+
+	if (!toggleFrightenedMode)
+		globalTimer += m_deltaTime;
+
+	m_cherry->update(m_deltaTime);
+
+	m_clyde->update(m_deltaTime);
+	m_inky->update(m_deltaTime);
+	m_pinky->update(m_deltaTime);
+	m_blinky->update(m_deltaTime);
+
+	m_player->update(m_deltaTime);
+
+	m_player->eatDot(m_dots, m_ghosts);
+
+	if (globalTimer > 2)
+		m_clyde->shouldExitBase(true);
+
+	if (toggleFrightenedMode) {
+		frightenedTimer += m_deltaTime;
+	}
+
+	if (frightenedTimer > frightenedTimerThreshold) {
+
+		for (auto& ghost : m_ghosts) {
+
+			if (ghost->getCurrentMode() != EnemyState::eaten)
+				ghost->returnPreviousEnemyState();
+		}
+
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
+			AudioManager::getInstance()->m_chFrightened->stop();
+		}
+
+		frightenedTimer = 0.0f;
+		currentBigDotGhostCounter = 1;
+
+		toggleFrightenedMode = false;
+	}
+
+	for (auto& ghost : m_ghosts) {
+
+		if (!toggleFrightenedMode)
+			ghost->manageStates();
+
+		m_player->onGhostCollision(ghost);
+	}
+
+	if (m_player->getHealth() <= 0)
+		globalGameState = GameState::game_over;
+}
+
+void GameWorld::onGameOverGameState() {
+}
+
+void GameWorld::onLifeLostGameState() {
+	restart();
 }
 
 void GameWorld::mouse(int p_button, int p_state, int p_x, int p_y) {

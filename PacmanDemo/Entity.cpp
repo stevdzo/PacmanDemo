@@ -31,7 +31,8 @@ GraphNode* Entity::getNodeInDirection(GraphNode* p_node, Direction p_direction, 
 
 // Gets the node from graph by current position of entity
 GraphNode* Entity::getNodeByPosition() const {
-    return Graph::getInstance()->getNodeByPosition(m_position);
+    auto node = Graph::getInstance()->getNodeByPosition(m_position);
+    return (node != nullptr) ? node : m_previousNode;
 }
 
 // Gets the node by given position
@@ -111,7 +112,7 @@ bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2)
 Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     
     m_size = Vector2D(60.0f, 60.0f);
-    m_currentNode = getNodeByIndex(453);
+    m_currentNode = getNodeByIndex(baseEntranceNodeIndex);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -144,6 +145,13 @@ void Entity::render() {
 
 void Entity::renderWireframe() {
     GameObject::renderWireframe();
+}
+
+void Entity::restart(int p_nodeIndex, Direction p_direction) {
+    m_currentNode = getNodeByIndex(p_nodeIndex);
+    m_position = m_currentNode->getPosition();  
+    m_currentDirection = p_direction;
+    m_desiredDirection = p_direction;
 }
 
 Direction Entity::getCurrentDirection() const {

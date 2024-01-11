@@ -17,6 +17,14 @@ static void idleCallback(void) {
 	world.idle();
 }
 
+static void keyboardSpecialCallback(int p_key, int p_x, int p_y) {
+	world.keyboard(p_key, p_x, p_y);
+}
+
+static void keyboardSpecialUpCallback(int p_key, int p_x, int p_y) {
+	world.keyboardUp(p_key, p_x, p_y);
+}
+
 static void keyboardCallback(unsigned char p_key, int p_x, int p_y) {
 	world.keyboard(p_key, p_x, p_y);
 }
@@ -45,6 +53,8 @@ int glutMain(int p_argc, char** p_argv, int p_width, int p_height, const char* p
 	glutReshapeFunc(reshapeCallback);
 	glutIdleFunc(idleCallback);
 
+	glutSpecialUpFunc(keyboardSpecialUpCallback);
+	glutSpecialFunc(keyboardSpecialCallback);
 	glutKeyboardFunc(keyboardCallback);
 	glutKeyboardUpFunc(keyboardUpCallback);
 	glutMouseFunc(mouseCallback);

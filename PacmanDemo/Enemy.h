@@ -12,15 +12,6 @@ enum class GhostType {
 	clyde = 3,
 };
 
-enum class EnemyState {
-	none = 0,
-	chase = 1,
-	scatter = 2,
-	eaten = 3,
-	frightened = 4,
-	base = 5
-};
-
 class Enemy : public Entity {
 
 private:
@@ -40,9 +31,11 @@ private:
 	int m_currentNodeIndex;
 
 	bool m_frightenedDirectionChosen;
+	bool m_frightened;
 	bool m_insideBase;
 	bool m_isEaten;
 
+	EnemyState m_initialEnemyState;
 	EnemyState m_currentEnemyState;
 	EnemyState m_previousEnemyState;
 
@@ -52,12 +45,14 @@ private:
 
 public:
 
-	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, const int* p_baseNodeIndices, Player* m_player);
+	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, const int* p_baseNodeIndices, const EnemyState p_initialState, Player* m_player);
 
 	void update(float p_deltaTime) override;
 	void render() override;
 	void renderWireframe() override;
 	void renderPath();
+
+	void restart(int p_nodeIndex, Direction p_direction) override;
 
 	void setVelocityByDirection() override;
 	void updateDirection() override;
@@ -79,8 +74,11 @@ public:
 
 	bool pathCompleted();
 
-	bool isEaten(void);
-	void isEaten(bool);
+	bool isFrightened(void);
+	void isFrightened(bool);
+
+	bool isHeadingToHouse(void);
+	void isHeadingToHouse(bool);
 
 	void toggleScatterNode();
 	void toggleBaseNode();
@@ -89,7 +87,7 @@ public:
 
 	void shouldExitBase(const bool p_insideBase);
 
-	void manageStateBasedOnTimer();
+	void manageStates();
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();
 

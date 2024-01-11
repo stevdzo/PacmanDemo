@@ -49,6 +49,8 @@ public:
 	virtual void render();
 	virtual void renderWireframe();
 
+	virtual void restart(int p_nodeIndex, Direction p_direction);
+
 	Direction getCurrentDirection() const;
 
 	void setPositionByNode(const int p_nodeIndex);

@@ -89,6 +89,11 @@ void Player::renderWireframe() {
 	glEnd();*/
 }
 
+void Player::restart(int p_nodeIndex, Direction p_direction) {
+	Entity::restart(p_nodeIndex, p_direction);
+	m_position += Vector2D(nodeSize / 2.0f, 0.0f);
+}
+
 int Player::getScore(void) const {
 	return m_score;
 }
@@ -97,12 +102,19 @@ int Player::getHealth(void) const {
 	return m_health;;
 }
 
-void Player::eatDot(std::vector<Dot*>& p_dots) {
+void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {
 			if ((*it)->getType() == DotType::big) {
 				frightenedTimer = 0.0f;
 				toggleFrightenedMode = true;
+				 
+				for (auto& ghost : p_ghosts) {
+					if (ghost->getCurrentMode() != EnemyState::eaten &&
+						ghost->getCurrentMode() != EnemyState::base) {
+						ghost->changeEnemyState(EnemyState::frightened);
+					}
+				}
 				AudioManager::getInstance()->playFrightenedSound();
 			}
 			m_score += (*it)->getValue();
@@ -124,27 +136,25 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 		if (p_ghost->getCurrentMode() == EnemyState::chase || 
 			p_ghost->getCurrentMode() == EnemyState::scatter) {
 
-		
 			m_health -= 1;
 			m_pacLives.erase(m_pacLives.end() - 1);
-			gameActive = false;
-
+						
 			AudioManager::getInstance()->playDieSound();
+
+			globalGameState = GameState::life_lost;
 
 			return;
 
 		}
 		else if (p_ghost->getCurrentMode() == EnemyState::frightened) {
 
-			if (toggleFrightenedMode) {
-			
-				m_score += initialGhostEatValue * currentBigDotGhostCounter;
-				currentBigDotGhostCounter*=2;			
-			}
+			m_score += initialGhostEatValue * currentBigDotGhostCounter; // 200 * 1
+			currentBigDotGhostCounter*=2;			
 
 			AudioManager::getInstance()->playEatGhostSound();
-			p_ghost->isEaten(true);
-			p_ghost->changeEnemyState(EnemyState::eaten);	
+			p_ghost->isHeadingToHouse(true);
+			p_ghost->isFrightened(false);
+			p_ghost->changeEnemyState(EnemyState::eaten);
 			
 			return;
 
@@ -158,34 +168,34 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 void Player::onPlayerMovement(int p_key) {
 
 	if (p_key == '2') {
-		m_currentNode = getNodeByIndex(441);
-		m_position = m_currentNode->getPosition();
-		m_position += Vector2D(nodeSize / 2.0f, 0.0f);
-		m_isMoving = true;
-		m_currentDirection = Direction::left;
-		m_desiredDirection = Direction::left;
-		m_velocity = Vector2D(-1.0f, 0.0f);
+		restart(playerStartNodeIndex, Direction::left);
 	}
 
-	if (p_key == 'd') {
+	if (p_key == GLUT_KEY_RIGHT) { // d
 		if (m_desiredDirection == Direction::left)
 			 m_currentDirection = Direction::right;
 		m_desiredDirection = Direction::right;
 	}
-	if (p_key == 'a') {		
+	if (p_key == GLUT_KEY_LEFT) { // a
 		if (m_desiredDirection == Direction::right)
 			 m_currentDirection = Direction::left;
 		m_desiredDirection = Direction::left;
 	}
-	if (p_key == 'w') {	
+	if (p_key == GLUT_KEY_UP) {	// w
 		if (m_desiredDirection == Direction::down) 
 			 m_currentDirection = Direction::up;
 		m_desiredDirection = Direction::up;
 	}
-	if (p_key == 's') {
+	if (p_key == GLUT_KEY_DOWN) { // s
 		if (m_desiredDirection == Direction::up)
 			 m_currentDirection = Direction::down;
 		m_desiredDirection = Direction::down;
+	}
+
+	if (p_key == GLUT_KEY_RIGHT) { // d
+		if (m_desiredDirection == Direction::left)
+			m_currentDirection = Direction::right;
+		m_desiredDirection = Direction::right;
 	}
 }
 
@@ -223,9 +233,9 @@ void Player::setVelocityByDirection() {
 
 void Player::updateDirection() {
 
-	float dist = m_position.distanceToSq(m_currentNode->getPosition());	
+	/*float dist = m_position.distanceToSq(m_currentNode->getPosition());	
 
-	if (dist < directionChangeDistanceThreshold) {
+	if (dist < pacDirectionChangeDistanceThreshold) {
 		if (!isValidDirection()) {
 			if (m_currentDirection == m_desiredDirection) {
 				m_currentDirection = Direction::none;
@@ -234,14 +244,23 @@ void Player::updateDirection() {
 		}
 		else {
 			m_currentDirection = m_desiredDirection;
+		}
+	}*/
 
-			//// Snap the position to the current node
-			//Vector2D newPosition = m_currentNode->getPosition();
-			//m_position = newPosition;
+	// primi input sa tastature w a s d
+	// 
 
-			//// Adjust the position based on the distance
-			//float displacement = sqrt(directionChangeDistanceThreshold) - sqrt(dist);
-			//m_position += m_velocity * displacement;    
+	float dist = m_position.distanceToSq(m_currentNode->getPosition());
+
+	if (dist < pacDirectionChangeDistanceThreshold) {
+		if (!isValidDirection()) {
+			if (m_currentDirection == m_desiredDirection) {
+				m_currentDirection = Direction::none;
+			}
+			//else m_desiredDirection = m_currentDirection;
+		}
+		else {
+			m_currentDirection = m_desiredDirection;
 		}
 	}
 }

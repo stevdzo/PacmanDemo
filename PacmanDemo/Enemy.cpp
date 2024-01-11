@@ -4,16 +4,17 @@ Enemy::Enemy(GhostType p_ghostType,
 			Sprite p_sprite, 
 			const int* p_scatterNodeIndices, 
 			const int* p_baseNodeIndices, 
+			const EnemyState p_initialState,
 			Player* p_player) : 
 			Entity(p_sprite), 
+			m_astar(AStar()),
 			m_ghostType(p_ghostType), 
+			m_initialEnemyState(p_initialState),
 			m_player(p_player)
 {
 	m_currentNodeIndex = 0;
 	m_speed = 88.0f * 3.0f;
 
-	m_astar = AStar();		
-	
 	for (unsigned int i = 0; i < 3; i++)
 		m_scatterNodeIndices[i] = p_scatterNodeIndices[i];
 
@@ -28,6 +29,7 @@ Enemy::Enemy(GhostType p_ghostType,
 	m_desiredDirection = Direction::right;		
 
 	m_frightenedDirectionChosen = false;
+	m_frightened = false;
 	m_insideBase = true;
 	m_isEaten = false;
 }
@@ -40,7 +42,10 @@ void Enemy::update(float p_deltaTime) {
 	setVelocityByDirection();
 	updateDirection();
 
+	//manageStates();
+
 	flashOnFrightened(p_deltaTime);
+
 }
 
 void Enemy::render() {
@@ -89,13 +94,19 @@ void Enemy::renderPath() {
 	}
 }
 
+void Enemy::restart(int p_nodeIndex, Direction p_direction) {
+	Entity::restart(p_nodeIndex, p_direction);
+	changeEnemyState(m_initialEnemyState);
+}
+
 void Enemy::setVelocityByDirection() {
 	switch (m_currentDirection) {
 
 	case Direction::up:
 		m_velocity = Vector2D(0.0f, 1.0f);
 
-		if (m_currentEnemyState == EnemyState::frightened) m_sprite.setCurrentFramesRange(8, 9);
+		if (m_currentEnemyState == EnemyState::frightened ||
+			(m_currentEnemyState == EnemyState::base && toggleFrightenedMode)) m_sprite.setCurrentFramesRange(8, 9);
 		else if (m_currentEnemyState == EnemyState::eaten) m_sprite.setCurrentFramesRange(14, 14);
 		else m_sprite.setCurrentFramesRange(4, 5);
 
@@ -103,7 +114,8 @@ void Enemy::setVelocityByDirection() {
 	case Direction::down:
 		m_velocity = Vector2D(0.0f, -1.0f);
 
-		if (m_currentEnemyState == EnemyState::frightened) m_sprite.setCurrentFramesRange(8, 9);
+		if (m_currentEnemyState == EnemyState::frightened ||
+			(m_currentEnemyState == EnemyState::base && toggleFrightenedMode)) m_sprite.setCurrentFramesRange(8, 9);
 		else if (m_currentEnemyState == EnemyState::eaten) m_sprite.setCurrentFramesRange(15, 15);
 		else m_sprite.setCurrentFramesRange(6, 7);
 
@@ -111,7 +123,8 @@ void Enemy::setVelocityByDirection() {
 	case Direction::left:
 		m_velocity = Vector2D(-1.0f, 0.0f);
 
-		if (m_currentEnemyState == EnemyState::frightened) m_sprite.setCurrentFramesRange(8, 9);
+		if (m_currentEnemyState == EnemyState::frightened ||
+			(m_currentEnemyState == EnemyState::base && toggleFrightenedMode)) m_sprite.setCurrentFramesRange(8, 9);
 		else if (m_currentEnemyState == EnemyState::eaten) m_sprite.setCurrentFramesRange(13, 13);
 		else m_sprite.setCurrentFramesRange(2, 3);
 
@@ -119,7 +132,8 @@ void Enemy::setVelocityByDirection() {
 	case Direction::right:
 		m_velocity = Vector2D(1.0f, 0.0f);
 
-		if (m_currentEnemyState == EnemyState::frightened) m_sprite.setCurrentFramesRange(8, 9);
+		if (m_currentEnemyState == EnemyState::frightened ||
+			(m_currentEnemyState == EnemyState::base && toggleFrightenedMode)) m_sprite.setCurrentFramesRange(8, 9);
 		else if (m_currentEnemyState == EnemyState::eaten) m_sprite.setCurrentFramesRange(12, 12);
 		else m_sprite.setCurrentFramesRange(0, 1);
 
@@ -138,7 +152,7 @@ void Enemy::updateDirection() {
 			m_currentDirection = m_desiredDirection;
 		}
 	}
-	if (dist < directionChangeDistanceThreshold) {
+	if (dist < ghostDirectionChangeDistanceThreshold) {
 		if (m_currentEnemyState != EnemyState::frightened) {
 			//if (m_currentNode->isIntersection())
 				m_currentDirection = m_desiredDirection;
@@ -156,7 +170,7 @@ void Enemy::moveEnemy() {
 	switch (m_currentEnemyState) {
 
 	case EnemyState::none:
-		m_currentDirection = none;
+		m_currentDirection = Direction::none;
 		break; 
 	case EnemyState::chase:
 		onChase();
@@ -260,15 +274,17 @@ void Enemy::onEaten() {
 	findShortestPath(m_eatenNode);
 	followPath();
 
-	if (m_currentNode == m_eatenNode)
-		m_isEaten = false;
+	if (m_currentNode == m_eatenNode) {
+		changeEnemyState(EnemyState::scatter);
+		m_isEaten = false; 		
+	}
 }
 
 void Enemy::onFrightened() {		
 
 	m_speed = frightenedSpeed;
 	if (m_currentNode->isIntersection()) {		
-		if (m_position.distanceTo(m_currentNode->getPosition()) <= directionChangeDistanceThreshold) {
+		if (m_position.distanceTo(m_currentNode->getPosition()) <= ghostDirectionChangeDistanceThreshold) {
 			if (!m_frightenedDirectionChosen) {				
 				std::vector<Direction> possibleDirections = chooseDirectionWhenFrightened();
 				if (!possibleDirections.empty()) {
@@ -309,11 +325,19 @@ bool Enemy::pathCompleted() {
 	return m_insideBase ? m_path.size() < 1 : m_path.size() < 2;
 }
 
-bool Enemy::isEaten(void) {
+bool Enemy::isFrightened(void) {
+	return m_frightened;
+}
+
+void Enemy::isFrightened(bool p_frightened) {
+	m_frightened = p_frightened;
+}
+
+bool Enemy::isHeadingToHouse(void) {
 	return m_isEaten;
 }
 
-void Enemy::isEaten(bool p_isEaten) {
+void Enemy::isHeadingToHouse(bool p_isEaten) {
 	m_isEaten = p_isEaten;
 }
 
@@ -331,16 +355,6 @@ void Enemy::toggleScatterNode() {
 
 void Enemy::toggleBaseNode() {
 
-	/*if (m_baseNode == getNodeByIndex(m_baseNodeIndices[0])) {
-		m_baseNode = getNodeByIndex(m_baseNodeIndices[1]);
-	}
-	else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1])) {
-		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
-	}
-	else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[2])) {
-		m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
-	}*/
-
 	if (m_insideBase) {
 		if (m_baseNode == getNodeByIndex(m_baseNodeIndices[0])) {
 			m_baseNode = getNodeByIndex(m_baseNodeIndices[1]);
@@ -355,48 +369,58 @@ void Enemy::toggleBaseNode() {
 			m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
 		//}
 
-		if (m_currentNode == m_baseNode)
-			changeEnemyState(EnemyState::scatter);
+			if (m_currentNode == m_baseNode) {
+				changeEnemyState(EnemyState::scatter);
+				if (toggleFrightenedMode)
+					changeEnemyState(EnemyState::frightened);
+			}
 	}
 }
 
+// Flashes the ghosts to white as a sign that the effect is about to end.
 void Enemy::flashOnFrightened(float p_deltaTime) {
 
-	/*if (frightenedTimer > frightenedFlashTimerThreshold) {
-		std::cout << frightenedTimer << std::endl;
-		m_sprite.setCurrentFramesRange(10, 11);
-	}*/
+	if (m_currentEnemyState == EnemyState::frightened  && 
+		frightenedTimer > frightenedFlashTimerThreshold) {
+		((int)(frightenedTimer * 10) % 3 == 0) ?
+			m_sprite.setCurrentFramesRange(10, 11) :
+			m_sprite.setCurrentFramesRange(8, 9);
+	}
 }
 
 void Enemy::shouldExitBase(const bool p_insideBase) {
 	m_insideBase = !p_insideBase;
 }
 
-void Enemy::manageStateBasedOnTimer() {
+void Enemy::manageStates() {
+
+	//std::cout << m_frightened << std::endl;
+
+	//if (toggleFrightenedMode) {
+	//
+	//	m_frightened = true;	
+	//}
+
+	//if (frightenedTimer > frightenedTimerThreshold) {
+	//	if (m_currentEnemyState != EnemyState::eaten) {			
+	//		returnPreviousEnemyState();
+	//		return;  // Make sure to exit the function after returning to the previous state
+	//	}
+	//}
+
+	//if (m_frightened) {
+	//	if (m_currentEnemyState != EnemyState::eaten) {
+	//		changeEnemyState(EnemyState::frightened);
+	//		return;  // Exit the function after changing to frightened state
+	//	}
+	//}
+
 	
-	struct StateInterval {
-		float start;
-		float end;
-		EnemyState state;
-	};
 
-	// Define time intervals and corresponding states
-	StateInterval intervals[] = {
-		{ 7.0f, 27.0f, EnemyState::chase },
-		{ 27.0f, 34.0f, EnemyState::scatter },
-		{ 34.0f, 54.0f, EnemyState::chase },
-		{ 54.0f, 59.0f, EnemyState::scatter },
-		{ 59.0f, 79.0f, EnemyState::chase },
-		{ 79.0f, 84.0f, EnemyState::scatter },
-		{ 84.0f, FLT_MAX, EnemyState::chase }  // FLT_MAX as a placeholder for infinity
-	};
-
-	// Find the appropriate state for the current timer value
 	for (const auto& interval : intervals) {
 		if (globalTimer > interval.start && globalTimer <= interval.end) {
-			if (!m_isEaten) {
+			if (!m_isEaten) {		
 				changeEnemyState(interval.state);
-				break;
 			}
 		}
 	}
@@ -404,7 +428,11 @@ void Enemy::manageStateBasedOnTimer() {
 
 void Enemy::changeEnemyState(EnemyState p_enemyState) {
 	if (m_currentEnemyState != p_enemyState) {
-		m_previousEnemyState = m_currentEnemyState;
+
+		if (m_previousEnemyState != EnemyState::chase && m_previousEnemyState != EnemyState::scatter) {
+			m_previousEnemyState = EnemyState::scatter; // Default to scatter if the previous state is not valid
+		}
+
 		m_currentEnemyState = p_enemyState;
 
 		if (p_enemyState == EnemyState::chase) {

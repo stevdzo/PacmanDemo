@@ -81,16 +81,20 @@ bool toggleWireframe = false;
 bool toggleRender = !toggleWireframe;
 
 bool toggleFrightenedMode = false;
+bool frightenedModeActive = false;
 
 bool toggleChangeMode = false;
 
 bool gameActive = false;
+bool lifeLost = false;
+bool nextLevel = false;
 
-const float directionChangeDistanceThreshold = 0.8f;
+const float ghostDirectionChangeDistanceThreshold = 0.8f; 
+const float pacDirectionChangeDistanceThreshold = 0.8f;
 const float turnBufferDistanceThreshold = 200.0f;
 const float eatDistanceThreshold = 8.0f;
 
-const float gameStartTimerThreshold = 5.0f;
+const float gameStartTimerThreshold = 6.0f;
 
 const float frightenedTimerThreshold = 6.0f;
 const float frightenedFlashTimerThreshold = 4.0f;
@@ -100,6 +104,10 @@ const int respawnNodeIndex = 450;
 const float chaseScatterSpeed = 88.0f * 3.0f;;
 const float eatenSpeed = 300.0f;
 const float frightenedSpeed = 70.0f;
+
+const int baseEntranceNodeIndex = 453;
+
+const int playerStartNodeIndex = 441;
 
 const int blinkyStartNodeIndex = 453;
 const int pinkyStartNodeIndex  = 450;
@@ -150,3 +158,20 @@ float frightenedTimer = 0.0f;
 
 const int initialGhostEatValue = 200;
 int currentBigDotGhostCounter = 1;
+
+GameState globalGameState = GameState::paused;
+
+const EnemyState blinkyInitialState = EnemyState::scatter;
+const EnemyState pinkyInitialState = EnemyState::base;
+const EnemyState inkyInitialState = EnemyState::base;
+const EnemyState clydeInitialState = EnemyState::base;
+
+const StateInterval intervals[] = {
+		{ 7.0f, 27.0f, EnemyState::chase },
+		{ 27.0f, 34.0f, EnemyState::scatter },
+		{ 34.0f, 54.0f, EnemyState::chase },
+		{ 54.0f, 59.0f, EnemyState::scatter },
+		{ 59.0f, 79.0f, EnemyState::chase },
+		{ 79.0f, 84.0f, EnemyState::scatter },
+		{ 84.0f, FLT_MAX, EnemyState::chase }
+};
