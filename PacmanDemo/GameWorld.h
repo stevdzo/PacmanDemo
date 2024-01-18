@@ -26,8 +26,6 @@ private:
 
 	Drop* m_cherry;
 
-	AStar astar;
-
 	std::vector<Dot*> m_dots;
 	std::vector<Enemy*> m_ghosts;	
 

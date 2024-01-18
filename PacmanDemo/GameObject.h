@@ -15,8 +15,11 @@ protected:
 
 	Vector2D m_position;
 	Vector2D m_size;
+	Vector2D m_wireframeSize;
 
 	Vector3D m_wireframeColor;
+
+	bool m_isVisible;
 
 public:
 
@@ -28,10 +31,16 @@ public:
 	virtual void render();
 	virtual void renderWireframe();
 
+	void isVisible(bool);
+	bool isVisible(void) const;
+
 	void setPosition(Vector2D p_position);
 	Vector2D getPosition() const;
 
 	void setSize(Vector2D p_size);
 	Vector2D getSize() const;
+
+	void setWireFrameColor(Vector3D p_wireframeColor);
+	Vector3D getWireFrameColor() const;
 };
 #endif

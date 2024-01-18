@@ -11,19 +11,21 @@ Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 	m_currentNode = getNodeByIndex(441);
 	m_position = m_currentNode->getPosition();
 	m_position += Vector2D(nodeSize/2.0f, 0.0f);
-	m_isMoving = true;
+	m_isAlive = true;
+	m_deathAnimationStarted = false;
 	m_currentDirection = Direction::left;
 	m_desiredDirection = Direction::left;
 	m_velocity = Vector2D(-1.0f, 0.0f);
 
 	for (size_t i = 1; i <= 3; i++) {
-		auto pacImg = new GameObject(Sprite(pacFilePath, 4, 4));
+		auto pacImg = new GameObject(Sprite(pacFilePath, 14, 8));
 		pacImg->setPosition(Vector2D(screenWidth - (300 - 30 * i), screenHeight / 2 - 100));
 		m_pacLives.push_back(pacImg);
 	}
 }
 
 void Player::update(float p_deltaTime) {
+
 	Entity::update(p_deltaTime);
 
 	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
@@ -39,7 +41,10 @@ void Player::render() {
 }
 
 void Player::renderWireframe() {
-	Entity::renderWireframe();
+	//Entity::renderWireframe();
+
+	if (toggleWireframe)
+		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pacR, pacG, pacB, GL_QUADS);
 
 	/*auto node = Graph::getInstance()->getNodeInPlayerDirection(m_currentNode, m_currentDirection);
 
@@ -92,6 +97,7 @@ void Player::renderWireframe() {
 void Player::restart(int p_nodeIndex, Direction p_direction) {
 	Entity::restart(p_nodeIndex, p_direction);
 	m_position += Vector2D(nodeSize / 2.0f, 0.0f);
+	m_sprite.setCurrentFrame(0);
 }
 
 int Player::getScore(void) const {
@@ -104,7 +110,7 @@ int Player::getHealth(void) const {
 
 void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
-		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {
+		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {			
 			if ((*it)->getType() == DotType::big) {
 				frightenedTimer = 0.0f;
 				toggleFrightenedMode = true;
@@ -118,6 +124,7 @@ void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 				AudioManager::getInstance()->playFrightenedSound();
 			}
 			m_score += (*it)->getValue();
+			dotCounter++;
 
 			delete* it;
 			it = p_dots.erase(it);
@@ -130,18 +137,14 @@ void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 }
 
 void Player::onGhostCollision(Enemy* p_ghost) {
-	
+
 	if (m_position.distanceTo(p_ghost->getPosition()) < 16) {
 
-		if (p_ghost->getCurrentMode() == EnemyState::chase || 
+		if (p_ghost->getCurrentMode() == EnemyState::chase ||
 			p_ghost->getCurrentMode() == EnemyState::scatter) {
 
-			m_health -= 1;
-			m_pacLives.erase(m_pacLives.end() - 1);
-						
-			AudioManager::getInstance()->playDieSound();
 
-			globalGameState = GameState::life_lost;
+			onLifeLost();
 
 			return;
 
@@ -149,20 +152,35 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 		else if (p_ghost->getCurrentMode() == EnemyState::frightened) {
 
 			m_score += initialGhostEatValue * currentBigDotGhostCounter; // 200 * 1
-			currentBigDotGhostCounter*=2;			
+			currentBigDotGhostCounter *= 2;
 
 			AudioManager::getInstance()->playEatGhostSound();
 			p_ghost->isHeadingToHouse(true);
 			p_ghost->isFrightened(false);
 			p_ghost->changeEnemyState(EnemyState::eaten);
-			
-			return;
 
+			return;
 		}
 		else if (p_ghost->getCurrentMode() == EnemyState::eaten) {
 			return;
 		}
 	}
+}
+
+void Player::onLifeLost() {
+
+	globalGameState = GameState::life_lost;
+
+	m_currentDirection = Direction::none;
+	m_velocity = Vector2D(0.0f, 0.0f);
+
+	setAnimationDelay(deathAnimatonDelay);
+	setCurrentFramesRange(2, 13);
+
+	AudioManager::getInstance()->playDieSound();
+
+	m_health -= 1;
+	m_pacLives.erase(m_pacLives.end() - 1);
 }
 
 void Player::onPlayerMovement(int p_key) {
@@ -199,6 +217,22 @@ void Player::onPlayerMovement(int p_key) {
 	}
 }
 
+void Player::isAlive(bool p_isAlive) {
+	m_isAlive = p_isAlive;
+}
+
+bool Player::isAlive(void) { 
+	return m_isAlive;
+}
+
+bool Player::isDeathAnimationFinished() {
+
+	bool flag = getCurrentFrame() == 13;
+	if (flag) m_sprite.setCurrentFrame(13);
+
+	return flag;
+}
+
 void Player::setDefaultPosition() {
 	m_currentNode = getNodeByIndex(441);
 	m_position = m_currentNode->getPosition();
@@ -207,27 +241,34 @@ void Player::setDefaultPosition() {
 
 void Player::setVelocityByDirection() {
 
-	switch (m_currentDirection) {
+	if (!m_deathAnimationStarted) {
 
-	case Direction::up:
-		m_velocity = Vector2D(0.0f, 1.0f);
-		m_sprite.setCurrentFramesRange(6, 8);
-		break;
-	case Direction::down:
-		m_velocity = Vector2D(0.0f, -1.0f);
-		m_sprite.setCurrentFramesRange(9, 11);
-		break;
-	case Direction::left:
-		m_velocity = Vector2D(-1.0f, 0.0f);
-		m_sprite.setCurrentFramesRange(3, 5);
-		break;
-	case Direction::right:
-		m_velocity = Vector2D(1.0f, 0.0f);
-		m_sprite.setCurrentFramesRange(0, 2);
-		break;
-	case Direction::none:
-		m_velocity = Vector2D(0.0f, 0.0f);
-		break;
+		switch (m_currentDirection) {
+
+		case Direction::up:
+			m_velocity = Vector2D(0.0f, 1.0f);
+			//m_sprite.setCurrentFramesRange(6, 8);
+			m_sprite.setCurrentFramesRange(28, 29);
+			break;
+		case Direction::down:
+			m_velocity = Vector2D(0.0f, -1.0f);
+			//m_sprite.setCurrentFramesRange(9, 11);
+			m_sprite.setCurrentFramesRange(42, 43);
+			break;
+		case Direction::left:
+			m_velocity = Vector2D(-1.0f, 0.0f);
+			//m_sprite.setCurrentFramesRange(3, 5);
+			m_sprite.setCurrentFramesRange(14, 15);
+			break;
+		case Direction::right:
+			m_velocity = Vector2D(1.0f, 0.0f);
+			//m_sprite.setCurrentFramesRange(0, 2);
+			m_sprite.setCurrentFramesRange(0, 1);
+			break;
+		case Direction::none:
+			m_velocity = Vector2D(0.0f, 0.0f);
+			break;
+		}
 	}
 }
 

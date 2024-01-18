@@ -13,6 +13,12 @@ private:
 	int m_score;
 	int m_health;
 
+	bool m_isAlive;
+
+	bool m_deathAnimationStarted;
+
+	PlayerState m_playerState;
+
 	std::vector<GameObject*> m_pacLives;
 
 public:
@@ -31,8 +37,12 @@ public:
 	void eatDot(std::vector<Dot*>&, std::vector<Enemy*>& p_ghosts);
 
 	void onGhostCollision(Enemy* p_ghost);
-
+	void onLifeLost();	
 	void onPlayerMovement(int = 0);
+
+	void isAlive(bool p_isAlive);
+	bool isAlive(void);
+	bool isDeathAnimationFinished();
 
 	void setDefaultPosition() override;
 

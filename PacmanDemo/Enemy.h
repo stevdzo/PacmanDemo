@@ -25,6 +25,10 @@ private:
 	GraphNode* m_scatterNode;
 	GraphNode* m_eatenNode;	
 	GraphNode* m_baseNode;	
+	GraphNode* m_currentTargetNode;
+	GraphNode* m_initialNode;
+
+	GraphNode* m_inkyCurrentTargetNode; // only for inky
 
 	int m_scatterNodeIndices[3];
 	int m_baseNodeIndices[3];
@@ -34,6 +38,8 @@ private:
 	bool m_frightened;
 	bool m_insideBase;
 	bool m_isEaten;
+
+	bool m_isClydeInRange; // only for clyde
 
 	EnemyState m_initialEnemyState;
 	EnemyState m_currentEnemyState;
@@ -57,6 +63,8 @@ public:
 	void setVelocityByDirection() override;
 	void updateDirection() override;
 
+	void setPositionByNode(const int p_index) override;
+
 	void findShortestPath(GraphNode* p_targetNode);
 
 	void moveEnemy();
@@ -79,6 +87,8 @@ public:
 
 	bool isHeadingToHouse(void);
 	void isHeadingToHouse(bool);
+
+	GraphNode* getCurrentTargetNode() const;
 
 	void toggleScatterNode();
 	void toggleBaseNode();

@@ -4,17 +4,20 @@ GameObject::GameObject() {
 	//m_sprite = nullptr;
 	m_position = Vector2D(0.0f, 0.0f);
 	m_size = defaultSize;
+	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = gameObjectWireframeColor;
 }
 
-GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite) {
+GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite), m_isVisible(true) {
 	m_position = Vector2D(0.0f, 0.0f);
 	m_size = defaultSize;
+	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = gameObjectWireframeColor;
 }
 
 GameObject::GameObject(Vector2D p_position) : m_position(p_position) {
 	m_size = defaultSize;
+	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = gameObjectWireframeColor;
 }
 
@@ -24,7 +27,7 @@ void GameObject::update(float p_deltaTime) {
 
 void GameObject::render() {
 
-	if (toggleRender) {
+	if (toggleRender && m_isVisible) {
 
 		glColor3fv(defaultWireframeColor.toArray());
 
@@ -69,15 +72,24 @@ void GameObject::render() {
 
 void GameObject::renderWireframe() {
 
-	if (toggleWireframe) {	
-		glBegin(GL_LINE_LOOP);		
+	if (toggleWireframe)
+		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, 1.0f, 1.0f, 1.0f, GL_LINE_LOOP);
+
+		/*glBegin(GL_LINE_LOOP);		
 		glColor3fv(m_wireframeColor.toArray());
-			glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
-			glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
-			glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
-			glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
-		glEnd();		
-	}
+			glVertex2f(m_position.x - m_wireframeSize.x / 2, m_position.y - m_wireframeSize.y / 2);
+			glVertex2f(m_position.x + m_wireframeSize.x / 2, m_position.y - m_wireframeSize.y / 2);
+			glVertex2f(m_position.x + m_wireframeSize.x / 2, m_position.y + m_wireframeSize.y / 2);
+			glVertex2f(m_position.x - m_wireframeSize.x / 2, m_position.y + m_wireframeSize.y / 2);
+		glEnd();*/			
+}
+
+void GameObject::isVisible(bool p_isVisible) {
+	m_isVisible = p_isVisible;
+}
+
+bool GameObject::isVisible(void) const {
+	return m_isVisible;
 }
 
 void GameObject::setPosition(Vector2D p_position) {
@@ -94,4 +106,12 @@ void GameObject::setSize(Vector2D p_size) {
 
 Vector2D GameObject::getSize() const {
 	return m_size;
+}
+
+void GameObject::setWireFrameColor(Vector3D p_wireframeColor) {
+	m_wireframeColor = p_wireframeColor;
+}
+
+Vector3D GameObject::getWireFrameColor() const {
+	return m_wireframeColor;
 }

@@ -161,29 +161,12 @@ void GraphNode::render() {
 }
 
 void GraphNode::renderWireframe(){
-
-	/*if (m_isObstacle) m_wireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
-	else		      m_wireframeColor = Vector3D(0.2f, 0.8f, 0.2f);*/
-
-	if (!isEmptyNode() && isObstacle())
-	GameObject::renderWireframe();
-	/*else {
-		glPointSize(5.0f);
-		glBegin(GL_POINTS);
-		glColor3f(0.5, 0.5, 0.0);
-		glVertex2f(m_position.x, m_position.y);
-		glEnd();
-	}*/
+	if (toggleWireframe)
+		if (!isEmptyNode() && isObstacle())
+			drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 0.0f, 1.0f, GL_LINE_LOOP);
 }
 
 void GraphNode::renderNodeFromPath() {
-	if (toggleWireframe) {
-		glBegin(GL_POLYGON);
-		glColor3fv(m_wireframeColor.toArray());
-		glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
-		glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
-		glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
-		glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
-		glEnd();
-	}
+	if (toggleWireframe)
+		drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 1.0f, 0.0f, GL_POLYGON);
 }

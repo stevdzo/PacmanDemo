@@ -46,6 +46,9 @@ public:
 	float getAnimationDelay();
 	float getAnimationElapsedTime();
 
+	void setAnimationDelay(float);
+	void setAnimationElapsedTime(float);
+
 	bool isTransparent();
 	bool hasAnimationChanged();
 	void hasAnimationChanged(bool);

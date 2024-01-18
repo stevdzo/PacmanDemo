@@ -88,6 +88,11 @@ bool toggleChangeMode = false;
 bool gameActive = false;
 bool lifeLost = false;
 bool nextLevel = false;
+bool hasRestarted = false;
+bool hasIntervalStateChanged = false;
+
+const float wireframeSizeX = nodeSize;
+const float wireframeSizeY = nodeSize;
 
 const float ghostDirectionChangeDistanceThreshold = 0.8f; 
 const float pacDirectionChangeDistanceThreshold = 0.8f;
@@ -99,11 +104,37 @@ const float gameStartTimerThreshold = 6.0f;
 const float frightenedTimerThreshold = 6.0f;
 const float frightenedFlashTimerThreshold = 4.0f;
 
+const float clyde8NodesDistance = 256.0f;
+
 const int respawnNodeIndex = 450;
 
 const float chaseScatterSpeed = 88.0f * 3.0f;;
+//const float chaseScatterSpeed = 50;
 const float eatenSpeed = 300.0f;
 const float frightenedSpeed = 70.0f;
+
+const float pacR = 254.0f/255.0f;
+const float pacG = 255.0f/255.0f;
+const float pacB = 0.0f/255.0f;
+
+const float blinkyR = 255.0f/255.0f;
+const float blinkyG = 0.0f/255.0f;
+const float blinkyB = 0.0f/255.0f;
+
+const float pinkyR = 255.0f/255.0f;
+const float pinkyG = 184.0f/255.0f;
+const float pinkyB = 255.0f/255.0f;
+
+const float inkyR = 0.0f/255.0f;
+const float inkyG = 255.0f/255.0f;
+const float inkyB = 255.0f/255.0f;
+
+const float clydeR = 255.0f/255.0f;
+const float clydeG = 184.0f/255.0f;
+const float clydeB = 82.0f/255.0f;
+
+const float normalAnimationDelay = 0.15f;
+const float deathAnimatonDelay = 0.4;
 
 const int baseEntranceNodeIndex = 453;
 
@@ -134,7 +165,7 @@ Vector3D gameObjectWireframeColor = Vector3D(0.2f, 0.8f, 0.2f);
 Vector3D nodeWireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
 Vector3D edgeWireframeColor = Vector3D(0.2f, 0.8f, 0.8f);
 
-const char* pacFilePath       = "resources/images/pacman.png";
+const char* pacFilePath       = "resources/images/sprite_sheet_2.png";
 const char* blinkyFilePath    = "resources/images/ghost_blinky.png";
 const char* pinkyFilePath     = "resources/images/ghost_pinky.png";
 const char* inkyFilePath      = "resources/images/ghost_inky.png";
@@ -156,6 +187,10 @@ float globalTimer = 0.0f;
 float gameStartTimer = 0.0f;
 float frightenedTimer = 0.0f;
 
+int dotCounter = 0;
+const int inkyDotExitThreshold = 30;
+const int clydeDotExitThreshold = 70;
+
 const int initialGhostEatValue = 200;
 int currentBigDotGhostCounter = 1;
 
@@ -167,11 +202,49 @@ const EnemyState inkyInitialState = EnemyState::base;
 const EnemyState clydeInitialState = EnemyState::base;
 
 const StateInterval intervals[] = {
-		{ 7.0f, 27.0f, EnemyState::chase },
-		{ 27.0f, 34.0f, EnemyState::scatter },
-		{ 34.0f, 54.0f, EnemyState::chase },
-		{ 54.0f, 59.0f, EnemyState::scatter },
-		{ 59.0f, 79.0f, EnemyState::chase },
-		{ 79.0f, 84.0f, EnemyState::scatter },
-		{ 84.0f, FLT_MAX, EnemyState::chase }
+		{ 7.0f, 27.0f, EnemyState::chase, 0 },
+		{ 27.0f, 34.0f, EnemyState::scatter, 1 },
+		{ 34.0f, 54.0f, EnemyState::chase, 2 },
+		{ 54.0f, 59.0f, EnemyState::scatter, 3 },
+		{ 59.0f, 79.0f, EnemyState::chase, 4 },
+		{ 79.0f, 84.0f, EnemyState::scatter, 5 },
+		{ 84.0f, FLT_MAX, EnemyState::chase, 6 }
 };
+
+void drawCircle(float posX, float posY, float radius, float red, float green, float blue) {
+	int i, n = 360;
+	float theta;
+	glColor3f(red, green, blue);
+	glBegin(GL_LINE_LOOP);
+	for (i = 0; i < n; i++) {
+		theta = 2 * PI * i / n;
+		glVertex2f(posX + radius * cos(theta), posY + radius * sin(theta));
+	}
+	glEnd();
+}
+
+void drawPoint(float posX, float posY, float size, float red, float green, float blue) {
+	glPointSize(size);
+	glColor3f(red, green, blue);
+	glBegin(GL_POINTS);
+	glVertex2f(posX, posY);
+	glEnd();
+}
+
+void drawLine(float posX1, float posY1, float posX2, float posY2, float red, float green, float blue) {
+	glColor3f(red, green, blue);
+	glBegin(GL_LINES);
+	glVertex2f(posX1, posY1);
+	glVertex2f(posX2, posY2);
+	glEnd();
+}
+
+void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, float green, float blue, int type) {
+	glColor3f(red, green, blue);
+	glBegin(type);
+	glVertex2f(posX - sizeW/2, posY - sizeH/2);
+	glVertex2f(posX + sizeW/2, posY - sizeH/2);
+	glVertex2f(posX + sizeW/2, posY + sizeH/2);
+	glVertex2f(posX - sizeW/2, posY + sizeH/2);
+	glEnd();
+}

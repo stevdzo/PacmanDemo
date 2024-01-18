@@ -15,12 +15,12 @@ Sprite::Sprite(
 	m_currentFrame = 0;
 	m_numberOfFrames = p_numberOfFramesX * p_numberOfFramesY;
 
-	m_startingFrame = 2;
-	m_endingFrame = 2; // for pacman sprite
+	m_startingFrame = 0;
+	m_endingFrame = 0;
 
 	m_hasAnimationChanged = false;
 
-	m_animationDelay = 0.1f;
+	m_animationDelay = normalAnimationDelay;
 	m_animationElapsedTime = 0.0f;
 
 	int texture = SOIL_load_OGL_texture(p_fileName, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
@@ -88,6 +88,14 @@ float Sprite::getAnimationDelay() {
 
 float Sprite::getAnimationElapsedTime() {
 	return this->m_animationElapsedTime;
+}
+
+void Sprite::setAnimationDelay(float p_animationDelay) {
+	m_animationDelay = p_animationDelay;
+}
+
+void Sprite::setAnimationElapsedTime(float p_animationElapsedTime) {
+	m_animationElapsedTime = p_animationElapsedTime;
 }
 
 bool Sprite::isTransparent() {

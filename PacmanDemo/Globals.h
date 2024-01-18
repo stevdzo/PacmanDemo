@@ -24,6 +24,12 @@ enum class Direction {
 	right = 4
 };
 
+enum class PlayerState {
+	none = 0,
+	alive = 1,
+	dead = 2
+};
+
 enum class EnemyState {
 	none = 0,
 	chase = 1,
@@ -44,6 +50,7 @@ struct StateInterval {
 	float start;
 	float end;
 	EnemyState state;
+	int index;
 };
 
 template <typename T>
@@ -76,20 +83,48 @@ extern bool toggleChangeMode;
 extern bool gameActive;
 extern bool lifeLost;
 extern bool nextLevel;
+extern bool hasRestarted;
+extern bool hasIntervalStateChanged;
+
+extern const float wireframeSizeX;
+extern const float wireframeSizeY;
 
 extern const float ghostDirectionChangeDistanceThreshold;
 extern const float pacDirectionChangeDistanceThreshold;
 extern const float turnBufferDistanceThreshold;
-extern const float eatDistanceThreshold;	
-
+extern const float eatDistanceThreshold;
 extern const float gameStartTimerThreshold;
-
 extern const float frightenedTimerThreshold;
 extern const float frightenedFlashTimerThreshold;
+
+extern const float clyde8NodesDistance;
 
 extern const float chaseScatterSpeed;
 extern const float eatenSpeed;
 extern const float frightenedSpeed;
+
+extern const float pacR;
+extern const float pacG;
+extern const float pacB;
+
+extern const float blinkyR;
+extern const float blinkyG;
+extern const float blinkyB;
+
+extern const float pinkyR;
+extern const float pinkyG;
+extern const float pinkyB;
+
+extern const float inkyR;
+extern const float inkyG;
+extern const float inkyB;
+
+extern const float clydeR;
+extern const float clydeG;
+extern const float clydeB;
+
+extern const float normalAnimationDelay;
+extern const float deathAnimatonDelay;
 
 extern const int respawnNodeIndex;
 
@@ -146,6 +181,10 @@ extern float gameStartTimer;
 
 extern float frightenedTimer;
 
+extern int dotCounter;
+extern const int inkyDotExitThreshold;
+extern const int clydeDotExitThreshold;
+
 extern const int initialGhostEatValue;
 extern int currentBigDotGhostCounter;
 
@@ -159,5 +198,10 @@ extern const EnemyState inkyInitialState;
 extern const EnemyState clydeInitialState;
 
 extern const StateInterval intervals[7];
+
+extern void drawCircle(float posX, float posY, float radius, float red, float green, float blue);
+extern void drawPoint(float posX, float posY, float size, float red, float green, float blue);
+extern void drawLine(float posX1, float posY1, float posX2, float posY2, float red, float green, float blue); 
+extern void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, float green, float blue, int type);
 
 #endif

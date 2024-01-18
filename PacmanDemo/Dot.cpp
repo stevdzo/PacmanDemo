@@ -5,10 +5,13 @@ Dot::Dot(Sprite p_sprite, DotType p_type) : GameObject(p_sprite), m_type(p_type)
     switch (m_type) {  
     case DotType::small:
         m_size = Vector2D(8.0f, 8.0f);
+        m_wireframeSize = Vector2D(8.0f, 8.0f);
         m_value = 10;
+        
         break;
     case DotType::big:
         m_size = Vector2D(32.0f, 32.0f);
+        m_wireframeSize = Vector2D(32.0f, 32.0f);
         m_value = 50;
         break;
     }
@@ -39,15 +42,7 @@ void Dot::render() {
 }
 
 void Dot::renderWireframe() {
-
-    GameObject::renderWireframe();
-    if (toggleWireframe) {       
-        glBegin(GL_POLYGON);
-        glColor3fv(m_wireframeColor.toArray());
-        glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
-        glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
-        glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
-        glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
-        glEnd();
-    }
+    //GameObject::renderWireframe();
+    if (toggleWireframe)
+        drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.8f, 0.8f, 0.8f, GL_LINE_LOOP);
 }

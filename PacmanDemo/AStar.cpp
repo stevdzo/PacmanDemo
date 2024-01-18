@@ -1,7 +1,7 @@
 #include "AStar.h"
 
 AStar::AStar() {
-
+	std::cout << "Initializing AStar." << std::endl;
 }
 
 void AStar::update(float p_deltaTime) {

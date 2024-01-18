@@ -26,7 +26,7 @@ void GameWorld::init() {
 	m_background->setPosition(Vector2D((screenWidth-400) / 2, screenHeight / 2));
 	m_background->setSize(Vector2D(screenWidth-400, screenHeight));
 
-	m_player = new Player(Sprite(pacFilePath, 3, 4));
+	m_player = new Player(Sprite(pacFilePath, 14, 8));
 
 	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, blinkyInitialState, m_player);
 	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 8), pinkyScatterNodeIndices , pinkyBaseNodeIndices , pinkyInitialState , m_player);
@@ -62,7 +62,7 @@ void GameWorld::init() {
 
 	m_audioManager->playIntroSound();
 
-	astar = AStar();
+	//astar = AStar();
 }
 
 void GameWorld::initDots() {
@@ -107,7 +107,6 @@ void GameWorld::render() {
 	m_background->render();
 
 	for (auto& dot : m_dots) {
-
 		dot->renderWireframe();
 		dot->render();
 	}	
@@ -125,6 +124,10 @@ void GameWorld::render() {
 
 	renderWireframe();
 	renderUi();
+
+	//std::cout << "Blinky current node: " << m_blinky->getCurrentNode()->getIndex() << std::endl;
+	//std::cout << "Inky current nodfe: " << m_inky->getCurrentNode()->getIndex() << std::endl;
+	//std::cout << "Current GLOBAL state: " << static_cast<int>(globalGameState) << std::endl;
 
 	glutSwapBuffers();
 }
@@ -148,14 +151,14 @@ void GameWorld::gameOver() {
 
 void GameWorld::restart() {
 
-	/*m_blinky->setPositionByNode(blinkyStartNodeIndex);
+	m_blinky->setPositionByNode(blinkyStartNodeIndex);
 	m_pinky->setPositionByNode(pinkyStartNodeIndex);
 	m_inky->setPositionByNode(inkyStartNodeIndex);
 	m_clyde->setPositionByNode(clydeStartNodeIndex);
 
 	m_blinky->setCurrentDirection(Direction::left);
-	m_pinky->setCurrentDirection(Direction::down);
-	m_inky->setCurrentDirection(Direction::up);
+	m_pinky->setCurrentDirection(Direction::up);
+	m_inky->setCurrentDirection(Direction::down);
 	m_clyde->setCurrentDirection(Direction::down);
 
 	m_blinky->changeEnemyState(EnemyState::scatter);
@@ -163,21 +166,12 @@ void GameWorld::restart() {
 	m_inky->changeEnemyState(EnemyState::base);
 	m_clyde->changeEnemyState(EnemyState::base);
 
-	m_player->setDefaultPosition();*/
-
 	m_blinky->restart(blinkyStartNodeIndex, Direction::left);
-	m_pinky->restart(pinkyStartNodeIndex, Direction::down);
-	m_inky->restart(inkyStartNodeIndex, Direction::up);
+	m_pinky->restart(pinkyStartNodeIndex, Direction::up);
+	m_inky->restart(inkyStartNodeIndex, Direction::down);
 	m_clyde->restart(clydeStartNodeIndex, Direction::down);
 
-	m_player->restart(playerStartNodeIndex, Direction::left);
-
-	gameStartTimer += m_deltaTime;
-
-	if (gameStartTimer > 3) {
-		globalGameState = GameState::running;
-		gameStartTimer = 0;
-	}
+	m_player->restart(playerStartNodeIndex, Direction::left);		
 }
 
 void GameWorld::renderUi() {
@@ -226,7 +220,7 @@ void GameWorld::onRunningGameState() {
 	if (!toggleFrightenedMode)
 		globalTimer += m_deltaTime;
 
-	m_cherry->update(m_deltaTime);
+	//m_cherry->update(m_deltaTime);
 
 	m_clyde->update(m_deltaTime);
 	m_inky->update(m_deltaTime);
@@ -237,8 +231,13 @@ void GameWorld::onRunningGameState() {
 
 	m_player->eatDot(m_dots, m_ghosts);
 
-	if (globalTimer > 2)
+	if (dotCounter == inkyDotExitThreshold) {
 		m_clyde->shouldExitBase(true);
+		m_inky->shouldExitBase(true);
+	}
+
+	//if (dotCounter == clydeDotExitThreshold)
+		//m_clyde->shouldExitBase(true);
 
 	if (toggleFrightenedMode) {
 		frightenedTimer += m_deltaTime;
@@ -264,8 +263,9 @@ void GameWorld::onRunningGameState() {
 
 	for (auto& ghost : m_ghosts) {
 
-		if (!toggleFrightenedMode)
-			ghost->manageStates();
+		if (!toggleFrightenedMode && 
+			ghost->getCurrentMode() != EnemyState::base)
+				ghost->manageStates();
 
 		m_player->onGhostCollision(ghost);
 	}
@@ -278,7 +278,35 @@ void GameWorld::onGameOverGameState() {
 }
 
 void GameWorld::onLifeLostGameState() {
-	restart();
+
+	if (m_player->isAlive())
+		m_player->update(m_deltaTime);
+
+	if (m_player->isDeathAnimationFinished()) {
+		m_player->setAnimationDelay(normalAnimationDelay);		
+		m_player->isAlive(false);
+		m_player->isVisible(false);
+	}
+	if (!m_player->isAlive()) {
+		gameStartTimer += m_deltaTime;
+
+		m_player->isVisible(true);
+
+		if (gameStartTimer > 1 && !hasRestarted) {
+			restart();
+			hasRestarted = true;
+		}
+	
+		if (gameStartTimer > 3) {
+		
+			/*for (auto& ghost : m_ghosts)
+				ghost->findShortestPath(ghost->getCurrentTargetNode());*/
+
+			gameStartTimer = 0;
+			hasRestarted = false;
+			globalGameState = GameState::running;							
+		}
+	}	
 }
 
 void GameWorld::mouse(int p_button, int p_state, int p_x, int p_y) {

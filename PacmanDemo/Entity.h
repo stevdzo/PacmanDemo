@@ -51,9 +51,14 @@ public:
 
 	virtual void restart(int p_nodeIndex, Direction p_direction);
 
+	virtual void setCurrentFramesRange(int p_startingFrame, int p_endingFrame);
+	virtual void setAnimationDelay(float p_animationDelay);
+
+	virtual float getCurrentFrame();
+
 	Direction getCurrentDirection() const;
 
-	void setPositionByNode(const int p_nodeIndex);
+	virtual void setPositionByNode(const int p_nodeIndex);
 	void setCurrentDirection(const Direction p_direction);
 
 	virtual void setDefaultPosition();

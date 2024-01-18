@@ -122,7 +122,7 @@ Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
     m_velocity = Vector2D();
-    m_speed = 0.0f;
+    m_speed = 0.0f;  
 }
 
 void Entity::update(float p_deltaTime) {
@@ -144,7 +144,7 @@ void Entity::render() {
 }
 
 void Entity::renderWireframe() {
-    GameObject::renderWireframe();
+   GameObject::renderWireframe();   
 }
 
 void Entity::restart(int p_nodeIndex, Direction p_direction) {
@@ -154,13 +154,25 @@ void Entity::restart(int p_nodeIndex, Direction p_direction) {
     m_desiredDirection = p_direction;
 }
 
+void Entity::setCurrentFramesRange(int p_startingFrame, int p_endingFrame) {
+    m_sprite.setCurrentFramesRange(p_startingFrame, p_endingFrame);
+}
+
+void Entity::setAnimationDelay(float p_animationDelay) {
+    m_sprite.setAnimationDelay(p_animationDelay);
+}
+
+float Entity::getCurrentFrame() {
+    return m_sprite.getCurrentFrameIndex();
+}
+
 Direction Entity::getCurrentDirection() const {
     return m_currentDirection;
 }
 
 void Entity::setPositionByNode(const int p_nodeIndex) {
     m_currentNode = getNodeByIndex(p_nodeIndex);
-    m_position = m_currentNode->getPosition();
+    m_position = m_currentNode->getPosition();   
 }
 
 void Entity::setCurrentDirection(const Direction p_direction) {

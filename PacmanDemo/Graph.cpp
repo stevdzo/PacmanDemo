@@ -66,12 +66,12 @@ void Graph::initEdges() {
                     }                 
                 }
             }
-            if (m_nodeMatrix[row][col]->getIndex() == leftPortalIndex) {
+           /* if (m_nodeMatrix[row][col]->getIndex() == leftPortalIndex) {
                 m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[rightPortalIndex]);
             }
             if (m_nodeMatrix[row][col]->getIndex() == rightPortalIndex) {
                 m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[leftPortalIndex]);
-            }
+            }*/
         }
     }
 }
@@ -223,15 +223,13 @@ GraphNode* Graph::getNodeByPosition(Vector2D p_position) {
 
 GraphNode* Graph::calculateInkyTargetNode(const GraphNode* p_node1, const GraphNode* p_node2, const Direction p_direction) {
 
-    if (!p_node1 || !p_node2) {
-        return nullptr;
-    }
+    if (!p_node1 || !p_node2)
+        return nullptr;   
 
     GraphNode* targetNode = getNodeInPlayerDirection(p_node1, p_direction, 2);
 
-    if (!targetNode) {
+    if (!targetNode)
         return nullptr;
-    }
 
     Index2D blinkyIndex = p_node2->getIndexAs2D();
     Index2D targetIndex = targetNode->getIndexAs2D();
@@ -250,7 +248,7 @@ GraphNode* Graph::calculateInkyTargetNode(const GraphNode* p_node1, const GraphN
         targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&
         !node->isObstacle() &&
         !node->isEmptyNode())
-        return node;
+         return node;
     else return nullptr;
 }
 
