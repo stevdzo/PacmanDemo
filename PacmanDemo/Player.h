@@ -17,6 +17,8 @@ private:
 
 	bool m_deathAnimationStarted;
 
+	bool m_allDotsEaten;
+
 	PlayerState m_playerState;
 
 	std::vector<GameObject*> m_pacLives;
@@ -36,9 +38,11 @@ public:
 
 	void eatDot(std::vector<Dot*>&, std::vector<Enemy*>& p_ghosts);
 
+	void onGameWon();
 	void onGhostCollision(Enemy* p_ghost);
 	void onLifeLost();	
 	void onPlayerMovement(int = 0);
+	void onPlayerJoystickMovement(int p_x, int p_y, int p_z);
 
 	void isAlive(bool p_isAlive);
 	bool isAlive(void);

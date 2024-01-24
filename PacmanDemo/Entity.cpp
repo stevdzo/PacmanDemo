@@ -88,9 +88,9 @@ void Entity::updateDirection() {
      
 }
 
-bool Entity::isValidDirection() const {
-    return !(m_nextNode && (m_nextNode->isEmptyNode() || m_nextNode->isObstacle()));
-    //return !(m_nextNode->isEmptyNode() || m_nextNode->isObstacle());
+bool Entity::isValidDirection(const Direction p_direction) const {
+    auto node = getNodeByDirectionFromCurrentNode(p_direction);
+    return !(node && (node->isEmptyNode() || node->isObstacle()));
 }
 
 bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2) const {
@@ -106,6 +106,21 @@ bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2)
         return p_direction2 == Direction::left;
     default:
         return false;
+    }
+}
+
+Direction Entity::getOppositeDirection() const {
+    switch (m_currentDirection) {
+    case Direction::up:
+        return Direction::down;
+    case Direction::left:
+        return Direction::right;
+    case Direction::down:
+        return Direction::up;
+    case Direction::right:
+        return Direction::left;
+    default:
+        return Direction::none;
     }
 }
 
@@ -176,8 +191,16 @@ void Entity::setPositionByNode(const int p_nodeIndex) {
 }
 
 void Entity::setCurrentDirection(const Direction p_direction) {
-    m_currentDirection = p_direction;
+    if (m_currentDirection != p_direction) m_currentDirection = p_direction;
     //setVelocityByDirection();
+}
+
+void Entity::setDesiredDirection(const Direction p_direction) {
+    if (m_desiredDirection != p_direction) m_desiredDirection = p_direction;
+}
+
+void Entity::setSpeed(const float p_speed) {
+    if (m_speed != p_speed) m_speed = p_speed;
 }
 
 void Entity::setDefaultPosition() {

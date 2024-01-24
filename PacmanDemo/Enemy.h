@@ -38,6 +38,7 @@ private:
 	bool m_frightened;
 	bool m_insideBase;
 	bool m_isEaten;
+	bool m_hasGlobalStateChanged;
 
 	bool m_isClydeInRange; // only for clyde
 

@@ -60,6 +60,7 @@ public:
 	virtual void keyboardSpecUp(int, int, int);
 	virtual void keyboard(int, int, int);
 	virtual void keyboardUp(int, int, int);
+	virtual void joystick(unsigned int, int, int, int);
 	virtual void mouse(int p_button, int p_state, int p_x, int p_y);
 	virtual void reshape(int p_w, int p_h);
 	virtual void display();

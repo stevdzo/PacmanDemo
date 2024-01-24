@@ -50,8 +50,8 @@ struct StateInterval {
 	float start;
 	float end;
 	EnemyState state;
-	int index;
 };
+
 
 template <typename T>
 using Matrix = std::vector<std::vector<T>>;
@@ -102,6 +102,7 @@ extern const float clyde8NodesDistance;
 extern const float chaseScatterSpeed;
 extern const float eatenSpeed;
 extern const float frightenedSpeed;
+extern const float baseSpeed;
 
 extern const float pacR;
 extern const float pacG;
@@ -150,13 +151,6 @@ extern const int clydeBaseNodeIndices[];
 extern const int pinkyTargetNodeDistance;
 extern const int clydeRadiusNodeDistance;
 
-extern Vector2D defaultSize;
-
-extern Vector3D defaultWireframeColor;
-extern Vector3D gameObjectWireframeColor;
-extern Vector3D nodeWireframeColor;
-extern Vector3D edgeWireframeColor;
-
 extern const char* pacFilePath;
 extern const char* blinkyFilePath;
 extern const char* pinkyFilePath;
@@ -192,12 +186,14 @@ static int currentLevel = 1;
 
 extern GameState globalGameState;
 
+extern EnemyState globalGhostState;
+
 extern const EnemyState blinkyInitialState;
 extern const EnemyState pinkyInitialState;
 extern const EnemyState inkyInitialState;
 extern const EnemyState clydeInitialState;
 
-extern const StateInterval intervals[7];
+extern StateInterval intervals[7];
 
 extern void drawCircle(float posX, float posY, float radius, float red, float green, float blue);
 extern void drawPoint(float posX, float posY, float size, float red, float green, float blue);

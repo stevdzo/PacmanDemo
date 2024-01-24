@@ -12,7 +12,6 @@ GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
-	m_wireframeColor = nodeWireframeColor;
 }
 
 GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameObject(p_position) {
@@ -26,7 +25,6 @@ GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameO
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
-	m_wireframeColor = nodeWireframeColor;
 }
 
 void GraphNode::setIndex(int p_index) {

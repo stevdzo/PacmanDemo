@@ -6,13 +6,14 @@ Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 	m_score = 0;
 	m_health = 3;
-	m_speed = 88.0f*3.0f;
+	m_speed = 300.0f;
 
 	m_currentNode = getNodeByIndex(441);
 	m_position = m_currentNode->getPosition();
 	m_position += Vector2D(nodeSize/2.0f, 0.0f);
 	m_isAlive = true;
 	m_deathAnimationStarted = false;
+	m_allDotsEaten = false;
 	m_currentDirection = Direction::left;
 	m_desiredDirection = Direction::left;
 	m_velocity = Vector2D(-1.0f, 0.0f);
@@ -30,6 +31,8 @@ void Player::update(float p_deltaTime) {
 
 	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 
+	onGameWon();
+
 	setVelocityByDirection();
 	updateDirection();
 }
@@ -43,55 +46,17 @@ void Player::render() {
 void Player::renderWireframe() {
 	//Entity::renderWireframe();
 
+	auto desiredDirectionNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
+	auto currentDirectionNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
+
+	if (desiredDirectionNode)
+		drawPoint(desiredDirectionNode->getPosition().x, desiredDirectionNode->getPosition().y, 14, pacR, pacG, pacB);
+
+	if (currentDirectionNode)
+		drawPoint(currentDirectionNode->getPosition().x, currentDirectionNode->getPosition().y, 14, 0.0f, 1.0f, 1.0f);
+
 	if (toggleWireframe)
 		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pacR, pacG, pacB, GL_QUADS);
-
-	/*auto node = Graph::getInstance()->getNodeInPlayerDirection(m_currentNode, m_currentDirection);
-
-	if (node) {
-
-		glPointSize(16.0f);
-		glBegin(GL_POINTS);
-		glColor3f(1.0, 0.0, 1.0);
-		glVertex2f(node->getPosition().x, node->getPosition().y);
-		glEnd();
-	}*/
-
-	/*GraphNode* nextNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
-
-	glPointSize(16.0f);
-	glBegin(GL_POINTS);
-	glColor3f(1.0, 0.0, 1.0);
-	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
-	glEnd();
-
-	nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
-
-	glPointSize(16.0f);
-	glBegin(GL_POINTS);
-	glColor3f(1.0, 1.0, 0.0);
-	glVertex2f(nextNode->getPosition().x, nextNode->getPosition().y);
-	glEnd();*/
-
-	/*if (toggleWireframe) {
-		glBegin(GL_POLYGON);
-		glColor3fv(m_wireframeColor.toArray());
-		glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
-		glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
-		glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
-		glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
-		glEnd();
-	}*/
-
-	/*glBegin(GL_TRIANGLE_FAN);
-	glColor3fv(m_wireframeColor.toArray());
-	for (int i = 0; i <= 360; ++i) {
-		float theta = 2.0f * PI * float(i) / float(360);
-		float x = m_position.x + 15 * cos(theta);
-		float y = m_position.y + 15 * sin(theta);
-		glVertex2f(x, y);
-	}
-	glEnd();*/
 }
 
 void Player::restart(int p_nodeIndex, Direction p_direction) {
@@ -105,7 +70,7 @@ int Player::getScore(void) const {
 }
 
 int Player::getHealth(void) const {
-	return m_health;;
+	return m_health;
 }
 
 void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
@@ -119,6 +84,7 @@ void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 					if (ghost->getCurrentMode() != EnemyState::eaten &&
 						ghost->getCurrentMode() != EnemyState::base) {
 						ghost->changeEnemyState(EnemyState::frightened);
+						ghost->setCurrentDirection(ghost->getOppositeDirection());
 					}
 				}
 				AudioManager::getInstance()->playFrightenedSound();
@@ -133,6 +99,15 @@ void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 		}
 		else
 			++it;
+	}
+	if (p_dots.empty())
+		m_allDotsEaten = true;
+}
+
+void Player::onGameWon() {
+	if (m_allDotsEaten) {
+		std::cout << "ALL DOTS EATEN " << std::endl;
+		globalGameState = GameState::game_over;
 	}
 }
 
@@ -185,35 +160,59 @@ void Player::onLifeLost() {
 
 void Player::onPlayerMovement(int p_key) {
 
-	if (p_key == '2') {
-		restart(playerStartNodeIndex, Direction::left);
-	}
+	if (globalGameState == GameState::running) {
 
-	if (p_key == GLUT_KEY_RIGHT) { // d
-		if (m_desiredDirection == Direction::left)
-			 m_currentDirection = Direction::right;
-		m_desiredDirection = Direction::right;
-	}
-	if (p_key == GLUT_KEY_LEFT) { // a
-		if (m_desiredDirection == Direction::right)
-			 m_currentDirection = Direction::left;
-		m_desiredDirection = Direction::left;
-	}
-	if (p_key == GLUT_KEY_UP) {	// w
-		if (m_desiredDirection == Direction::down) 
-			 m_currentDirection = Direction::up;
-		m_desiredDirection = Direction::up;
-	}
-	if (p_key == GLUT_KEY_DOWN) { // s
-		if (m_desiredDirection == Direction::up)
-			 m_currentDirection = Direction::down;
-		m_desiredDirection = Direction::down;
-	}
+		if (p_key == '2') {
+			restart(playerStartNodeIndex, Direction::left);
+		}
 
-	if (p_key == GLUT_KEY_RIGHT) { // d
-		if (m_desiredDirection == Direction::left)
-			m_currentDirection = Direction::right;
-		m_desiredDirection = Direction::right;
+		if (p_key == GLUT_KEY_RIGHT) { // d
+			if (m_desiredDirection == Direction::left)
+				m_currentDirection = Direction::right;
+			m_desiredDirection = Direction::right;
+		}
+		else if (p_key == GLUT_KEY_LEFT) { // a
+			if (m_desiredDirection == Direction::right)
+				m_currentDirection = Direction::left;
+			m_desiredDirection = Direction::left;
+		}
+		else if (p_key == GLUT_KEY_UP) {	// w
+			if (m_desiredDirection == Direction::down)
+				m_currentDirection = Direction::up;
+			m_desiredDirection = Direction::up;
+		}
+		else if (p_key == GLUT_KEY_DOWN) { // s
+			if (m_desiredDirection == Direction::up)
+				m_currentDirection = Direction::down;
+			m_desiredDirection = Direction::down;
+		}
+	}
+}
+
+void Player::onPlayerJoystickMovement(int p_x, int p_y, int p_z) {
+
+	if (globalGameState == GameState::running) {
+
+		if (p_x > 900) { // d
+			if (m_desiredDirection == Direction::left)
+				m_currentDirection = Direction::right;
+			m_desiredDirection = Direction::right;
+		}
+		if (p_x < -900) { // a
+			if (m_desiredDirection == Direction::right)
+				m_currentDirection = Direction::left;
+			m_desiredDirection = Direction::left;
+		}
+		if (p_y < -900) {	// w
+			if (m_desiredDirection == Direction::down)
+				m_currentDirection = Direction::up;
+			m_desiredDirection = Direction::up;
+		}
+		if (p_y > 900) { // s
+			if (m_desiredDirection == Direction::up)
+				m_currentDirection = Direction::down;
+			m_desiredDirection = Direction::down;
+		}
 	}
 }
 
@@ -274,34 +273,22 @@ void Player::setVelocityByDirection() {
 
 void Player::updateDirection() {
 
-	/*float dist = m_position.distanceToSq(m_currentNode->getPosition());	
-
-	if (dist < pacDirectionChangeDistanceThreshold) {
-		if (!isValidDirection()) {
-			if (m_currentDirection == m_desiredDirection) {
-				m_currentDirection = Direction::none;
-			}
-			else m_desiredDirection = m_currentDirection;
-		}
-		else {
-			m_currentDirection = m_desiredDirection;
-		}
-	}*/
-
-	// primi input sa tastature w a s d
-	// 
-
 	float dist = m_position.distanceToSq(m_currentNode->getPosition());
 
 	if (dist < pacDirectionChangeDistanceThreshold) {
-		if (!isValidDirection()) {
+
+		if (!isValidDirection(m_currentDirection) && !isValidDirection(m_desiredDirection)) {
+			m_currentDirection = Direction::none;
+			m_desiredDirection = Direction::none;
+		}
+		if (!isValidDirection(m_desiredDirection)) {
 			if (m_currentDirection == m_desiredDirection) {
 				m_currentDirection = Direction::none;
+				m_desiredDirection = Direction::none;
 			}
 			//else m_desiredDirection = m_currentDirection;
 		}
-		else {
+		else
 			m_currentDirection = m_desiredDirection;
-		}
 	}
 }

@@ -12,7 +12,9 @@ private:
 
 	Player* m_player;
 
-	GLboolean m_keyDown[256];
+	bool m_keyDown[256];
+
+	bool m_isKeyDown;
 
 	GLboolean m_isKeyPressed;
 
@@ -28,6 +30,7 @@ public:
 	void keyboardSpecUp(int p_key, int p_x, int p_y);
 	void keyboard(int p_key, int p_x, int p_y);
 	void keyboardUp(int p_key, int p_x, int p_y);
+	void joystick(unsigned int p_buttons, int p_x, int p_y, int p_z);
 	void mouse(int p_button, int p_state, int p_x, int p_y);
 
 	~InputManager();

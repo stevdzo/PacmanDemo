@@ -4,7 +4,7 @@
 Graph* Graph::instance = nullptr;
 
 void Graph::initNodes() {
-    std::cout << "Initializing nodes." << std::endl;
+    std::cout << "Initializing Nodes." << std::endl;
     m_nodeMatrix.resize(rows, std::vector<GraphNode*>(columns, nullptr));
     int index = 0;
     for (unsigned int row = 0; row < rows; row++) {
@@ -43,7 +43,7 @@ void Graph::initNodes() {
 }
 
 void Graph::initEdges() {
-    std::cout << "Initializing edges." << std::endl;
+    std::cout << "Initializing Edges." << std::endl;
     int index = 0;
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < columns; col++) {

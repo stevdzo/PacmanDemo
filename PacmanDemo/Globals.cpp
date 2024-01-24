@@ -108,10 +108,11 @@ const float clyde8NodesDistance = 256.0f;
 
 const int respawnNodeIndex = 450;
 
-const float chaseScatterSpeed = 88.0f * 3.0f;;
+const float chaseScatterSpeed = 290.0f;
 //const float chaseScatterSpeed = 50;
-const float eatenSpeed = 300.0f;
-const float frightenedSpeed = 70.0f;
+const float eatenSpeed = 400.0f;
+const float frightenedSpeed = 50.0f;
+const float baseSpeed = 50.0f;
 
 const float pacR = 254.0f/255.0f;
 const float pacG = 255.0f/255.0f;
@@ -155,15 +156,8 @@ const int pinkyBaseNodeIndices     [] = { 449, 451, 453 };
 const int inkyBaseNodeIndices      [] = { 389, 387, 453 };
 const int clydeBaseNodeIndices     [] = { 513, 511, 453 };
 
-extern const int pinkyTargetNodeDistance = 4;
-extern const int clydeRadiusNodeDistance = 8;
-
-Vector2D defaultSize = Vector2D(32.0f, 32.0f);
-
-Vector3D defaultWireframeColor = Vector3D(1.0f, 1.0f, 1.0f);
-Vector3D gameObjectWireframeColor = Vector3D(0.2f, 0.8f, 0.2f);
-Vector3D nodeWireframeColor = Vector3D(0.8f, 0.2f, 0.2f);
-Vector3D edgeWireframeColor = Vector3D(0.2f, 0.8f, 0.8f);
+const int pinkyTargetNodeDistance = 4;
+const int clydeRadiusNodeDistance = 8;
 
 const char* pacFilePath       = "resources/images/sprite_sheet_2.png";
 const char* blinkyFilePath    = "resources/images/ghost_blinky.png";
@@ -196,19 +190,21 @@ int currentBigDotGhostCounter = 1;
 
 GameState globalGameState = GameState::paused;
 
+EnemyState globalGhostState = EnemyState::scatter;
+
 const EnemyState blinkyInitialState = EnemyState::scatter;
 const EnemyState pinkyInitialState = EnemyState::base;
 const EnemyState inkyInitialState = EnemyState::base;
 const EnemyState clydeInitialState = EnemyState::base;
 
-const StateInterval intervals[] = {
-		{ 7.0f, 27.0f, EnemyState::chase, 0 },
-		{ 27.0f, 34.0f, EnemyState::scatter, 1 },
-		{ 34.0f, 54.0f, EnemyState::chase, 2 },
-		{ 54.0f, 59.0f, EnemyState::scatter, 3 },
-		{ 59.0f, 79.0f, EnemyState::chase, 4 },
-		{ 79.0f, 84.0f, EnemyState::scatter, 5 },
-		{ 84.0f, FLT_MAX, EnemyState::chase, 6 }
+StateInterval intervals[] = {
+	{7.0f, 27.0f, EnemyState::chase},
+	{27.0f, 34.0f, EnemyState::scatter},
+	{34.0f, 54.0f, EnemyState::chase},
+	{54.0f, 59.0f, EnemyState::scatter},
+	{59.0f, 79.0f, EnemyState::chase},
+	{79.0f, 84.0f, EnemyState::scatter},
+	{84.0f, FLT_MAX, EnemyState::chase}
 };
 
 void drawCircle(float posX, float posY, float radius, float red, float green, float blue) {

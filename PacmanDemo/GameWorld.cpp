@@ -120,13 +120,11 @@ void GameWorld::render() {
 
 	//m_cherry->render();
 
-	//astar.render();
-
 	renderWireframe();
 	renderUi();
 
-	//std::cout << "Blinky current node: " << m_blinky->getCurrentNode()->getIndex() << std::endl;
-	//std::cout << "Inky current nodfe: " << m_inky->getCurrentNode()->getIndex() << std::endl;
+	//std::cout << "Pinky current state: " << static_cast<int>(m_pinky->getCurrentMode()) << std::endl;
+	//std::cout << "Inky current nodfe: " << static_cast<int>(m_inky->getCurrentMode()) << std::endl;
 	//std::cout << "Current GLOBAL state: " << static_cast<int>(globalGameState) << std::endl;
 
 	glutSwapBuffers();
@@ -203,6 +201,10 @@ void GameWorld::keyboardUp(int p_key, int p_x, int p_y) {
 	m_inputManager->keyboardUp(p_key, p_x, p_y);
 }
 
+void GameWorld::joystick(unsigned int p_buttons, int p_x, int p_y, int p_z) {
+	m_inputManager->joystick(p_buttons, p_x, p_y, p_z);
+}
+
 void GameWorld::onPausedGameState() {
 
 	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
@@ -231,17 +233,14 @@ void GameWorld::onRunningGameState() {
 
 	m_player->eatDot(m_dots, m_ghosts);
 
-	if (dotCounter == inkyDotExitThreshold) {
-		m_clyde->shouldExitBase(true);
+	if (dotCounter == inkyDotExitThreshold)
 		m_inky->shouldExitBase(true);
-	}
 
-	//if (dotCounter == clydeDotExitThreshold)
-		//m_clyde->shouldExitBase(true);
+	if (dotCounter == clydeDotExitThreshold)
+		m_clyde->shouldExitBase(true);
 
-	if (toggleFrightenedMode) {
+	if (toggleFrightenedMode)
 		frightenedTimer += m_deltaTime;
-	}
 
 	if (frightenedTimer > frightenedTimerThreshold) {
 
@@ -251,9 +250,8 @@ void GameWorld::onRunningGameState() {
 				ghost->returnPreviousEnemyState();
 		}
 
-		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
 			AudioManager::getInstance()->m_chFrightened->stop();
-		}
 
 		frightenedTimer = 0.0f;
 		currentBigDotGhostCounter = 1;
@@ -298,10 +296,7 @@ void GameWorld::onLifeLostGameState() {
 		}
 	
 		if (gameStartTimer > 3) {
-		
-			/*for (auto& ghost : m_ghosts)
-				ghost->findShortestPath(ghost->getCurrentTargetNode());*/
-
+	
 			gameStartTimer = 0;
 			hasRestarted = false;
 			globalGameState = GameState::running;							

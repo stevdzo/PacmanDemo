@@ -3,22 +3,22 @@
 GameObject::GameObject() {
 	//m_sprite = nullptr;
 	m_position = Vector2D(0.0f, 0.0f);
-	m_size = defaultSize;
+	m_size = Vector2D(32.0f, 32.0f);
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
-	m_wireframeColor = gameObjectWireframeColor;
+	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }
 
 GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite), m_isVisible(true) {
 	m_position = Vector2D(0.0f, 0.0f);
-	m_size = defaultSize;
+	m_size = Vector2D(32.0f, 32.0f);
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
-	m_wireframeColor = gameObjectWireframeColor;
+	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }
 
 GameObject::GameObject(Vector2D p_position) : m_position(p_position) {
-	m_size = defaultSize;
+	m_size = Vector2D(32.0f, 32.0f);;
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
-	m_wireframeColor = gameObjectWireframeColor;
+	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }
 
 void GameObject::update(float p_deltaTime) {
@@ -28,8 +28,6 @@ void GameObject::update(float p_deltaTime) {
 void GameObject::render() {
 
 	if (toggleRender && m_isVisible) {
-
-		glColor3fv(defaultWireframeColor.toArray());
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -73,15 +71,7 @@ void GameObject::render() {
 void GameObject::renderWireframe() {
 
 	if (toggleWireframe)
-		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, 1.0f, 1.0f, 1.0f, GL_LINE_LOOP);
-
-		/*glBegin(GL_LINE_LOOP);		
-		glColor3fv(m_wireframeColor.toArray());
-			glVertex2f(m_position.x - m_wireframeSize.x / 2, m_position.y - m_wireframeSize.y / 2);
-			glVertex2f(m_position.x + m_wireframeSize.x / 2, m_position.y - m_wireframeSize.y / 2);
-			glVertex2f(m_position.x + m_wireframeSize.x / 2, m_position.y + m_wireframeSize.y / 2);
-			glVertex2f(m_position.x - m_wireframeSize.x / 2, m_position.y + m_wireframeSize.y / 2);
-		glEnd();*/			
+		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, 1.0f, 1.0f, 1.0f, GL_LINE_LOOP);		
 }
 
 void GameObject::isVisible(bool p_isVisible) {

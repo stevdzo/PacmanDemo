@@ -37,8 +37,8 @@ protected:
 	virtual void setVelocityByDirection();
 	virtual void checkForPortal();
 	virtual void updateDirection();
-	virtual bool isValidDirection() const;
-	virtual bool isOppositeDirection(Direction p_direction1, Direction p_direction2) const;
+	virtual bool isValidDirection(const Direction p_direction) const;
+	virtual bool isOppositeDirection(Direction p_direction1, Direction p_direction2) const;	
 
 public:
 
@@ -57,9 +57,14 @@ public:
 	virtual float getCurrentFrame();
 
 	Direction getCurrentDirection() const;
+	Direction getOppositeDirection() const;
 
 	virtual void setPositionByNode(const int p_nodeIndex);
 	void setCurrentDirection(const Direction p_direction);
+
+	void setDesiredDirection(const Direction p_direction);
+
+	void setSpeed(const float p_speed);
 
 	virtual void setDefaultPosition();
 
