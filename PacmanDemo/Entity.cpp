@@ -90,7 +90,7 @@ void Entity::updateDirection() {
 
 bool Entity::isValidDirection(const Direction p_direction) const {
     auto node = getNodeByDirectionFromCurrentNode(p_direction);
-    return !(node && (node->isEmptyNode() || node->isObstacle()));
+    return !(node && (node->isEmptyNode() || node->isObstacle() || node->getIndex() == baseEntranceBlockNodeIndex));
 }
 
 bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2) const {
@@ -122,6 +122,8 @@ Direction Entity::getOppositeDirection() const {
     default:
         return Direction::none;
     }
+
+    std::cout << "LDHSAJKL" << std::endl;
 }
 
 Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {

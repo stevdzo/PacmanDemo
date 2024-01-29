@@ -51,10 +51,12 @@ public:
 	void onPausedGameState();
 	void onRunningGameState();
 	void onGameOverGameState();
+	void onNextLevelGameState();
 	void onLifeLostGameState();
 
 	void gameOver();
 	void restart();
+	void restartGame();
 
 	virtual void keyboardSpec(int, int, int);
 	virtual void keyboardSpecUp(int, int, int);

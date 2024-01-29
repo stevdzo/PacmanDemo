@@ -1,4 +1,4 @@
-#include "Graph.h"
+﻿#include "Graph.h"
 #include "GraphEdge.h"
 
 Graph* Graph::instance = nullptr;
@@ -178,9 +178,12 @@ Direction Graph::getDirectionByNode(GraphNode* p_currentNode, GraphNode* p_targe
     return Direction::none;
 }
 
+// const GraphNode* p_node - čvor u odnosu na koga se traži ciljni čvor, u ovom slučaju čvor igrača
+// const Direction p_direction - trenutni smer igrača
+// const int p_tileDistance - udaljenost igrača u čvorovima
 GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direction p_direction, const int p_tileDistance) const {
 
-    if (!p_node || p_direction == Direction::none)
+    if (!p_node)     
         return nullptr;
 
     Index2D playerIndex2D = p_node->getIndexAs2D();
@@ -202,9 +205,10 @@ GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direct
         targetRow += p_tileDistance;
         break;
     default:
-        return nullptr;
+        break;
     }
 
+    // traži se čvor grafa sa odabranim indeksom I vraća se ukoliko je validan
     GraphNode* node = m_nodeMatrix[targetRow][targetCol];
     if (targetRow >= 0 && targetRow < static_cast<int>(m_nodeMatrix.size()) &&
         targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&

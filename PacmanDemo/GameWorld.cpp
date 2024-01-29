@@ -28,10 +28,10 @@ void GameWorld::init() {
 
 	m_player = new Player(Sprite(pacFilePath, 14, 8));
 
-	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 2, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, blinkyInitialState, m_player);
-	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 2, 8), pinkyScatterNodeIndices , pinkyBaseNodeIndices , pinkyInitialState , m_player);
-	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 2, 8), inkyScatterNodeIndices  , inkyBaseNodeIndices  , inkyInitialState  , m_player);
-	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 2, 8), clydeScatterNodeIndices , clydeBaseNodeIndices , clydeInitialState , m_player);
+	m_blinky = new Enemy(GhostType::blinky, Sprite(blinkyFilePath, 14, 8), blinkyScatterNodeIndices, blinkyBaseNodeIndices, blinkyInitialState, m_player);
+	m_pinky  = new Enemy(GhostType::pinky , Sprite(pinkyFilePath , 14, 8), pinkyScatterNodeIndices , pinkyBaseNodeIndices , pinkyInitialState , m_player);
+	m_inky   = new Enemy(GhostType::inky  , Sprite(inkyFilePath  , 14, 8), inkyScatterNodeIndices  , inkyBaseNodeIndices  , inkyInitialState  , m_player);
+	m_clyde  = new Enemy(GhostType::clyde , Sprite(clydeFilePath , 14, 8), clydeScatterNodeIndices , clydeBaseNodeIndices , clydeInitialState , m_player);
 
 	m_cherry = new Drop(Sprite(cherryFilePath, 1, 1));
 
@@ -154,10 +154,10 @@ void GameWorld::restart() {
 	m_inky->setPositionByNode(inkyStartNodeIndex);
 	m_clyde->setPositionByNode(clydeStartNodeIndex);
 
-	m_blinky->setCurrentDirection(Direction::left);
+	/*m_blinky->setCurrentDirection(Direction::left);
 	m_pinky->setCurrentDirection(Direction::up);
 	m_inky->setCurrentDirection(Direction::down);
-	m_clyde->setCurrentDirection(Direction::down);
+	m_clyde->setCurrentDirection(Direction::down);*/
 
 	m_blinky->changeEnemyState(EnemyState::scatter);
 	m_pinky->changeEnemyState(EnemyState::base);
@@ -170,6 +170,15 @@ void GameWorld::restart() {
 	m_clyde->restart(clydeStartNodeIndex, Direction::down);
 
 	m_player->restart(playerStartNodeIndex, Direction::left);		
+
+	frightenedTimer = 0.0f;
+	currentBigDotGhostCounter = 1;
+	toggleFrightenedMode = false;
+}
+
+void GameWorld::restartGame() {
+	restart();
+	m_player->restartGame();
 }
 
 void GameWorld::renderUi() {
@@ -209,7 +218,7 @@ void GameWorld::onPausedGameState() {
 
 	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
 
-		m_pinky->shouldExitBase(true);
+		m_pinky->isInsideBase(false);
 
 		gameStartTimer = 0.0f;
 
@@ -233,11 +242,13 @@ void GameWorld::onRunningGameState() {
 
 	m_player->eatDot(m_dots, m_ghosts);
 
-	if (dotCounter == inkyDotExitThreshold)
-		m_inky->shouldExitBase(true);
+	if (dotCounter >= inkyDotExitThreshold) {
+		m_inky->isInsideBase(false);
+	}
 
-	if (dotCounter == clydeDotExitThreshold)
-		m_clyde->shouldExitBase(true);
+	if (dotCounter >= clydeDotExitThreshold) {
+		m_clyde->isInsideBase(false);
+	}
 
 	if (toggleFrightenedMode)
 		frightenedTimer += m_deltaTime;
@@ -246,8 +257,12 @@ void GameWorld::onRunningGameState() {
 
 		for (auto& ghost : m_ghosts) {
 
-			if (ghost->getCurrentMode() != EnemyState::eaten)
+			if (ghost->getCurrentMode() != EnemyState::eaten &&
+				ghost->getCurrentMode() != EnemyState::base) {
 				ghost->returnPreviousEnemyState();
+				std::cout << static_cast<int>(ghost->getGhostType()) << std::endl;
+				ghost->findShortestPath(ghost->getCurrentTargetNode());
+			}
 		}
 
 		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
@@ -255,7 +270,6 @@ void GameWorld::onRunningGameState() {
 
 		frightenedTimer = 0.0f;
 		currentBigDotGhostCounter = 1;
-
 		toggleFrightenedMode = false;
 	}
 
@@ -273,6 +287,19 @@ void GameWorld::onRunningGameState() {
 }
 
 void GameWorld::onGameOverGameState() {
+
+	
+	//restart();
+}
+
+void GameWorld::onNextLevelGameState() {
+
+	nextLevelDelayTimer += m_deltaTime;
+
+	if (nextLevelDelayTimer > nextLevelDelayTimerThreshold) {
+		restartGame();
+		nextLevelDelayTimer = 0.0f;
+	}
 }
 
 void GameWorld::onLifeLostGameState() {
@@ -284,22 +311,31 @@ void GameWorld::onLifeLostGameState() {
 		m_player->setAnimationDelay(normalAnimationDelay);		
 		m_player->isAlive(false);
 		m_player->isVisible(false);
+
+		
 	}
 	if (!m_player->isAlive()) {
-		gameStartTimer += m_deltaTime;
+		lifeLostDelayTimer += m_deltaTime;
 
 		m_player->isVisible(true);
 
-		if (gameStartTimer > 1 && !hasRestarted) {
+		if (lifeLostDelayTimer > lifeLostDelayTimerThreshold - 2 && !hasRestarted) {
 			restart();
+
+			std::cout << lifeLostDelayTimer << std::endl;	
+
 			hasRestarted = true;
 		}
 	
-		if (gameStartTimer > 3) {
+		if (lifeLostDelayTimer > lifeLostDelayTimerThreshold) {
 	
-			gameStartTimer = 0;
+			lifeLostDelayTimer = 0;
 			hasRestarted = false;
-			globalGameState = GameState::running;							
+		
+			globalGameState = GameState::running;	
+
+			m_player->isAlive(true);
+			return;
 		}
 	}	
 }

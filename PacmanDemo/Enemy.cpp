@@ -55,21 +55,21 @@ void Enemy::render() {
 void Enemy::renderWireframe() {
 	renderPath();	
 
-	if (toggleWireframe) {
+	//if (toggleWireframe) {
 
 		switch (m_ghostType) {
 
 
 		case GhostType::blinky: {
 
-			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, blinkyR, blinkyG, blinkyB, GL_QUADS);
+			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, blinkyR, blinkyG, blinkyB, GL_QUADS);
 			drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, blinkyR, blinkyG, blinkyB);
 		}
 		break;
 
 		case GhostType::pinky: {
 
-			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pinkyR, pinkyG, pinkyB, GL_QUADS);
+			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pinkyR, pinkyG, pinkyB, GL_QUADS);
 
 			if (m_currentTargetNode)
 				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, pinkyR, pinkyG, pinkyB);
@@ -79,7 +79,7 @@ void Enemy::renderWireframe() {
 
 		case GhostType::inky: {
 
-			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, inkyR, inkyG, inkyB, GL_QUADS);
+			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, inkyR, inkyG, inkyB, GL_QUADS);
 			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, inkyR, inkyG, inkyB);
 			GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
 			if (node) {
@@ -94,7 +94,7 @@ void Enemy::renderWireframe() {
 
 			float dist = m_position.distanceTo(m_player->getPosition());
 
-			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, clydeR, clydeG, clydeB, GL_QUADS);
+			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, clydeR, clydeG, clydeB, GL_QUADS);
 			drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, clydeR, clydeG, clydeB);
 			drawCircle(m_player->getPosition().x, m_player->getPosition().y, clyde8NodesDistance, 1.0f, 0.0f, 0.0f);
 			drawCircle(m_player->getPosition().x, m_player->getPosition().y, dist, 0.0f, 1.0f, 0.0f);
@@ -102,7 +102,7 @@ void Enemy::renderWireframe() {
 		}
 		break;
 		}
-	}
+	//}
 
 	//Entity::renderWireframe();	
 }
@@ -115,7 +115,10 @@ void Enemy::renderPath() {
 
 void Enemy::restart(int p_nodeIndex, Direction p_direction) {
 	Entity::restart(p_nodeIndex, p_direction);
-	changeEnemyState(m_initialEnemyState);	
+
+	if (m_insideBase) changeEnemyState(inkyInitialState);
+	else changeEnemyState(globalGhostState);
+
 	m_scatterNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[m_scatterNodeIndices[0]];
 	m_baseNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[m_baseNodeIndices[0]];
 	m_eatenNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[respawnNodeIndex];
@@ -125,15 +128,16 @@ void Enemy::restart(int p_nodeIndex, Direction p_direction) {
 	m_frightenedDirectionChosen = false;
 	m_frightened = false;
 	m_isEaten = false;
+
 	if (m_ghostType != GhostType::blinky)
-		m_insideBase = true;
-
-	shouldExitBase(true);
-
+		shouldExitBase(false);
+	if (m_ghostType == GhostType::pinky)
+		shouldExitBase(true);
 	if (m_currentEnemyState == EnemyState::scatter)
 		findShortestPath(m_scatterNode);
 	if (m_currentEnemyState == EnemyState::base)
 		findShortestPath(m_baseNode);
+
 }
 
 void Enemy::setVelocityByDirection() {
@@ -202,9 +206,9 @@ void Enemy::setPositionByNode(const int p_index) {
 	m_initialNode = getNodeByIndex(p_index);
 }
 
-void Enemy::findShortestPath(GraphNode* p_targetNode) {	
+void Enemy::findShortestPath(GraphNode* p_targetNode, const bool p_isBaseClosed) {
 	if (p_targetNode)
-		m_path = m_astar.findShortestPath(m_currentNode, p_targetNode);
+		m_path = m_astar.findShortestPath(m_currentNode, p_targetNode, p_isBaseClosed);
 }
 
 void Enemy::moveEnemy() {
@@ -255,10 +259,12 @@ void Enemy::updateChaseTarget() {
 	case GhostType::pinky: {
 
 		GraphNode* node = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), pinkyTargetNodeDistance);
-		if (node)
+		if (node) {
 			m_playerNode = node;
-		/*else
-			m_playerNode = m_player->getCurrentNode();*/
+
+			if (m_playerNode == m_currentNode)
+				m_playerNode == m_player->getCurrentNode();
+		}
 	}
 		break;
 	case GhostType::inky: {
@@ -267,9 +273,9 @@ void Enemy::updateChaseTarget() {
 		if (node) {
 			m_inkyCurrentTargetNode = node;
 		}
-		else changeEnemyState(EnemyState::scatter); 
-		
-			m_playerNode = m_inkyCurrentTargetNode;
+		else changeEnemyState(EnemyState::scatter);
+
+		m_playerNode = m_inkyCurrentTargetNode;
 	}
 		break;
 	case GhostType::clyde:
@@ -286,14 +292,12 @@ void Enemy::updateChaseTarget() {
 }
 
 void Enemy::onChase() {
-	//updateChaseTarget();
 	setSpeed(chaseScatterSpeed);
 	setDesiredDirection(getDirectionByNextNode());
 
 	if (onPlayerNodeChange() || m_currentNode->isIntersection()) {
-
 		updateChaseTarget();
-		findShortestPath(m_playerNode); 
+		findShortestPath(m_playerNode, true); 
 		m_currentTargetNode = m_playerNode;
 	}
 	followPath();
@@ -304,7 +308,7 @@ void Enemy::onScatter() {
 	setDesiredDirection(getDirectionByNextNode());
 
 	if (pathCompleted()) {
-		findShortestPath(m_scatterNode); 
+		findShortestPath(m_scatterNode, true); 
 		m_currentTargetNode = m_scatterNode;
 		toggleScatterNode();
 	}
@@ -332,10 +336,12 @@ void Enemy::onEaten() {
 	setSpeed(eatenSpeed);
 	setDesiredDirection(getDirectionByNextNode());
 	if (m_path[m_path.size() - 1] != m_eatenNode) {
-		findShortestPath(m_eatenNode);
+		findShortestPath(m_eatenNode, false);
 		m_currentTargetNode = m_eatenNode;
 	}
 	followPath();
+
+	//std::cout << "Path eaten: " << m_path.size() << std::endl;
 
 	if (m_currentNode == m_eatenNode) {
 		changeEnemyState(EnemyState::scatter);
@@ -357,14 +363,14 @@ void Enemy::onFrightened() {
 					Direction newDirection = possibleDirections[randomDirection];
 					m_desiredDirection = newDirection;				
 					m_currentDirection = m_desiredDirection;
-					m_frightenedDirectionChosen = true;
-					
+					m_frightenedDirectionChosen = true;		
 				}
 			}
+			m_frightenedDirectionChosen = false;
+			if (onEnemyNodeChange())
+				m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 		}
 	}		
-	m_frightenedDirectionChosen = false;
-	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 }
 
 void Enemy::onBase() {
@@ -417,6 +423,18 @@ bool Enemy::isHeadingToHouse(void) {
 
 void Enemy::isHeadingToHouse(bool p_isEaten) {
 	m_isEaten = p_isEaten;
+}
+
+bool Enemy::isInsideBase(void) {
+	return m_insideBase;
+}
+
+void Enemy::isInsideBase(bool p_insideBase) {
+	if (m_insideBase != p_insideBase && !toggleFrightenedMode) m_insideBase = p_insideBase;
+}
+
+GhostType Enemy::getGhostType() const {
+	return m_ghostType;
 }
 
 GraphNode* Enemy::getCurrentTargetNode() const {
@@ -476,16 +494,19 @@ void Enemy::toggleBaseNode() {
 
 // Flashes the ghosts to white as a sign that the effect is about to end.
 void Enemy::flashOnFrightened(float p_deltaTime) {
-	if (m_currentEnemyState == EnemyState::frightened  && 
-		frightenedTimer > frightenedFlashTimerThreshold) {
-		((int)(frightenedTimer * 10) % 3 == 0) ?
-			setCurrentFramesRange(10, 11):
-			setCurrentFramesRange(8, 9);
-	}
+	if (toggleFrightenedMode)
+		if ((m_currentEnemyState == EnemyState::frightened ||
+			m_currentEnemyState == EnemyState::base)  &&
+			frightenedTimer > frightenedFlashTimerThreshold) {
+			((int)(frightenedTimer * 10) % 3 == 0) ?
+				setCurrentFramesRange(10, 11):
+				setCurrentFramesRange(8, 9);
+		}
 }
 
 void Enemy::shouldExitBase(const bool p_insideBase) {
-	m_insideBase = !p_insideBase;
+	if (!toggleFrightenedMode)
+		m_insideBase = !p_insideBase;
 }
 
 void Enemy::manageStates() {
@@ -540,7 +561,7 @@ std::vector<Direction> Enemy::chooseDirectionWhenFrightened() {
 	m_previousDirection = m_currentDirection;
 	if (m_currentNode->isIntersection()) {
 		for (auto& node : m_currentNode->getConnectedNodes()) {
-			if (!node->isObstacle() && !node->isEmptyNode()) {
+			if (!node->isObstacle() && !node->isEmptyNode() && node->getIndex() != baseEntranceBlockNodeIndex) {
 				Direction desiredDirection = getDirectionByGivenNode(node);		
 				if (!isOppositeDirection(m_previousDirection, desiredDirection)) {									
 					directions.push_back(desiredDirection);

@@ -43,7 +43,8 @@ enum class GameState {
 	running = 0,
 	paused = 1,
 	game_over = 2,
-	life_lost = 3
+	life_lost = 3,
+	next_level = 4
 };
 
 struct StateInterval {
@@ -72,6 +73,9 @@ constexpr const int columns = 31; // 31 + 1
 extern const int map[rows][columns];
 extern const int dots[rows][columns];
 
+extern const int numberOfFramesX;
+extern const int numberOfFramesY;
+
 extern bool toggleWireframe;
 extern bool toggleRender;
 
@@ -86,6 +90,9 @@ extern bool nextLevel;
 extern bool hasRestarted;
 extern bool hasIntervalStateChanged;
 
+extern bool inkyExitBaseFlag;
+extern bool clydeExitBaseFlag;
+
 extern const float wireframeSizeX;
 extern const float wireframeSizeY;
 
@@ -93,9 +100,6 @@ extern const float ghostDirectionChangeDistanceThreshold;
 extern const float pacDirectionChangeDistanceThreshold;
 extern const float turnBufferDistanceThreshold;
 extern const float eatDistanceThreshold;
-extern const float gameStartTimerThreshold;
-extern const float frightenedTimerThreshold;
-extern const float frightenedFlashTimerThreshold;
 
 extern const float clyde8NodesDistance;
 
@@ -130,6 +134,8 @@ extern const float deathAnimatonDelay;
 extern const int respawnNodeIndex;
 
 extern const int baseEntranceNodeIndex;
+
+extern const int baseEntranceBlockNodeIndex;
 
 extern const int playerStartNodeIndex;
 
@@ -172,8 +178,16 @@ extern float timer;
 extern float tempTimer;
 extern float globalTimer;
 extern float gameStartTimer;
+extern float lifeLostDelayTimer;
+extern float nextLevelDelayTimer;
 
 extern float frightenedTimer;
+
+extern const float gameStartTimerThreshold;
+extern const float lifeLostDelayTimerThreshold;
+extern const float nextLevelDelayTimerThreshold;
+extern const float frightenedTimerThreshold;
+extern const float frightenedFlashTimerThreshold;
 
 extern int dotCounter;
 extern const int inkyDotExitThreshold;

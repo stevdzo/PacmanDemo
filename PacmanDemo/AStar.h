@@ -23,7 +23,7 @@ public:
 	/*void setStartNode(GraphNode* p_startNode);
 	void setTargetNode(GraphNode* p_targetNode);*/
 
-	std::vector<GraphNode*> findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode);
+	std::vector<GraphNode*> findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, const bool p_isBaseClosed=false);
 };
 
 inline GLint heuristicDistance(GraphNode* p_node1, GraphNode* p_node2) {

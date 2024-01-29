@@ -1,4 +1,4 @@
-#include "Globals.h"
+﻿#include "Globals.h"
 #include "Vector2D.h"
 #include "Vector3D.h"
 
@@ -77,6 +77,9 @@ const int dots[rows][columns] = {
 		{_, 1, 1, 1, 1, _, _, 2, 1, 1, 1, _, _, _, _, _, _, _, _, _, _, _, 1, 1, 1, 1, 1, 2, 1, 1}
 };
 
+const int numberOfFramesX = 14;
+const int numberOfFramesY = 8;
+
 bool toggleWireframe = false;
 bool toggleRender = !toggleWireframe;
 
@@ -91,6 +94,9 @@ bool nextLevel = false;
 bool hasRestarted = false;
 bool hasIntervalStateChanged = false;
 
+bool inkyExitBaseFlag = false;
+bool clydeExitBaseFlag = false;
+
 const float wireframeSizeX = nodeSize;
 const float wireframeSizeY = nodeSize;
 
@@ -99,20 +105,15 @@ const float pacDirectionChangeDistanceThreshold = 0.8f;
 const float turnBufferDistanceThreshold = 200.0f;
 const float eatDistanceThreshold = 8.0f;
 
-const float gameStartTimerThreshold = 6.0f;
-
-const float frightenedTimerThreshold = 6.0f;
-const float frightenedFlashTimerThreshold = 4.0f;
-
 const float clyde8NodesDistance = 256.0f;
 
-const int respawnNodeIndex = 450;
+const int respawnNodeIndex = 450; 
 
 const float chaseScatterSpeed = 290.0f;
 //const float chaseScatterSpeed = 50;
 const float eatenSpeed = 400.0f;
-const float frightenedSpeed = 50.0f;
-const float baseSpeed = 50.0f;
+const float frightenedSpeed = 170.0f;
+const float baseSpeed = 100.0f;
 
 const float pacR = 254.0f/255.0f;
 const float pacG = 255.0f/255.0f;
@@ -137,7 +138,8 @@ const float clydeB = 82.0f/255.0f;
 const float normalAnimationDelay = 0.15f;
 const float deathAnimatonDelay = 0.4;
 
-const int baseEntranceNodeIndex = 453;
+const int baseEntranceNodeIndex = 453; // čvor ispred ulaza u bazu
+const int baseEntranceBlockNodeIndex = 452; // čvor kojim blokiram ulaz u bazu
 
 const int playerStartNodeIndex = 441;
 
@@ -179,7 +181,15 @@ float timer = 0.0f;
 float tempTimer = 0.0f;
 float globalTimer = 0.0f;
 float gameStartTimer = 0.0f;
+float lifeLostDelayTimer = 0.0f;
+float nextLevelDelayTimer = 0.0f;
 float frightenedTimer = 0.0f;
+
+const float gameStartTimerThreshold = 6.0f;
+const float lifeLostDelayTimerThreshold = 3.0f;
+const float nextLevelDelayTimerThreshold = 3.0f;
+const float frightenedTimerThreshold = 7.0f;
+const float frightenedFlashTimerThreshold = 4.0f;
 
 int dotCounter = 0;
 const int inkyDotExitThreshold = 30;

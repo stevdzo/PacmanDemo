@@ -66,7 +66,7 @@ public:
 
 	void setPositionByNode(const int p_index) override;
 
-	void findShortestPath(GraphNode* p_targetNode);
+	void findShortestPath(GraphNode* p_targetNode, const bool p_isBaseClosed = false);
 
 	void moveEnemy();
 	void followPath();
@@ -89,6 +89,10 @@ public:
 	bool isHeadingToHouse(void);
 	void isHeadingToHouse(bool);
 
+	bool isInsideBase(void);
+	void isInsideBase(bool);
+
+	GhostType getGhostType() const;
 	GraphNode* getCurrentTargetNode() const;
 
 	void toggleScatterNode();

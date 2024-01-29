@@ -1,4 +1,4 @@
-#include "AStar.h"
+﻿#include "AStar.h"
 
 AStar::AStar() {
 	std::cout << "Initializing AStar." << std::endl;
@@ -11,9 +11,12 @@ void AStar::render() {
 	for (auto& node : m_path) {
 		node->renderNodeFromPath();
 	}
-} 
+}
 
-std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode) {
+// GraphNode* p_startNode - trenutni čvor neprijatelja
+// GraphNode* p_targetNode - ciljni čvor neprijatelja
+// const bool p_isBaseClosed - flag koji uključuje/isključuje čvorove u bazi za pretragu 
+std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, const bool p_isBaseClosed) {
 	
 	if (!m_path.empty()) m_path.empty();
 
@@ -40,8 +43,13 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 			return finalPath;
 		}
 
-		for (auto* adjNode : currentNode->getConnectedNodes()) {		
-			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode()) {	
+		for (auto* adjNode : currentNode->getConnectedNodes()) {
+
+			/*if (p_isBaseClosed)
+				if (adjNode->getIndex() == baseEntranceBlockNodeIndex)
+					continue;*/
+
+			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode()) {
 				continue;
 			}		
 			if (openNodes.count(adjNode) && adjNode->getGCost() > findNodeWithHighestCost(openNodes)->getGCost()) {
@@ -60,6 +68,7 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 	}
 }
 
+// std::set<GraphNode*>& p_nodes - skup čvorova na osnovu koga se traži čvor sa najmanjom cenom
 GraphNode* AStar::findNodeWithLowestCost(std::set<GraphNode*>& p_nodes) {
 
 	GraphNode* lowestCostNode = nullptr;
@@ -74,6 +83,7 @@ GraphNode* AStar::findNodeWithLowestCost(std::set<GraphNode*>& p_nodes) {
 	return lowestCostNode;
 }
 
+// std::set<GraphNode*>& p_nodes - skup čvorova na osnovu koga se traži čvor sa najvišom cenom
 GraphNode* AStar::findNodeWithHighestCost(std::set<GraphNode*>& p_nodes) {
 	GraphNode* highestCostNode = nullptr;
 	int highestCost = std::numeric_limits<int>::min();

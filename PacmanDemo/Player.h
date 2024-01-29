@@ -32,9 +32,12 @@ public:
 	void renderWireframe() override;
 
 	void restart(int p_nodeIndex, Direction p_direction) override;
+	void restartGame();
 
 	int getScore(void) const;
 	int getHealth(void) const;
+
+	void createUIHealth();
 
 	void eatDot(std::vector<Dot*>&, std::vector<Enemy*>& p_ghosts);
 
@@ -46,7 +49,11 @@ public:
 
 	void isAlive(bool p_isAlive);
 	bool isAlive(void);
+	void isVisible(bool p_isVisible);
+	bool isVisible(void);
 	bool isDeathAnimationFinished();
+
+	void resetAnimation();
 
 	void setDefaultPosition() override;
 
