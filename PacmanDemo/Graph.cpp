@@ -66,12 +66,12 @@ void Graph::initEdges() {
                     }                 
                 }
             }
-           /* if (m_nodeMatrix[row][col]->getIndex() == leftPortalIndex) {
-                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[rightPortalIndex]);
+            if (m_nodeMatrix[row][col]->getIndex() == 47) {
+                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[884]);
             }
-            if (m_nodeMatrix[row][col]->getIndex() == rightPortalIndex) {
-                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[leftPortalIndex]);
-            }*/
+            if (m_nodeMatrix[row][col]->getIndex() == 884) {
+                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[47]);
+            }
         }
     }
 }
@@ -219,10 +219,19 @@ GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direct
 
 }
 
+// Vector2D p_position - vektor pozicije u odnosu na koga se traži čvor
 GraphNode* Graph::getNodeByPosition(Vector2D p_position) {
-    return m_nodeMatrix
-        [std::floor((p_position.x + nodeSize) / nodeSize)]
-        [std::floor(p_position.y / nodeSize)];
+
+    if (nodeSize == 0) return nullptr;
+
+    int xIndex = std::floor((p_position.x + nodeSize) / nodeSize);
+    int yIndex = std::floor(p_position.y / nodeSize);
+
+    if (xIndex >= 0 && xIndex < m_nodeMatrix.size() &&
+        yIndex >= 0 && yIndex < m_nodeMatrix[0].size()) {
+        return m_nodeMatrix[xIndex][yIndex];
+    }
+    else return nullptr;
 }
 
 GraphNode* Graph::calculateInkyTargetNode(const GraphNode* p_node1, const GraphNode* p_node2, const Direction p_direction) {

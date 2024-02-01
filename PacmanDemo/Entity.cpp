@@ -16,7 +16,9 @@ GraphNode* Entity::getNodeByIndex(int p_index) const {
 
 // Gets the node from given direction by current node
 GraphNode* Entity::getNodeByDirectionFromCurrentNode(Direction p_direction) const {
-    return getNodeByIndex(getNodeIndexByDirection(p_direction));
+    auto index = getNodeIndexByDirection(p_direction);
+    auto node = getNodeByIndex(index);
+    return node ? node : nullptr;
 }
 
 // Gets the node from given direction by custom node
@@ -50,7 +52,7 @@ Direction Entity::getDirectionByNextNode() const {
     return Graph::getInstance()->getDirectionByNode(m_currentNode, m_nextNode);
 }
 
-// Gets the direction between current and given ndoe
+// Gets the direction from current to given node
 Direction Entity::getDirectionByGivenNode(GraphNode* p_node) const {
     return Graph::getInstance()->getDirectionByNode(m_currentNode, p_node);
 }
@@ -122,8 +124,6 @@ Direction Entity::getOppositeDirection() const {
     default:
         return Direction::none;
     }
-
-    std::cout << "LDHSAJKL" << std::endl;
 }
 
 Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
@@ -194,7 +194,6 @@ void Entity::setPositionByNode(const int p_nodeIndex) {
 
 void Entity::setCurrentDirection(const Direction p_direction) {
     if (m_currentDirection != p_direction) m_currentDirection = p_direction;
-    //setVelocityByDirection();
 }
 
 void Entity::setDesiredDirection(const Direction p_direction) {

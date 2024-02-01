@@ -34,13 +34,20 @@ private:
 	int m_baseNodeIndices[3];
 	int m_currentNodeIndex;
 
+	int m_animRange[8];
+
 	bool m_frightenedDirectionChosen;
 	bool m_frightened;
 	bool m_insideBase;
 	bool m_isEaten;
 	bool m_hasGlobalStateChanged;
 
-	bool m_isClydeInRange; // only for clyde
+	bool m_isClydeInRange; // clyde
+	bool m_clydeSwitchState; // clyde
+	bool m_inkySwitchState; // inky
+
+	EnemyState m_nextClydeState; // clyde
+	EnemyState m_nextInkyState; // clyde
 
 	EnemyState m_initialEnemyState;
 	EnemyState m_currentEnemyState;
@@ -52,7 +59,7 @@ private:
 
 public:
 
-	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, const int* p_baseNodeIndices, const EnemyState p_initialState, Player* m_player);
+	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, const int* p_baseNodeIndices, const int* p_animRange, const EnemyState p_initialState, Player* m_player);
 
 	void update(float p_deltaTime) override;
 	void render() override;
@@ -62,11 +69,17 @@ public:
 	void restart(int p_nodeIndex, Direction p_direction) override;
 
 	void setVelocityByDirection() override;
+
+	void onEnemyMoveUp();
+	void onEnemyMoveDown();
+	void onEnemyMoveLeft();
+	void onEnemyMoveRight();
+
 	void updateDirection() override;
 
 	void setPositionByNode(const int p_index) override;
 
-	void findShortestPath(GraphNode* p_targetNode, const bool p_isBaseClosed = false);
+	void findShortestPath(GraphNode* p_targetNode);
 
 	void moveEnemy();
 	void followPath();
@@ -95,18 +108,24 @@ public:
 	GhostType getGhostType() const;
 	GraphNode* getCurrentTargetNode() const;
 
+	void setScatterNode(GraphNode* p_node);
+
 	void toggleScatterNode();
 	void toggleBaseNode();
 
 	void flashOnFrightened(float p_deltaTime);
 
 	void shouldExitBase(const bool p_insideBase);
+	void shouldClydeSwitchState(float p_deltaTime);
+	void shouldInkySwitchState(float p_deltaTime);
 
 	void manageStates();
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();
 
 	void assignBlinkyToInky(Enemy* m_enemy);
+
+	
 
 	EnemyState getCurrentMode() const;
 

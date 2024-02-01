@@ -10,14 +10,21 @@ void AStar::update(float p_deltaTime) {
 void AStar::render() {
 	for (auto& node : m_path) {
 		node->renderNodeFromPath();
+
+		for (auto& adjNode : node->getConnectedNodes())
+		{
+			drawPoint(adjNode->getPosition().x, adjNode->getPosition().y, 12, 1.0f, 0.0f, 0.0f);
+
+		}
+
+		//std::cout << node->getIndex() << std::endl;
 	}
 }
 
 // GraphNode* p_startNode - trenutni čvor neprijatelja
 // GraphNode* p_targetNode - ciljni čvor neprijatelja
-// const bool p_isBaseClosed - flag koji uključuje/isključuje čvorove u bazi za pretragu 
-std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, const bool p_isBaseClosed) {
-	
+std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode) {
+
 	if (!m_path.empty()) m_path.empty();
 
 	std::set<GraphNode*> openNodes;
@@ -25,29 +32,26 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 
 	openNodes.insert(p_startNode);
 
-	while (!openNodes.empty()) {		
+	while (!openNodes.empty()) {
 		GraphNode* currentNode = findNodeWithLowestCost(openNodes);
 
 		openNodes.erase(currentNode);
 		closedNodes.insert(currentNode);
 
 		if (currentNode == p_targetNode) {
-			
+
 			std::vector<GraphNode*> finalPath;
 			while (currentNode != nullptr && currentNode != p_startNode) {
 				finalPath.push_back(currentNode);
 				m_path.push_back(currentNode);
 				currentNode = currentNode->getParent();
 			}
-			std::reverse(finalPath.begin(), finalPath.end());			
+			std::reverse(finalPath.begin(), finalPath.end());
+			std::reverse(m_path.begin(), m_path.end());
 			return finalPath;
 		}
 
 		for (auto* adjNode : currentNode->getConnectedNodes()) {
-
-			/*if (p_isBaseClosed)
-				if (adjNode->getIndex() == baseEntranceBlockNodeIndex)
-					continue;*/
 
 			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode()) {
 				continue;
@@ -55,14 +59,14 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 			if (openNodes.count(adjNode) && adjNode->getGCost() > findNodeWithHighestCost(openNodes)->getGCost()) {
 				continue;
 			}
-			else {		
+			//else {		
 
 				adjNode->setParent(currentNode);
 
 				adjNode->setGCost(currentNode->getGCost() + 1);
 				adjNode->setHCost(heuristicDistance(adjNode, p_targetNode));
 				adjNode->setFCost(adjNode->getGCost() + adjNode->getHCost());
-			}
+			//}
 			openNodes.insert(adjNode);							
 		}		
 	}

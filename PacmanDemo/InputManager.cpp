@@ -62,9 +62,9 @@ void InputManager::mouse(int p_button, int p_state, int p_x, int p_y) {
        if (node) {
            std::cout << "Index: " << node->getIndex() << std::endl;
            std::cout << "Type: " << static_cast<int>(node->getNodeType()) << std::endl;    
-           /*for (auto& n : node->getConnectedNodes()) {
+           for (auto& n : node->getConnectedNodes()) {
                std::cout << "Index of neighboor: " << n->getIndex() << std::endl;
-           }*/
+           }
        }
     }
 }

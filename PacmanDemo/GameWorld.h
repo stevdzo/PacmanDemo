@@ -35,6 +35,8 @@ private:
 
 	GameState m_gameState;
 
+	AStar m_astar;
+
 	float m_deltaTime;
 	float m_previousTime;
 
@@ -53,6 +55,8 @@ public:
 	void onGameOverGameState();
 	void onNextLevelGameState();
 	void onLifeLostGameState();
+
+	void manageGhostStates();
 
 	void gameOver();
 	void restart();

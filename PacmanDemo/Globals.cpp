@@ -10,8 +10,8 @@ const float nodeSize = 32.0f;
 
 const float nodeRenderOffset = nodeSize / 2.0f;
 
-const int leftPortalIndex = 16;
-const int rightPortalIndex = 915;
+const int leftPortalIndex = 16; // 47
+const int rightPortalIndex = 915; // 884
 
 const int _ = -1;
 const int map[rows][columns] = {
@@ -113,6 +113,7 @@ const float chaseScatterSpeed = 290.0f;
 //const float chaseScatterSpeed = 50;
 const float eatenSpeed = 400.0f;
 const float frightenedSpeed = 170.0f;
+//const float frightenedSpeed = 50.0f;
 const float baseSpeed = 100.0f;
 
 const float pacR = 254.0f/255.0f;
@@ -161,6 +162,16 @@ const int clydeBaseNodeIndices     [] = { 513, 511, 453 };
 const int pinkyTargetNodeDistance = 4;
 const int clydeRadiusNodeDistance = 8;
 
+const int blinkyAnimRange [8] = { 56, 57,  58,  59,  60,  61,  62, 63  };
+const int pinkyAnimRange  [8] = { 70, 71,  72,  73,  74,  75,  76, 77  };
+const int inkyAnimRange   [8] = { 84, 85,  86,  87,  88,  89,  90, 91  };
+const int clydeAnimRange  [8] = { 98, 99, 100, 101, 102, 103, 104, 105 };
+
+const int frightenedAnimRange      [2] = { 64, 65 };
+const int frightenedFlashAnimRange [2] = { 66, 67 };
+const int eatenAnimRange		   [4] = { 78, 79, 80, 81 };
+
+const char* assetsFilePath       = "resources/images/sprite_sheet_2.png";
 const char* pacFilePath       = "resources/images/sprite_sheet_2.png";
 const char* blinkyFilePath    = "resources/images/ghost_blinky.png";
 const char* pinkyFilePath     = "resources/images/ghost_pinky.png";
@@ -183,11 +194,15 @@ float globalTimer = 0.0f;
 float gameStartTimer = 0.0f;
 float lifeLostDelayTimer = 0.0f;
 float nextLevelDelayTimer = 0.0f;
+float clydeSwitchStateTimer = 0.0f;
+float inkySwitchStateTimer = 0.0f;
 float frightenedTimer = 0.0f;
 
 const float gameStartTimerThreshold = 6.0f;
 const float lifeLostDelayTimerThreshold = 3.0f;
 const float nextLevelDelayTimerThreshold = 3.0f;
+const float clydeSwitchStateTimerThreshold = 2.0f;
+const float inkySwitchStateTimerThreshold = 2.0f;
 const float frightenedTimerThreshold = 7.0f;
 const float frightenedFlashTimerThreshold = 4.0f;
 

@@ -4,8 +4,8 @@ Sprite::Sprite() {}
 
 Sprite::Sprite(
 	const char* p_fileName,
-	int p_numberOfFramesX,
-	int p_numberOfFramesY,
+	const int p_numberOfFramesX,
+	const int p_numberOfFramesY,
 	bool p_isTransparent)
 	: m_numberOfFramesX(p_numberOfFramesX),
 	  m_numberOfFramesY(p_numberOfFramesY)
@@ -13,7 +13,7 @@ Sprite::Sprite(
 
 	m_textureIndex = 0;
 	m_currentFrame = 0;
-	m_numberOfFrames = p_numberOfFramesX * p_numberOfFramesY;
+	m_numberOfFrames = m_numberOfFramesX * m_numberOfFramesY;
 
 	m_startingFrame = 0;
 	m_endingFrame = 0;
@@ -48,12 +48,11 @@ void Sprite::setCurrentFrame(int p_currentFrame) {
 }
 
 void Sprite::setCurrentFramesRange(int p_start, int p_end) {
-
 	if (this->m_startingFrame != p_start &&
 		this->m_endingFrame != p_end) {
 		this->m_startingFrame = p_start;
 		this->m_endingFrame = p_end;
-		this->m_hasAnimationChanged = true;
+		this->m_hasAnimationChanged = true;		
 	}
 }
 

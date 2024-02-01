@@ -157,6 +157,16 @@ extern const int clydeBaseNodeIndices[];
 extern const int pinkyTargetNodeDistance;
 extern const int clydeRadiusNodeDistance;
 
+extern const int blinkyAnimRange [];
+extern const int pinkyAnimRange  [];
+extern const int inkyAnimRange   [];
+extern const int clydeAnimRange  [];
+
+extern const int frightenedAnimRange [];
+extern const int frightenedFlashAnimRange[];
+extern const int eatenAnimRange[];
+
+extern const char* assetsFilePath;
 extern const char* pacFilePath;
 extern const char* blinkyFilePath;
 extern const char* pinkyFilePath;
@@ -180,12 +190,15 @@ extern float globalTimer;
 extern float gameStartTimer;
 extern float lifeLostDelayTimer;
 extern float nextLevelDelayTimer;
-
+extern float clydeSwitchStateTimer;
+extern float inkySwitchStateTimer;
 extern float frightenedTimer;
 
 extern const float gameStartTimerThreshold;
 extern const float lifeLostDelayTimerThreshold;
 extern const float nextLevelDelayTimerThreshold;
+extern const float clydeSwitchStateTimerThreshold;
+extern const float inkySwitchStateTimerThreshold;
 extern const float frightenedTimerThreshold;
 extern const float frightenedFlashTimerThreshold;
 

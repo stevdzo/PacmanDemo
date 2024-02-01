@@ -1,5 +1,6 @@
 #include "GraphNode.h"
 #include "GraphEdge.h"
+#include "TextRenderer.h"
 
 GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_gCost = 0;
@@ -160,11 +161,19 @@ void GraphNode::render() {
 
 void GraphNode::renderWireframe(){
 	if (toggleWireframe)
-		if (!isEmptyNode() && isObstacle())
-			drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 0.0f, 1.0f, GL_LINE_LOOP);
+		if (!isEmptyNode() && isObstacle()) {
+			drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 0.0f, 1.0f, GL_LINE_LOOP);			
+		}
+	/*char cost[50];
+	sprintf_s(cost, 50, "%i", static_cast<int>(m_gCost));
+	if (cost != "0") {
+		TextRenderer::getInstance()->drawStrokeText((char*)cost, m_position.x - 0.14 * 0.75, m_position.y - 0.12 * 0.75, 1, 1, 1, 0.75);
+	}*/
 }
 
 void GraphNode::renderNodeFromPath() {
 	if (toggleWireframe)
 		drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 1.0f, 0.0f, GL_POLYGON);
+
+	
 }

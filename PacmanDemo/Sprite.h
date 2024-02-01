@@ -32,7 +32,7 @@ private:
 public:
 
 	Sprite();
-	Sprite(const char*, int, int, bool = true);
+	Sprite(const char*, const int = numberOfFramesX, const int = numberOfFramesY, const bool = true);
 
 	void setCurrentFrame(int p_currentFrame);
 	void setCurrentFramesRange(int p_start, int p_end);

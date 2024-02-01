@@ -80,10 +80,9 @@ int Player::getScore(void) const {
 int Player::getHealth(void) const {
 	return m_health;
 }
-
 void Player::createUIHealth() {
 	for (size_t i = 1; i <= 3; i++) {
-		auto pacImg = new GameObject(Sprite(pacFilePath, 14, 8));
+		auto pacImg = new GameObject(Sprite(pacFilePath));
 		pacImg->setPosition(Vector2D(screenWidth - (300 - 30 * i), screenHeight / 2 - 100));
 		m_pacLives.push_back(pacImg);
 	}
@@ -98,10 +97,9 @@ void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
 				 
 				for (auto& ghost : p_ghosts) {
 					if (ghost->getCurrentMode() != EnemyState::eaten &&
-						ghost->getCurrentMode() != EnemyState::base) {
+						(ghost->getCurrentMode() != EnemyState::base)) {
 						ghost->setCurrentDirection(ghost->getOppositeDirection());
-						ghost->changeEnemyState(EnemyState::frightened);
-						//std::cout << "Now frightened: " << static_cast<int>(ghost->getGhostType()) << std::endl;						
+						ghost->changeEnemyState(EnemyState::frightened);				
 					}
 				}
 				AudioManager::getInstance()->playFrightenedSound();
@@ -129,7 +127,7 @@ void Player::onGameWon() {
 
 void Player::onGhostCollision(Enemy* p_ghost) {
 
-	if (m_position.distanceTo(p_ghost->getPosition()) < 16) {
+	if (m_position.distanceTo(p_ghost->getPosition()) < 24) {
 
 		if (p_ghost->getCurrentMode() == EnemyState::chase ||
 			p_ghost->getCurrentMode() == EnemyState::scatter) {
@@ -175,6 +173,8 @@ void Player::onLifeLost() {
 
 void Player::onPlayerMovement(int p_key) {
 
+	if (!m_isAlive) return;
+
 	if (globalGameState == GameState::running) {
 
 		if (p_key == '2') {
@@ -182,22 +182,22 @@ void Player::onPlayerMovement(int p_key) {
 		}
 
 		if (p_key == GLUT_KEY_RIGHT) { // d
-			if (m_desiredDirection == Direction::left)
+			if (m_desiredDirection == Direction::left && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::right;
 			m_desiredDirection = Direction::right;
 		}
 		else if (p_key == GLUT_KEY_LEFT) { // a
-			if (m_desiredDirection == Direction::right)
+			if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::left;
 			m_desiredDirection = Direction::left;
 		}
 		else if (p_key == GLUT_KEY_UP) {	// w
-			if (m_desiredDirection == Direction::down)
+			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::up;
 			m_desiredDirection = Direction::up;
 		}
 		else if (p_key == GLUT_KEY_DOWN) { // s
-			if (m_desiredDirection == Direction::up)
+			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::down;
 			m_desiredDirection = Direction::down;
 		}
@@ -209,22 +209,22 @@ void Player::onPlayerJoystickMovement(int p_x, int p_y, int p_z) {
 	if (globalGameState == GameState::running) {
 
 		if (p_x > 900) { // d
-			if (m_desiredDirection == Direction::left)
+			if (m_desiredDirection == Direction::left && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::right;
 			m_desiredDirection = Direction::right;
 		}
 		if (p_x < -900) { // a
-			if (m_desiredDirection == Direction::right)
+			if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::left;
 			m_desiredDirection = Direction::left;
 		}
 		if (p_y < -900) {	// w
-			if (m_desiredDirection == Direction::down)
+			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::up;
 			m_desiredDirection = Direction::up;
 		}
 		if (p_y > 900) { // s
-			if (m_desiredDirection == Direction::up)
+			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::down;
 			m_desiredDirection = Direction::down;
 		}
