@@ -33,9 +33,9 @@ class GraphNode : public GameObject {
 private: 
 
 	int m_index;
-	int m_gCost;
-	int m_fCost;
-	int m_hCost;
+	float m_gCost;
+	float m_fCost;
+	float m_hCost;
 
 	NodeType m_nodeType;
 
@@ -59,14 +59,14 @@ public:
 
 	Index2D getIndexAs2D(void) const;
 
-	void setGCost(int);
-	int getGCost(void) const;
+	void setGCost(float);
+	float getGCost(void) const;
 
-	void setFCost(int);
-	int getFCost(void) const;
+	void setFCost(float);
+	float getFCost(void) const;
 
-	void setHCost(int);
-	int getHCost(void) const;
+	void setHCost(float);
+	float getHCost(void) const;
 
 	void setNodeType(NodeType p_nodeType);
 	NodeType getNodeType(void) const;

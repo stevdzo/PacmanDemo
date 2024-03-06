@@ -21,6 +21,8 @@ private:
 
 	PlayerState m_playerState;
 
+	std::vector<Enemy*> m_ghosts;
+
 	std::vector<GameObject*> m_pacLives;
 
 public:
@@ -37,12 +39,15 @@ public:
 	int getScore(void) const;
 	int getHealth(void) const;
 
+	void setGhosts(const std::vector<Enemy*>& p_ghosts);
+
 	void createUIHealth();
 
-	void eatDot(std::vector<Dot*>&, std::vector<Enemy*>& p_ghosts);
+	void eatDot(std::vector<Dot*>&);
 
 	void onGameWon();
 	void onGhostCollision(Enemy* p_ghost);
+	void onBigDotEaten();
 	void onLifeLost();	
 	void onPlayerMovement(int = 0);
 	void onPlayerJoystickMovement(int p_x, int p_y, int p_z);

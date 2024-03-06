@@ -57,6 +57,8 @@ void GameWorld::init() {
 	m_ghosts.push_back(m_inky);
 	m_ghosts.push_back(m_clyde);
 
+	m_player->setGhosts(m_ghosts);
+
 	m_inputManager = InputManager::getInstance(m_player);
 	m_audioManager = AudioManager::getInstance();	
 
@@ -115,9 +117,9 @@ void GameWorld::render() {
 
 	//m_astar.render();
 
-	m_clyde->render();
+	/*m_clyde->render();
 	m_inky->render();
-	m_pinky->render();
+	m_pinky->render();*/
 	m_blinky->render();
 
 	m_player->render();
@@ -255,14 +257,14 @@ void GameWorld::onRunningGameState() {
 
 	//m_cherry->update(m_deltaTime);
 
-	m_clyde->update(m_deltaTime);
+	/*m_clyde->update(m_deltaTime);
 	m_inky->update(m_deltaTime);
-	m_pinky->update(m_deltaTime);
+	m_pinky->update(m_deltaTime);*/
 	m_blinky->update(m_deltaTime);
 
 	m_player->update(m_deltaTime);
 
-	m_player->eatDot(m_dots, m_ghosts);
+	m_player->eatDot(m_dots);
 
 	if (dotCounter >= inkyDotExitThreshold) {
 		m_inky->isInsideBase(false);
@@ -383,6 +385,7 @@ void GameWorld::reshape(int p_w, int p_h) {
 }
 
 void GameWorld::display() {
+
 }
 
 void GameWorld::idle() {

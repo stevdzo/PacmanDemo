@@ -119,9 +119,9 @@ public:
 	void shouldClydeSwitchState(float p_deltaTime);
 	void shouldInkySwitchState(float p_deltaTime);
 
-	void manageStates();
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();
+	void reverseDirection();
 
 	void assignBlinkyToInky(Enemy* m_enemy);
 

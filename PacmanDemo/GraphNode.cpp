@@ -41,27 +41,27 @@ Index2D GraphNode::getIndexAs2D(void) const {
 				   m_index % columns);
 }
 
-void GraphNode::setGCost(int p_gCost) {
+void GraphNode::setGCost(float p_gCost) {
 	m_gCost = p_gCost;
 }
 
-int GraphNode::getGCost(void) const {
+float GraphNode::getGCost(void) const {
 	return m_gCost;
 }
 
-void GraphNode::setFCost(int p_fCost) {
+void GraphNode::setFCost(float p_fCost) {
 	m_fCost = p_fCost;
 }
 
-int GraphNode::getFCost(void) const {
+float GraphNode::getFCost(void) const {
 	return m_fCost;
 }
 
-void GraphNode::setHCost(int p_hCost) {
+void GraphNode::setHCost(float p_hCost) {
 	m_hCost = p_hCost;
 }
 
-int GraphNode::getHCost(void) const {
+float GraphNode::getHCost(void) const {
 	return m_hCost;
 }
 
@@ -159,7 +159,7 @@ void GraphNode::render() {
 
 }
 
-void GraphNode::renderWireframe(){
+void GraphNode::renderWireframe() {
 	if (toggleWireframe)
 		if (!isEmptyNode() && isObstacle()) {
 			drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 0.0f, 1.0f, GL_LINE_LOOP);			
@@ -172,8 +172,6 @@ void GraphNode::renderWireframe(){
 }
 
 void GraphNode::renderNodeFromPath() {
-	if (toggleWireframe)
-		drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 1.0f, 0.0f, GL_POLYGON);
-
-	
+	//if (toggleWireframe)
+		drawRectangle(m_position.x, m_position.y, m_size.x/2, m_size.y/2, 0.0f, 1.0f, 0.0f, GL_POLYGON);
 }

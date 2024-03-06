@@ -14,9 +14,7 @@ void AStar::render() {
 		for (auto& adjNode : node->getConnectedNodes())
 		{
 			drawPoint(adjNode->getPosition().x, adjNode->getPosition().y, 12, 1.0f, 0.0f, 0.0f);
-
 		}
-
 		//std::cout << node->getIndex() << std::endl;
 	}
 }
@@ -24,8 +22,6 @@ void AStar::render() {
 // GraphNode* p_startNode - trenutni čvor neprijatelja
 // GraphNode* p_targetNode - ciljni čvor neprijatelja
 std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode) {
-
-	if (!m_path.empty()) m_path.empty();
 
 	std::set<GraphNode*> openNodes;
 	std::set<GraphNode*> closedNodes;
@@ -39,7 +35,6 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 		closedNodes.insert(currentNode);
 
 		if (currentNode == p_targetNode) {
-
 			std::vector<GraphNode*> finalPath;
 			while (currentNode != nullptr && currentNode != p_startNode) {
 				finalPath.push_back(currentNode);
@@ -47,26 +42,23 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 				currentNode = currentNode->getParent();
 			}
 			std::reverse(finalPath.begin(), finalPath.end());
-			std::reverse(m_path.begin(), m_path.end());
 			return finalPath;
 		}
 
 		for (auto* adjNode : currentNode->getConnectedNodes()) {
 
-			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode()) {
-				continue;
-			}		
-			if (openNodes.count(adjNode) && adjNode->getGCost() > findNodeWithHighestCost(openNodes)->getGCost()) {
-				continue;
-			}
-			//else {		
+			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode())
+				continue;	
 
-				adjNode->setParent(currentNode);
+			adjNode->setParent(currentNode);
 
-				adjNode->setGCost(currentNode->getGCost() + 1);
-				adjNode->setHCost(heuristicDistance(adjNode, p_targetNode));
-				adjNode->setFCost(adjNode->getGCost() + adjNode->getHCost());
-			//}
+			adjNode->setGCost(currentNode->getGCost() + 1.0f);
+			adjNode->setHCost(heuristicDistance(adjNode, p_targetNode));
+			adjNode->setFCost(adjNode->getGCost() + adjNode->getHCost());
+
+			if (openNodes.count(adjNode) && adjNode->getGCost() > findNodeWithHighestCost(openNodes)->getGCost())
+				continue;
+			
 			openNodes.insert(adjNode);							
 		}		
 	}
@@ -96,7 +88,6 @@ GraphNode* AStar::findNodeWithHighestCost(std::set<GraphNode*>& p_nodes) {
 		if (node->getGCost() > highestCost) {
 			highestCost = node->getGCost();
 			highestCostNode = node;
-
 		}
 	}
 	return highestCostNode;

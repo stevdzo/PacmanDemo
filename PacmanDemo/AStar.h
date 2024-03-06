@@ -26,13 +26,15 @@ public:
 	std::vector<GraphNode*> findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode);
 };
 
-inline GLint heuristicDistance(GraphNode* p_node1, GraphNode* p_node2) {
+inline float heuristicDistance(GraphNode* p_node1, GraphNode* p_node2) {
 
 	Vector2D distance = p_node1->getPosition() - p_node2->getPosition();
 
-	int absDistX = std::abs(distance.x);
-	int absDistY = std::abs(distance.y);
+	float absDistX = std::abs(distance.x/100.0f);
+	float absDistY = std::abs(distance.y/100.0f);
 
-	return absDistX + absDistY;
+	float result = absDistX + absDistY;
+
+	return result;
 }
 #endif

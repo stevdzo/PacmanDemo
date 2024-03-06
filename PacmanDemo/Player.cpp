@@ -45,17 +45,20 @@ void Player::render() {
 void Player::renderWireframe() {
 	//Entity::renderWireframe();
 
-	auto desiredDirectionNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
-	auto currentDirectionNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
+	if (toggleWireframe) {
 
-	if (desiredDirectionNode)
-		drawPoint(desiredDirectionNode->getPosition().x, desiredDirectionNode->getPosition().y, 14, pacR, pacG, pacB);
+		auto desiredDirectionNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
+		auto currentDirectionNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
 
-	if (currentDirectionNode)
-		drawPoint(currentDirectionNode->getPosition().x, currentDirectionNode->getPosition().y, 14, 0.0f, 1.0f, 1.0f);
+		if (desiredDirectionNode)
+			drawPoint(desiredDirectionNode->getPosition().x, desiredDirectionNode->getPosition().y, 14, pacR, pacG, pacB);
 
-	if (toggleWireframe)
+		if (currentDirectionNode)
+			drawPoint(currentDirectionNode->getPosition().x, currentDirectionNode->getPosition().y, 14, 0.0f, 1.0f, 1.0f);
+
+
 		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pacR, pacG, pacB, GL_QUADS);
+	}
 }
 
 void Player::restart(int p_nodeIndex, Direction p_direction) {
@@ -80,6 +83,9 @@ int Player::getScore(void) const {
 int Player::getHealth(void) const {
 	return m_health;
 }
+void Player::setGhosts(const std::vector<Enemy*>& p_ghosts) {
+	m_ghosts = p_ghosts;
+}
 void Player::createUIHealth() {
 	for (size_t i = 1; i <= 3; i++) {
 		auto pacImg = new GameObject(Sprite(pacFilePath));
@@ -88,21 +94,11 @@ void Player::createUIHealth() {
 	}
 }
 
-void Player::eatDot(std::vector<Dot*>& p_dots, std::vector<Enemy*>& p_ghosts) {
+void Player::eatDot(std::vector<Dot*>& p_dots) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {			
 			if ((*it)->getType() == DotType::big) {
-				frightenedTimer = 0.0f;
-				toggleFrightenedMode = true;
-				 
-				for (auto& ghost : p_ghosts) {
-					if (ghost->getCurrentMode() != EnemyState::eaten &&
-						(ghost->getCurrentMode() != EnemyState::base)) {
-						ghost->setCurrentDirection(ghost->getOppositeDirection());
-						ghost->changeEnemyState(EnemyState::frightened);				
-					}
-				}
-				AudioManager::getInstance()->playFrightenedSound();
+				onBigDotEaten();
 			}
 			m_score += (*it)->getValue();
 			dotCounter++;
@@ -155,6 +151,21 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 	}
 }
 
+void Player::onBigDotEaten() {	
+
+	for (auto& ghost : m_ghosts) {
+		if (ghost->getCurrentMode() != EnemyState::eaten &&
+			(ghost->getCurrentMode() != EnemyState::base)) {
+			ghost->reverseDirection();
+			ghost->changeEnemyState(EnemyState::frightened);
+		}
+	}
+	AudioManager::getInstance()->playFrightenedSound();
+
+	frightenedTimer = 0.0f;
+	toggleFrightenedMode = true;
+}
+
 void Player::onLifeLost() {
 
 	globalGameState = GameState::life_lost;
@@ -179,6 +190,10 @@ void Player::onPlayerMovement(int p_key) {
 
 		if (p_key == '2') {
 			restart(playerStartNodeIndex, Direction::left);
+		}
+
+		if (p_key == '5') {
+			onBigDotEaten();
 		}
 
 		if (p_key == GLUT_KEY_RIGHT) { // d

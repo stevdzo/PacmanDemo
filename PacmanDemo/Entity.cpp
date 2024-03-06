@@ -146,14 +146,16 @@ void Entity::update(float p_deltaTime) {
     //GameObject::update(p_deltaTime);
     m_sprite.animate(p_deltaTime, m_speed * 0.01f);
 
-    Vector2D previousPosition = m_position;
+    auto previousNode = getNodeByPosition(m_position);
 
     m_position += m_velocity * (m_speed * p_deltaTime);
 
     checkForPortal();
 
-    m_currentNode = getNodeByPosition();
-    m_previousNode = getNodeByPosition(previousPosition);
+    if (previousNode != m_currentNode) {
+        m_currentNode = getNodeByPosition();
+        m_previousNode = previousNode;
+    }
 }
 
 void Entity::render() {

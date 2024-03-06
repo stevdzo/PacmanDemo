@@ -66,11 +66,11 @@ void Graph::initEdges() {
                     }                 
                 }
             }
-            if (m_nodeMatrix[row][col]->getIndex() == 47) {
-                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[884]);
+            if (m_nodeMatrix[row][col]->getIndex() == 16) {
+                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[915]);
             }
-            if (m_nodeMatrix[row][col]->getIndex() == 884) {
-                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[47]);
+            if (m_nodeMatrix[row][col]->getIndex() == 915) {
+                m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[16]);
             }
         }
     }

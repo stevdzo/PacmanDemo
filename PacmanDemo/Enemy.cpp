@@ -48,6 +48,8 @@ Enemy::Enemy(GhostType p_ghostType,
 	//m_sprite.setCurrentFramesRange(m_animRange[4], m_animRange[7]);
 
 	m_sprite.setCurrentFrame(m_animRange[0]);
+
+	m_nextNode = m_currentNode;
 }
 
 void Enemy::update(float p_deltaTime) {
@@ -74,7 +76,7 @@ void Enemy::render() {
 void Enemy::renderWireframe() {
 	renderPath();	
 
-	//if (toggleWireframe) {
+	if (toggleWireframe) {
 
 		switch (m_ghostType) {
 
@@ -82,7 +84,7 @@ void Enemy::renderWireframe() {
 		case GhostType::blinky: {
 
 			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, blinkyR, blinkyG, blinkyB, GL_QUADS);
-			drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, blinkyR, blinkyG, blinkyB);
+			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, blinkyR, blinkyG, blinkyB);
 		}
 		break;
 
@@ -90,8 +92,8 @@ void Enemy::renderWireframe() {
 
 			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pinkyR, pinkyG, pinkyB, GL_QUADS);
 
-			if (m_currentTargetNode)
-				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, pinkyR, pinkyG, pinkyB);
+			/*if (m_currentTargetNode)
+				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, pinkyR, pinkyG, pinkyB);*/
 
 		} 
 		break;
@@ -100,14 +102,14 @@ void Enemy::renderWireframe() {
 
 			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, inkyR, inkyG, inkyB, GL_QUADS);
 			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, inkyR, inkyG, inkyB);
-			GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
+		/*	GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
 			if (node) {
 				drawPoint(node->getPosition().x, node->getPosition().y, 24, inkyR, inkyG, inkyB);
 				drawLine(m_blinky->getPosition().x, m_blinky->getPosition().y, node->getPosition().x, node->getPosition().y, inkyR, inkyG, inkyB);
 			}
 
 			if (m_playerNode)
-				drawPoint(m_playerNode->getPosition().x, m_playerNode->getPosition().y, 24, 1.5f, 1.5f, 1.0f);
+				drawPoint(m_playerNode->getPosition().x, m_playerNode->getPosition().y, 24, 1.5f, 1.5f, 1.0f);*/
 
 			//auto player2NodesFront = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), 2);
 		}
@@ -115,17 +117,17 @@ void Enemy::renderWireframe() {
 
 		case GhostType::clyde: {
 
-			float dist = m_position.distanceTo(m_player->getPosition());
+			//float dist = m_position.distanceTo(m_player->getPosition());
 
-			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, clydeR, clydeG, clydeB, GL_QUADS);
-			drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, clydeR, clydeG, clydeB);
-			drawCircle(m_player->getPosition().x, m_player->getPosition().y, clyde8NodesDistance, 1.0f, 0.0f, 0.0f);
-			drawCircle(m_player->getPosition().x, m_player->getPosition().y, dist, 0.0f, 1.0f, 0.0f);
+			////drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, clydeR, clydeG, clydeB, GL_QUADS);
+			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, clydeR, clydeG, clydeB);
+			//drawCircle(m_player->getPosition().x, m_player->getPosition().y, clyde8NodesDistance, 1.0f, 0.0f, 0.0f);
+			//drawCircle(m_player->getPosition().x, m_player->getPosition().y, dist, 0.0f, 1.0f, 0.0f);
 
 		}
 		break;
 		}
-	//}
+	}
 
 	//Entity::renderWireframe();	
 }
@@ -388,12 +390,14 @@ void Enemy::onEaten() {
 	setSpeed(eatenSpeed);
 	setDesiredDirection(getDirectionByNextNode());
 
-	followPath();
+	if (pathCompleted()) {
 
-	if (m_currentNode == m_eatenNode) {
+		//std::cout << "11111123213" << std::endl;
+
 		returnPreviousEnemyState();
 		m_isEaten = false; 			
 	}
+	followPath();
 }
 
 void Enemy::onFrightened() {		
@@ -442,18 +446,6 @@ bool Enemy::onPlayerNodeChange() {
 
 bool Enemy::pathCompleted() {
 	return m_insideBase ? m_path.size() < 1 : m_path.size() < 2;
-	//return m_path.size() < 1;
-
-	//if (m_ghostType == GhostType::blinky) 
-	//	return m_path.size() < 2;
-
-	//if (!m_insideBase)
-	//	return m_path.size() < 2;
-
-	//if (m_insideBase)
-	//	if (m_baseNode == getNodeByIndex(baseEntranceNodeIndex))
-	//			return m_path.size() < 2;
-	//	else return m_path.size() < 1;
 }
 
 bool Enemy::isFrightened(void) {
@@ -589,26 +581,6 @@ void Enemy::shouldInkySwitchState(float p_deltaTime) {
 	}
 }
 
-void Enemy::manageStates() {
-
-	for (auto& interval : intervals) {
-		if (!m_hasGlobalStateChanged && globalTimer > interval.start && globalTimer <= interval.end) {
-			if (!m_isEaten) {
-				//if (globalGhostState != interval.state) {
-
-				m_hasGlobalStateChanged = true;
-				globalGhostState = interval.state;
-
-				changeEnemyState(interval.state);
-				//}
-			}
-		}
-		else if (globalTimer > interval.end) {
-			m_hasGlobalStateChanged = false;
-		}
-	}
-}
-
 void Enemy::changeEnemyState(EnemyState p_enemyState) {
 
 	if (m_currentEnemyState != p_enemyState) {
@@ -641,6 +613,11 @@ void Enemy::returnPreviousEnemyState() {
 	m_currentEnemyState = m_previousEnemyState;
 }
 
+void Enemy::reverseDirection() {
+	if (!m_currentNode->isIntersection() && !toggleFrightenedMode)
+		m_currentDirection = getOppositeDirection();
+}
+
 void Enemy::assignBlinkyToInky(Enemy* p_blinky) {
 	m_blinky = p_blinky;
 }
@@ -650,43 +627,18 @@ EnemyState Enemy::getCurrentMode() const {
 }
 
 std::vector<Direction> Enemy::chooseDirectionWhenFrightened() {
-
-	int br = 0;
-
 	std::vector<Direction> directions;
 	m_previousDirection = m_currentDirection;
 	if (m_currentNode->isIntersection()) {
 		for (auto& node : m_currentNode->getConnectedNodes()) {
 			if (!node->isObstacle() && !node->isEmptyNode() && node->getIndex() != baseEntranceBlockNodeIndex) {
 				Direction desiredDirection = getDirectionByGivenNode(node);
-
 				if (getOppositeDirection() != desiredDirection) {
-
 					directions.push_back(desiredDirection);
 					m_previousDirection = desiredDirection;
-					//std::cout << br++ << std::endl;
 				}
 			}
 		}
-		/*for (auto& dir : directions) {
-
-			switch (dir) {
-
-			case Direction::left:
-
-				std::cout << "left" << std::endl;
-				break;
-			case Direction::right:
-				std::cout << "right" << std::endl;
-				break;
-			case Direction::up:
-				std::cout << "up" << std::endl;
-				break;
-			case Direction::down:
-				std::cout << "down" << std::endl;
-				break;
-			}
-		}*/
 	}
 	return directions;
 }

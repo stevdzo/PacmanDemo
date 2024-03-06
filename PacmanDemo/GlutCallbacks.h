@@ -6,7 +6,7 @@
 static GameWorld world;
 
 static void displayCallback(void) {
-
+	world.display();
 }
 
 static void reshapeCallback(int p_w, int p_h) {
@@ -68,5 +68,4 @@ int glutMain(int p_argc, char** p_argv, int p_width, int p_height, const char* p
 
 	return 0;
 }
-
 #endif
