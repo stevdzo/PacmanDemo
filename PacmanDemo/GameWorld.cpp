@@ -102,7 +102,8 @@ void GameWorld::update(float p_deltaTime) {
 	case GameState::life_lost:
 		onLifeLostGameState();
 		break;	
-	}
+	}	
+	glutPostRedisplay();
 }
 
 void GameWorld::render() {
@@ -117,9 +118,9 @@ void GameWorld::render() {
 
 	//m_astar.render();
 
-	/*m_clyde->render();
+	m_clyde->render();
 	m_inky->render();
-	m_pinky->render();*/
+	m_pinky->render();
 	m_blinky->render();
 
 	m_player->render();
@@ -257,9 +258,9 @@ void GameWorld::onRunningGameState() {
 
 	//m_cherry->update(m_deltaTime);
 
-	/*m_clyde->update(m_deltaTime);
+	m_clyde->update(m_deltaTime);
 	m_inky->update(m_deltaTime);
-	m_pinky->update(m_deltaTime);*/
+	m_pinky->update(m_deltaTime);
 	m_blinky->update(m_deltaTime);
 
 	m_player->update(m_deltaTime);
@@ -394,5 +395,5 @@ void GameWorld::idle() {
 	m_previousTime = currentTime;
 
 	update(m_deltaTime);
-	render();
+	render();	
 }
