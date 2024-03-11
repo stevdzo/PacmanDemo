@@ -35,25 +35,25 @@ void GameObject::render() {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, m_sprite.getCurrentFrame());
 
-		GLfloat x = m_position.x;
-		GLfloat y = m_position.y;
+		float x = m_position.x;
+		float y = m_position.y;
 
-		GLfloat w = m_size.x;
-		GLfloat h = m_size.y;
+		float w = m_size.x;
+		float h = m_size.y;
 
-		GLfloat texWidth = (GLfloat)m_sprite.getTextureIndex() / (GLfloat)m_sprite.getNumberOfFramesX();
-		GLfloat texHeight = (GLfloat)m_sprite.getTextureIndex() / (GLfloat)m_sprite.getNumberOfFramesY();
+		float texWidth = (float)m_sprite.getTextureIndex() / (float)m_sprite.getNumberOfFramesX();
+		float texHeight = (float)m_sprite.getTextureIndex() / (float)m_sprite.getNumberOfFramesY();
 
-		GLfloat u = 0.0f;
-		GLfloat v = 0.0f;
+		float u = 0.0f;
+		float v = 0.0f;
 
 		if (m_sprite.getTextureIndex() < m_sprite.getNumberOfFramesX() * m_sprite.getNumberOfFramesY()) {
 
-			GLuint m_currentY = m_sprite.getCurrentFrameIndex() / m_sprite.getNumberOfFramesX();
-			GLuint m_currentX = m_sprite.getCurrentFrameIndex() - m_currentY * m_sprite.getNumberOfFramesX();
+			unsigned int m_currentY = m_sprite.getCurrentFrameIndex() / m_sprite.getNumberOfFramesX();
+			unsigned int m_currentX = m_sprite.getCurrentFrameIndex() - m_currentY * m_sprite.getNumberOfFramesX();
 
-			u = (GLfloat)m_currentX * texWidth;
-			v = (GLfloat)m_currentY * texHeight;
+			u = (float)m_currentX * texWidth;
+			v = (float)m_currentY * texHeight;
 		}
 		glBegin(GL_QUADS);
 		glTexCoord2f(u, v + texHeight);				glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
@@ -64,7 +64,6 @@ void GameObject::render() {
 
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_BLEND);
-
 	}
 }
 

@@ -183,8 +183,6 @@ extern const char* pacDieSfxFilePath;
 extern const char* frightenedSfxFilePath;
 extern const char* eatGhostSfxFilePath;
 
-extern float timer;
-
 extern float tempTimer;
 extern float globalTimer;
 extern float gameStartTimer;
@@ -222,9 +220,9 @@ extern const EnemyState clydeInitialState;
 
 extern StateInterval intervals[7];
 
-extern void drawCircle(float posX, float posY, float radius, float red, float green, float blue);
-extern void drawPoint(float posX, float posY, float size, float red, float green, float blue);
-extern void drawLine(float posX1, float posY1, float posX2, float posY2, float red, float green, float blue); 
-extern void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, float green, float blue, int type);
+void drawCircle(float posX, float posY, float radius, float red, float green, float blue);
+void drawPoint(float posX, float posY, float size, float red, float green, float blue);
+void drawLine(float posX1, float posY1, float posX2, float posY2, float red, float green, float blue); 
+void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, float green, float blue, int type);
 
 #endif

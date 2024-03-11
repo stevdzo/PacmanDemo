@@ -188,7 +188,6 @@ const char* pacDieSfxFilePath = "resources/sounds/die.mp3";
 const char* frightenedSfxFilePath = "resources/sounds/frightened.wav";
 const char* eatGhostSfxFilePath = "resources/sounds/eat_ghost.wav";
 
-float timer = 0.0f;
 float tempTimer = 0.0f;
 float globalTimer = 0.0f;
 float gameStartTimer = 0.0f;

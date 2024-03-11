@@ -3,47 +3,47 @@
 
 #include "GameWorld.h"
 
-static GameWorld world;
+static GameWorld* world;
 
 static void displayCallback(void) {
-	world.display();
+	world->display();
 }
 
 static void reshapeCallback(int p_w, int p_h) {
-	world.reshape(p_w, p_h);
+	world->reshape(p_w, p_h);
 }
 
 static void idleCallback(void) {
-	world.idle();
+	world->idle();
 }
 
 static void keyboardSpecialCallback(int p_key, int p_x, int p_y) {
-	world.keyboard(p_key, p_x, p_y);
+	world->keyboard(p_key, p_x, p_y);
 }
 
 static void keyboardSpecialUpCallback(int p_key, int p_x, int p_y) {
-	world.keyboardUp(p_key, p_x, p_y);
+	world->keyboardUp(p_key, p_x, p_y);
 }
 
 static void keyboardCallback(unsigned char p_key, int p_x, int p_y) {
-	world.keyboard(p_key, p_x, p_y);
+	world->keyboard(p_key, p_x, p_y);
 }
 
 static void keyboardUpCallback(unsigned char p_key, int p_x, int p_y) {
-	world.keyboardUp(p_key, p_x, p_y);
+	world->keyboardUp(p_key, p_x, p_y);
 }
 
 static void joystickCallback(unsigned int p_buttons, int p_x, int p_y, int p_z) {
-	world.joystick(p_buttons, p_x, p_y, p_z);
+	world->joystick(p_buttons, p_x, p_y, p_z);
 }
 
 static void mouseCallback(int p_button, int p_state, int p_x, int p_y) {
-	world.mouse(p_button, p_state, p_x, p_y);
+	world->mouse(p_button, p_state, p_x, p_y);
 }
 
 int glutMain(int p_argc, char** p_argv, int p_width, int p_height, const char* p_title) {
 
-	world = GameWorld();
+	world = new GameWorld();
 
 	glutInit(&p_argc, p_argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -51,7 +51,7 @@ int glutMain(int p_argc, char** p_argv, int p_width, int p_height, const char* p
 	glutInitWindowSize(p_width, p_height);
 	glutCreateWindow(p_title);
 
-	world.init();
+	world->init();
 
 	glutDisplayFunc(displayCallback);
 	glutReshapeFunc(reshapeCallback);

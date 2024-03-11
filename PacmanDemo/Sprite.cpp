@@ -109,7 +109,7 @@ void Sprite::hasAnimationChanged(bool p_hasAnimationChanged) {
 	this->m_hasAnimationChanged = p_hasAnimationChanged;
 }
 
-void Sprite::animate(float p_deltaTime, float p_speed) {
+void Sprite::animate(float p_speed, float p_deltaTime) {
 
 	m_animationElapsedTime += p_deltaTime * p_speed;
 	if (m_animationElapsedTime >= m_animationDelay) {

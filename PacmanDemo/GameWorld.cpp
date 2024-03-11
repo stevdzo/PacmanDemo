@@ -33,7 +33,7 @@ void GameWorld::init() {
 	m_inky   = new Enemy(GhostType::inky  , Sprite(assetsFilePath), inkyScatterNodeIndices  , inkyBaseNodeIndices  , inkyAnimRange  , inkyInitialState  , m_player);
 	m_clyde  = new Enemy(GhostType::clyde , Sprite(assetsFilePath), clydeScatterNodeIndices , clydeBaseNodeIndices , clydeAnimRange , clydeInitialState , m_player);
 
-	m_cherry = new Drop(Sprite(cherryFilePath));
+	//m_cherry = new Drop(Sprite(cherryFilePath));
 
 	m_blinky->setPositionByNode(blinkyStartNodeIndex);
 	m_pinky->setPositionByNode(pinkyStartNodeIndex);
@@ -103,11 +103,11 @@ void GameWorld::update(float p_deltaTime) {
 		onLifeLostGameState();
 		break;	
 	}	
-	glutPostRedisplay();
 }
 
 void GameWorld::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
 
 	m_background->render();
 
@@ -386,7 +386,7 @@ void GameWorld::reshape(int p_w, int p_h) {
 }
 
 void GameWorld::display() {
-
+	render();
 }
 
 void GameWorld::idle() {
@@ -395,5 +395,6 @@ void GameWorld::idle() {
 	m_previousTime = currentTime;
 
 	update(m_deltaTime);
-	render();	
+
+	glutPostRedisplay();
 }

@@ -25,9 +25,9 @@ Enemy::Enemy(GhostType p_ghostType,
 		m_animRange[i] = p_animRange[i];
 
 	m_currentTargetNode = m_currentNode;
-	m_scatterNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[m_scatterNodeIndices[0]];
-	m_baseNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[m_baseNodeIndices[0]];
-	m_eatenNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[respawnNodeIndex];
+	m_scatterNode = Graph::getInstance()->getNodeVector()[m_scatterNodeIndices[0]];
+	m_baseNode = Graph::getInstance()->getNodeVector()[m_baseNodeIndices[0]];
+	m_eatenNode = Graph::getInstance()->getNodeVector()[respawnNodeIndex];
 
 	m_currentDirection = Direction::right;
 	m_desiredDirection = Direction::right;		
@@ -74,7 +74,7 @@ void Enemy::render() {
 }
 
 void Enemy::renderWireframe() {
-	renderPath();	
+	//renderPath();	
 
 	if (toggleWireframe) {
 
@@ -83,14 +83,14 @@ void Enemy::renderWireframe() {
 
 		case GhostType::blinky: {
 
-			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, blinkyR, blinkyG, blinkyB, GL_QUADS);
+			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, blinkyR, blinkyG, blinkyB, GL_QUADS);
 			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, blinkyR, blinkyG, blinkyB);
 		}
 		break;
 
 		case GhostType::pinky: {
 
-			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pinkyR, pinkyG, pinkyB, GL_QUADS);
+			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pinkyR, pinkyG, pinkyB, GL_QUADS);
 
 			/*if (m_currentTargetNode)
 				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, pinkyR, pinkyG, pinkyB);*/
@@ -100,7 +100,7 @@ void Enemy::renderWireframe() {
 
 		case GhostType::inky: {
 
-			//drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, inkyR, inkyG, inkyB, GL_QUADS);
+			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, inkyR, inkyG, inkyB, GL_QUADS);
 			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, inkyR, inkyG, inkyB);
 		/*	GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
 			if (node) {
@@ -119,7 +119,7 @@ void Enemy::renderWireframe() {
 
 			//float dist = m_position.distanceTo(m_player->getPosition());
 
-			////drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, clydeR, clydeG, clydeB, GL_QUADS);
+			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, clydeR, clydeG, clydeB, GL_QUADS);
 			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, clydeR, clydeG, clydeB);
 			//drawCircle(m_player->getPosition().x, m_player->getPosition().y, clyde8NodesDistance, 1.0f, 0.0f, 0.0f);
 			//drawCircle(m_player->getPosition().x, m_player->getPosition().y, dist, 0.0f, 1.0f, 0.0f);
@@ -144,9 +144,9 @@ void Enemy::restart(int p_nodeIndex, Direction p_direction) {
 	if (m_insideBase) changeEnemyState(inkyInitialState);
 	else changeEnemyState(globalGhostState);
 
-	m_scatterNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[m_scatterNodeIndices[0]];
-	m_baseNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[m_baseNodeIndices[0]];
-	m_eatenNode = Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[respawnNodeIndex];
+	m_scatterNode = Graph::getInstance()->getNodeVector()[m_scatterNodeIndices[0]];
+	m_baseNode = Graph::getInstance()->getNodeVector()[m_baseNodeIndices[0]];
+	m_eatenNode = Graph::getInstance()->getNodeVector()[respawnNodeIndex];
 	m_currentTargetNode = m_baseNode;
 	m_currentDirection = Direction::right;
 	m_desiredDirection = Direction::right;

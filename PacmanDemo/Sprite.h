@@ -53,6 +53,6 @@ public:
 	bool hasAnimationChanged();
 	void hasAnimationChanged(bool);
 
-	void animate(float p_deltaTime, float p_speed);
+	void animate(float p_speed, float p_deltaTime);
 };
 #endif

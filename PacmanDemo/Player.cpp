@@ -86,6 +86,7 @@ int Player::getHealth(void) const {
 void Player::setGhosts(const std::vector<Enemy*>& p_ghosts) {
 	m_ghosts = p_ghosts;
 }
+
 void Player::createUIHealth() {
 	for (size_t i = 1; i <= 3; i++) {
 		auto pacImg = new GameObject(Sprite(pacFilePath));
@@ -103,7 +104,7 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 			m_score += (*it)->getValue();
 			dotCounter++;
 
-			delete* it;
+			delete *it;
 			it = p_dots.erase(it);
 		
 			AudioManager::getInstance()->playPacEatSound();					

@@ -11,7 +11,7 @@ int Entity::getNodeIndexByDirection(Direction p_direction) const {
 
 // Gets the node from graph by index
 GraphNode* Entity::getNodeByIndex(int p_index) const {
-    return Graph::getInstance()->getMatrixAsVector(Graph::getInstance()->getNodes())[p_index];
+    return Graph::getInstance()->getNodeVector()[p_index];
 }
 
 // Gets the node from given direction by current node
@@ -144,7 +144,7 @@ Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 
 void Entity::update(float p_deltaTime) {
     //GameObject::update(p_deltaTime);
-    m_sprite.animate(p_deltaTime, m_speed * 0.01f);
+    m_sprite.animate(m_speed * 0.01f, p_deltaTime);
 
     auto previousNode = getNodeByPosition(m_position);
 
