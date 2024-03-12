@@ -125,7 +125,7 @@ public:
 
 	void assignBlinkyToInky(Enemy* m_enemy);
 
-	
+	bool allignedWithNode();
 
 	EnemyState getCurrentMode() const;
 

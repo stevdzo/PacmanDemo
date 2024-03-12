@@ -240,17 +240,29 @@ void Enemy::onEnemyMoveRight() {
 }
 
 void Enemy::updateDirection() {
+
 	float dist = m_position.distanceToSq(m_currentNode->getPosition());
 
 	if (m_currentEnemyState == EnemyState::base) {
-		if (dist < 500) {
-			m_currentDirection = m_desiredDirection;
+
+		if (m_baseNode == getNodeByIndex(m_baseNodeIndices[2]) && m_ghostType != GhostType::pinky) {
+			if (dist < ghostDirectionChangeDistanceThreshold) {
+				m_currentDirection = m_desiredDirection;
+			}
+		}
+		else {
+			if (dist < 500) {
+				m_currentDirection = m_desiredDirection;
+			}
 		}
 	}
+
 	if (dist < ghostDirectionChangeDistanceThreshold) {
+
 		if (m_currentEnemyState != EnemyState::frightened) {
 			//if (m_currentNode->isIntersection())
 				m_currentDirection = m_desiredDirection;
+
 		}
 	}
 }
@@ -432,7 +444,7 @@ void Enemy::onBase() {
 		m_currentTargetNode = m_baseNode;
 		toggleBaseNode();
 	}
-	followPath();
+	followPath();	
 }
 
 bool Enemy::onEnemyNodeChange() {
@@ -506,19 +518,21 @@ void Enemy::toggleBaseNode() {
 		}
 		else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1])) {
 			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
-		}		
+		}				
 	}
-	else {
+	else {	
 
-		if (m_ghostType != GhostType::pinky)
-			m_baseNode = m_initialNode;
-		else m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
+		/*if (m_ghostType != GhostType::pinky)
+			m_baseNode = m_initialNode;*/
+		//else 
+
+		//m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
+		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
 
 		if (m_currentNode == m_baseNode) {
 
-
 			/*if (getGhostType() == GhostType::inky)
-				std::cout << static_cast<int>(getCurrentMode()) << std::endl;*/
+				std::cout << "inky" << std::endl;*/
 
 			if (toggleFrightenedMode) {
 				changeEnemyState(EnemyState::frightened);
@@ -526,6 +540,7 @@ void Enemy::toggleBaseNode() {
 			}
 
 			switch (globalGhostState) {
+
 			case EnemyState::scatter:
 				changeEnemyState(EnemyState::scatter);
 				break;
@@ -594,8 +609,9 @@ void Enemy::changeEnemyState(EnemyState p_enemyState) {
 		}	
 
 
-		if (p_enemyState == EnemyState::eaten) 
+		if (p_enemyState == EnemyState::eaten) {
 			findShortestPath(m_eatenNode);
+		}
 
 		if (p_enemyState == EnemyState::chase) {
 			updateChaseTarget();
@@ -620,6 +636,14 @@ void Enemy::reverseDirection() {
 
 void Enemy::assignBlinkyToInky(Enemy* p_blinky) {
 	m_blinky = p_blinky;
+}
+
+bool Enemy::allignedWithNode() {
+
+	int modX = (int)m_position.x % (int) m_size.x;
+	int modY = (int)m_position.y % (int) m_size.y;
+
+	return modX == 0 && modY == 0;
 }
 
 EnemyState Enemy::getCurrentMode() const {

@@ -100,8 +100,8 @@ bool clydeExitBaseFlag = false;
 const float wireframeSizeX = nodeSize;
 const float wireframeSizeY = nodeSize;
 
-const float ghostDirectionChangeDistanceThreshold = 0.8f; 
-const float pacDirectionChangeDistanceThreshold = 0.8f;
+const float ghostDirectionChangeDistanceThreshold = 1.0f; 
+const float pacDirectionChangeDistanceThreshold = 10.0f; // 0.8
 const float turnBufferDistanceThreshold = 200.0f;
 const float eatDistanceThreshold = 8.0f;
 

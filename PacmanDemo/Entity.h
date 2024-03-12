@@ -16,7 +16,6 @@ protected:
 	float m_speed;
 
 	bool m_isMoving;
-	
 	bool m_snap;
 
 	Direction m_currentDirection;

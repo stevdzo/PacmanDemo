@@ -396,5 +396,6 @@ void GameWorld::idle() {
 
 	update(m_deltaTime);
 
+
 	glutPostRedisplay();
 }
