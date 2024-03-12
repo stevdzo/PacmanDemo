@@ -258,17 +258,17 @@ void GameWorld::onRunningGameState() {
 
 	//m_cherry->update(m_deltaTime);
 
-	m_clyde->update(m_deltaTime);
+	//m_clyde->update(m_deltaTime);
 	m_inky->update(m_deltaTime);
 	m_pinky->update(m_deltaTime);
-	m_blinky->update(m_deltaTime);
+	//m_blinky->update(m_deltaTime);
 
 	m_player->update(m_deltaTime);
 
 	m_player->eatDot(m_dots);
 
 	if (dotCounter >= inkyDotExitThreshold) {
-		m_inky->isInsideBase(false);
+		m_inky->isInsideBase(false);	
 	}
 
 	if (dotCounter >= clydeDotExitThreshold) {
@@ -391,11 +391,10 @@ void GameWorld::display() {
 
 void GameWorld::idle() {
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
-	m_deltaTime = (GLfloat)(currentTime - m_previousTime) / 1000;
+	m_deltaTime = (float) (currentTime - m_previousTime) / 3000;
 	m_previousTime = currentTime;
 
 	update(m_deltaTime);
-
 
 	glutPostRedisplay();
 }

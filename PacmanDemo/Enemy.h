@@ -21,6 +21,8 @@ private:
 	Player* m_player;
 	Enemy* m_blinky; // only for inky
 
+	Vector2D m_offsetPosition;
+
 	GraphNode* m_playerNode;
 	GraphNode* m_scatterNode;
 	GraphNode* m_eatenNode;	

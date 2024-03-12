@@ -30,7 +30,7 @@ void Graph::initNodes() {
                 break;
             case 2: {
                 node->isObstacle(false);
-                node->setPosition(node->getPosition() + Vector2D(nodeSize/2.0f, 0.0f));
+                //node->setPosition(node->getPosition() + Vector2D(nodeSize/2.0f, 0.0f));
                 node->setNodeType(NodeType::valid);
             }
                   break;

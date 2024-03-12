@@ -191,7 +191,7 @@ Direction Entity::getCurrentDirection() const {
 
 void Entity::setPositionByNode(const int p_nodeIndex) {
     m_currentNode = getNodeByIndex(p_nodeIndex);
-    m_position = m_currentNode->getPosition();   
+    m_position = m_currentNode->getPosition() + Vector2D(15, 0);   
 }
 
 void Entity::setCurrentDirection(const Direction p_direction) {
