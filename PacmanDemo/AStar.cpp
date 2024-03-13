@@ -38,7 +38,7 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 			std::vector<GraphNode*> finalPath;
 			while (currentNode != nullptr && currentNode != p_startNode) {
 				finalPath.push_back(currentNode);
-				m_path.push_back(currentNode);
+				//m_path.push_back(currentNode);
 				currentNode = currentNode->getParent();
 			}
 			std::reverse(finalPath.begin(), finalPath.end());
@@ -46,6 +46,12 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 		}
 
 		for (auto* adjNode : currentNode->getConnectedNodes()) {
+
+			/*if (p_startNode != p_previousNode && adjNode == p_previousNode) {
+
+				
+				continue;
+			}*/
 
 			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode())
 				continue;	

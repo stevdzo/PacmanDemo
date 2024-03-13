@@ -30,7 +30,7 @@ void Graph::initNodes() {
                 break;
             case 2: {
                 node->isObstacle(false);
-                //node->setPosition(node->getPosition() + Vector2D(nodeSize/2.0f, 0.0f));
+                node->setPosition(node->getPosition() + Vector2D(nodeSize/2.0f, 0.0f));
                 node->setNodeType(NodeType::valid);
             }
                   break;
@@ -215,8 +215,8 @@ GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direct
         !node->isObstacle() &&
         !node->isEmptyNode())
         return node;
-    else return nullptr;
 
+    else return (GraphNode*) nullptr;
 }
 
 // Vector2D p_position - vektor pozicije u odnosu na koga se traži čvor

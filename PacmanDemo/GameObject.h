@@ -14,6 +14,7 @@ protected:
 	Sprite m_sprite;
 
 	Vector2D m_position;
+	Vector2D m_previousPosition;
 	Vector2D m_size;
 	Vector2D m_wireframeSize;
 

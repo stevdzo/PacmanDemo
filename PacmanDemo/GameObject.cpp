@@ -3,6 +3,7 @@
 GameObject::GameObject() {
 	//m_sprite = nullptr;
 	m_position = Vector2D(0.0f, 0.0f);
+	m_previousPosition = Vector2D(0.0f, 0.0f);
 	m_size = Vector2D(32.0f, 32.0f);
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
@@ -10,13 +11,14 @@ GameObject::GameObject() {
 
 GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite), m_isVisible(true) {
 	m_position = Vector2D(0.0f, 0.0f);
+	m_previousPosition = Vector2D(0.0f, 0.0f);
 	m_size = Vector2D(32.0f, 32.0f);
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }
 
-GameObject::GameObject(Vector2D p_position) : m_position(p_position) {
-	m_size = Vector2D(32.0f, 32.0f);;
+GameObject::GameObject(Vector2D p_position) : m_position(p_position), m_previousPosition(p_position) {
+	m_size = Vector2D(32.0f, 32.0f);
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }

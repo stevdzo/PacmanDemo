@@ -41,6 +41,7 @@ private:
 	bool m_frightenedDirectionChosen;
 	bool m_frightened;
 	bool m_insideBase;
+	bool m_canGoOut;
 	bool m_isEaten;
 	bool m_hasGlobalStateChanged;
 

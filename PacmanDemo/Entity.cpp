@@ -130,6 +130,7 @@ Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     
     m_size = Vector2D(60.0f, 60.0f);
     m_currentNode = getNodeByIndex(baseEntranceNodeIndex);
+    m_previousNode = getNodeByIndex(0);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
@@ -144,18 +145,22 @@ Entity::Entity(Vector2D p_position) : GameObject(p_position) {
 
 void Entity::update(float p_deltaTime) {
     //GameObject::update(p_deltaTime);
+
     m_sprite.animate(m_speed * 0.01f, p_deltaTime);
 
     auto previousNode = getNodeByPosition(m_position);
 
     m_position += m_velocity * (m_speed * p_deltaTime);
 
-    checkForPortal();
+    m_currentNode = getNodeByPosition();
 
     if (previousNode != m_currentNode) {
         m_currentNode = getNodeByPosition();
         m_previousNode = previousNode;
     }
+    m_previousNode = m_currentNode;
+
+    checkForPortal();
 }
 
 void Entity::render() {
@@ -191,7 +196,7 @@ Direction Entity::getCurrentDirection() const {
 
 void Entity::setPositionByNode(const int p_nodeIndex) {
     m_currentNode = getNodeByIndex(p_nodeIndex);
-    m_position = m_currentNode->getPosition() + Vector2D(15, 0);   
+    m_position = m_currentNode->getPosition() - Vector2D(1.0f, 0.0f);   
 }
 
 void Entity::setCurrentDirection(const Direction p_direction) {

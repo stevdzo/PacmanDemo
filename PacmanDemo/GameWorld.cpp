@@ -259,7 +259,7 @@ void GameWorld::onRunningGameState() {
 	//m_cherry->update(m_deltaTime);
 
 	//m_clyde->update(m_deltaTime);
-	m_inky->update(m_deltaTime);
+	//m_inky->update(m_deltaTime);
 	m_pinky->update(m_deltaTime);
 	//m_blinky->update(m_deltaTime);
 
