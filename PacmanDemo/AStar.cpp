@@ -21,7 +21,7 @@ void AStar::render() {
 
 // GraphNode* p_startNode - trenutni čvor neprijatelja
 // GraphNode* p_targetNode - ciljni čvor neprijatelja
-std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode) {
+std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_canGoBack) {
 
 	std::set<GraphNode*> openNodes;
 	std::set<GraphNode*> closedNodes;
@@ -47,11 +47,11 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 
 		for (auto* adjNode : currentNode->getConnectedNodes()) {
 
-			/*if (p_startNode != p_previousNode && adjNode == p_previousNode) {
+			if (p_canGoBack && p_startNode != p_previousNode && adjNode == p_previousNode) {
 
 				
 				continue;
-			}*/
+			}
 
 			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode())
 				continue;	
