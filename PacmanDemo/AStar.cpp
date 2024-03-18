@@ -21,7 +21,7 @@ void AStar::render() {
 
 // GraphNode* p_startNode - trenutni čvor neprijatelja
 // GraphNode* p_targetNode - ciljni čvor neprijatelja
-std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_canGoBack) {
+std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_isInsideBase) {
 
 	std::set<GraphNode*> openNodes;
 	std::set<GraphNode*> closedNodes;
@@ -47,9 +47,8 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 
 		for (auto* adjNode : currentNode->getConnectedNodes()) {
 
-			if (p_canGoBack && p_startNode != p_previousNode && adjNode == p_previousNode) {
-
-				
+			// Dodatna provera koje ne dozvoljava duhovima da krenu u suprotnom smeru.
+			if (!p_isInsideBase && p_startNode != p_previousNode && adjNode == p_previousNode) {
 				continue;
 			}
 

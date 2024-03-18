@@ -130,8 +130,8 @@ void GameWorld::render() {
 	renderWireframe();
 	renderUi();
 
-	//std::cout << "Pinky current state: " << static_cast<int>(m_pinky->getCurrentMode()) << std::endl;
-	//std::cout << "Inky current nodfe: " << static_cast<int>(m_inky->getCurrentMode()) << std::endl;
+	//std::cout << "Pinky current state: " << static_cast<int>(m_pinky->getCurrentState()) << std::endl;
+	//std::cout << "Inky current nodfe: " << static_cast<int>(m_inky->getCurrentState()) << std::endl;
 	//std::cout << "Current GLOBAL state: " << static_cast<int>(globalGameState) << std::endl;
 
 	glutSwapBuffers();
@@ -166,10 +166,10 @@ void GameWorld::restart() {
 	m_inky->setCurrentDirection(Direction::down);
 	m_clyde->setCurrentDirection(Direction::down);*/
 
-	m_blinky->changeEnemyState(EnemyState::scatter);
+	/*m_blinky->changeEnemyState(EnemyState::scatter);
 	m_pinky->changeEnemyState(EnemyState::base);
 	m_inky->changeEnemyState(EnemyState::base);
-	m_clyde->changeEnemyState(EnemyState::base);
+	m_clyde->changeEnemyState(EnemyState::base);*/
 
 	m_blinky->restart(blinkyStartNodeIndex, Direction::left);
 	m_pinky->restart(pinkyStartNodeIndex, Direction::up);
@@ -197,7 +197,7 @@ void GameWorld::manageGhostStates() {
 				globalGhostState = interval.state;
 
 				for (auto& ghost : m_ghosts)
-					if (ghost->getCurrentMode() != EnemyState::base)
+					if (ghost->getCurrentState() != EnemyState::base)
 						ghost->changeEnemyState(interval.state);
 			}
 		}
@@ -243,7 +243,8 @@ void GameWorld::onPausedGameState() {
 
 	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
 
-		m_pinky->isInsideBase(false);
+		//m_pinky->isInsideBase(false);
+		m_pinky->exitBase();
 
 		gameStartTimer = 0.0f;
 
@@ -258,21 +259,23 @@ void GameWorld::onRunningGameState() {
 
 	//m_cherry->update(m_deltaTime);
 
-	//m_clyde->update(m_deltaTime);
-	//m_inky->update(m_deltaTime);
+	m_clyde->update(m_deltaTime);
+	m_inky->update(m_deltaTime);
 	m_pinky->update(m_deltaTime);
-	//m_blinky->update(m_deltaTime);
+	m_blinky->update(m_deltaTime);
 
 	m_player->update(m_deltaTime);
 
 	m_player->eatDot(m_dots);
 
 	if (dotCounter >= inkyDotExitThreshold) {
-		m_inky->isInsideBase(false);	
+		//m_inky->isInsideBase(false);
+		m_inky->exitBase();
 	}
 
 	if (dotCounter >= clydeDotExitThreshold) {
-		m_clyde->isInsideBase(false);
+		//m_clyde->isInsideBase(false);
+		m_clyde->exitBase();
 	}
 
 	if (toggleFrightenedMode)
@@ -280,12 +283,14 @@ void GameWorld::onRunningGameState() {
 
 	if (frightenedTimer > frightenedTimerThreshold) {
 		for (auto& ghost : m_ghosts) {
-			if (ghost->getCurrentMode() == EnemyState::frightened) {
+			if (ghost->getCurrentState() == EnemyState::frightened) {
+				//ghost->canExitFrightened(true);
+				ghost->reverseDirection();
 				ghost->returnPreviousEnemyState();
-				ghost->findShortestPath(ghost->getCurrentTargetNode());
+
+				//ghost->canExitFrightened(false);
 			}
 		}
-
 		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
 			AudioManager::getInstance()->m_chFrightened->stop();
 
@@ -300,7 +305,7 @@ void GameWorld::onRunningGameState() {
 	for (auto& ghost : m_ghosts) {
 
 		/*if (!toggleFrightenedMode && 
-			ghost->getCurrentMode() != EnemyState::base)
+			ghost->getCurrentState() != EnemyState::base)
 				ghost->manageStates();*/
 
 		m_player->onGhostCollision(ghost);
@@ -391,7 +396,7 @@ void GameWorld::display() {
 
 void GameWorld::idle() {
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
-	m_deltaTime = (float) (currentTime - m_previousTime) / 3000;
+	m_deltaTime = (float) (currentTime - m_previousTime) / 1000;
 	m_previousTime = currentTime;
 
 	update(m_deltaTime);

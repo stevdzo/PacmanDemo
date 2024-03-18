@@ -97,6 +97,8 @@ bool hasIntervalStateChanged = false;
 bool inkyExitBaseFlag = false;
 bool clydeExitBaseFlag = false;
 
+bool everyGhostCloseToNode = true;
+
 const float wireframeSizeX = nodeSize;
 const float wireframeSizeY = nodeSize;
 

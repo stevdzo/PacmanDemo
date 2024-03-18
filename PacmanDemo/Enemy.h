@@ -41,9 +41,12 @@ private:
 	bool m_frightenedDirectionChosen;
 	bool m_frightened;
 	bool m_insideBase;
-	bool m_canGoOut;
+	bool m_inBase;
+	bool m_canGoOutsideBase;
 	bool m_isEaten;
 	bool m_hasGlobalStateChanged;
+
+	bool m_canExitFrightened;
 
 	bool m_isClydeInRange; // clyde
 	bool m_clydeSwitchState; // clyde
@@ -126,11 +129,19 @@ public:
 	void returnPreviousEnemyState();
 	void reverseDirection();
 
+	void exitBase();
+
 	void assignBlinkyToInky(Enemy* m_enemy);
+
+	bool closeToNode();
+	bool canCalculateNewDirection() const;
+
+	bool canExitFrightened(void) const;
+	void canExitFrightened(bool);
 
 	bool allignedWithNode();
 
-	EnemyState getCurrentMode() const;
+	EnemyState getCurrentState() const;
 
 	std::vector<Direction> chooseDirectionWhenFrightened();
 };

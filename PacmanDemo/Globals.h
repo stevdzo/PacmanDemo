@@ -93,6 +93,8 @@ extern bool hasIntervalStateChanged;
 extern bool inkyExitBaseFlag;
 extern bool clydeExitBaseFlag;
 
+extern bool everyGhostCloseToNode;
+
 extern const float wireframeSizeX;
 extern const float wireframeSizeY;
 

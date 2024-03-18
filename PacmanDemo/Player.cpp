@@ -126,30 +126,31 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 
 	if (m_position.distanceTo(p_ghost->getPosition()) < 24) {
 
-		if (p_ghost->getCurrentMode() == EnemyState::chase ||
-			p_ghost->getCurrentMode() == EnemyState::scatter) {			
+		if (p_ghost->getCurrentState() == EnemyState::chase ||
+			p_ghost->getCurrentState() == EnemyState::scatter) {			
 
 			onLifeLost();
-
 		}
-		else if (p_ghost->getCurrentMode() == EnemyState::frightened) {
+		else if (p_ghost->getCurrentState() == EnemyState::frightened) {
 
 			m_score += initialGhostEatValue * currentBigDotGhostCounter; // 200 * 1
 			currentBigDotGhostCounter *= 2;
 
 			AudioManager::getInstance()->playEatGhostSound();
-			p_ghost->isHeadingToHouse(true);
-			p_ghost->isFrightened(false);
+			//p_ghost->isHeadingToHouse(true);
+			//p_ghost->isFrightened(false);
+			p_ghost->reverseDirection();
+			//ghost->returnPreviousEnemyState();
 			p_ghost->changeEnemyState(EnemyState::eaten);
 
-			std::cout << "Current ghost Position: " << p_ghost->getPosition().x << " | " << p_ghost->getPosition().y << std::endl;
+			/*std::cout << "Current ghost Position: " << p_ghost->getPosition().x << " | " << p_ghost->getPosition().y << std::endl;
 			std::cout << "Current node position: " << p_ghost->getCurrentNode()->getPosition().x << " | " << p_ghost->getCurrentNode()->getPosition().y << std::endl;
-			std::cout << "Node index: " << p_ghost->getCurrentNode()->getIndex() << std::endl;
+			std::cout << "Node index: " << p_ghost->getCurrentNode()->getIndex() << std::endl;*/
 			//std::cout << "Node index: " << p_ghost->getCurrentNode()->getIndex() << std::endl;
 			
-			return;
+			//return;
 		}
-		/*else if (p_ghost->getCurrentMode() == EnemyState::eaten) {
+		/*else if (p_ghost->getCurrentState() == EnemyState::eaten) {
 			return;
 		}*/
 	}
@@ -158,8 +159,8 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 void Player::onBigDotEaten() {	
 
 	for (auto& ghost : m_ghosts) {
-		if (ghost->getCurrentMode() != EnemyState::eaten &&
-			(ghost->getCurrentMode() != EnemyState::base)) {
+		if (ghost->getCurrentState() != EnemyState::eaten &&
+		   (ghost->getCurrentState() != EnemyState::base)) {
 			ghost->reverseDirection();
 			ghost->changeEnemyState(EnemyState::frightened);
 		}
