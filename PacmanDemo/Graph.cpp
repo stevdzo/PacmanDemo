@@ -186,6 +186,12 @@ GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direct
     if (!p_node)     
         return nullptr;
 
+    if (p_node->getIndex() == leftPortalIndex)
+        return m_nodeVector[rightPortalIndex];
+
+    if (p_node->getIndex() == rightPortalIndex)
+        return m_nodeVector[leftPortalIndex];
+
     Index2D playerIndex2D = p_node->getIndexAs2D();
 
     int targetRow = playerIndex2D.row;
