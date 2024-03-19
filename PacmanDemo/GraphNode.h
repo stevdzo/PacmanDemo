@@ -43,6 +43,7 @@ private:
 	bool m_isObstacle;
 	bool m_isIntersection;
 	bool m_isCorner;
+	bool m_isTurn;
 
 	GraphNode* m_parentNode;
 
@@ -82,6 +83,9 @@ public:
 
 	void isCorner(bool);
 	bool isCorner(void) const;
+
+	void isTurn(bool);
+	bool isTurn(void) const;
 
 	void setParent(GraphNode* p_node);
 	GraphNode* getParent(void) const;

@@ -105,8 +105,8 @@ public:
 	bool isFrightened(void);
 	void isFrightened(bool);
 
-	bool isHeadingToHouse(void);
-	void isHeadingToHouse(bool);
+	bool isEaten(void);
+	void isEaten(bool);
 
 	bool isInsideBase(void);
 	void isInsideBase(bool);

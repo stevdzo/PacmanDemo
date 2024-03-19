@@ -212,7 +212,7 @@ void GameWorld::renderUi() {
 
 	char score[50];
 	sprintf_s(score, 50, "%i", static_cast<int>(m_player->getScore()));
-	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - 200, screenHeight/2, 1, 1, 0);
+	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - 200, screenHeight / 2, 1, 1, 0);
 
 	char timer[50];
 	sprintf_s(timer, 50, "%.2f", globalTimer);
@@ -284,11 +284,8 @@ void GameWorld::onRunningGameState() {
 	if (frightenedTimer > frightenedTimerThreshold) {
 		for (auto& ghost : m_ghosts) {
 			if (ghost->getCurrentState() == EnemyState::frightened) {
-				//ghost->canExitFrightened(true);
 				ghost->reverseDirection();
 				ghost->returnPreviousEnemyState();
-
-				//ghost->canExitFrightened(false);
 			}
 		}
 		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
@@ -302,14 +299,8 @@ void GameWorld::onRunningGameState() {
 	if (!toggleFrightenedMode)
 		manageGhostStates();
 
-	for (auto& ghost : m_ghosts) {
-
-		/*if (!toggleFrightenedMode && 
-			ghost->getCurrentState() != EnemyState::base)
-				ghost->manageStates();*/
-
+	for (auto& ghost : m_ghosts)
 		m_player->onGhostCollision(ghost);
-	}
 
 	if (m_player->getHealth() <= 0)
 		globalGameState = GameState::game_over;

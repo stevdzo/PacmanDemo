@@ -156,7 +156,7 @@ const int pinkyScatterNodeIndices  [] = { 246, 89 , 211 };
 const int inkyScatterNodeIndices   [] = { 688, 714, 498 };
 const int clydeScatterNodeIndices  [] = { 223, 187, 405 };
 
-const int blinkyBaseNodeIndices    [] = { 0,   0,   0   };
+const int blinkyBaseNodeIndices    [] = { 0,   0,   453 };
 const int pinkyBaseNodeIndices     [] = { 449, 451, 453 };
 const int inkyBaseNodeIndices      [] = { 389, 387, 453 };
 const int clydeBaseNodeIndices     [] = { 513, 511, 453 };

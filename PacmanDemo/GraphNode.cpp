@@ -26,6 +26,7 @@ GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameO
 	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
+	m_isTurn = false;
 }
 
 void GraphNode::setIndex(int p_index) {
@@ -95,13 +96,32 @@ void GraphNode::isIntersection(bool p_isIntersection) {
 	m_isIntersection = p_isIntersection;
 }
 
-//bool GraphNode::isIntersection(void) const {
-//	//return m_isIntersection;
-//	return m_edges.size() > 2 ? true : false;
-//}
+bool GraphNode::isIntersection(void) const {
+	return m_edges.size() > 2;
+}
 
 void GraphNode::isCorner(bool p_isCorner) {
 	m_isCorner = p_isCorner;
+}
+
+bool GraphNode::isCorner(void) const {
+	int indexSum = 0;
+	if (m_edges.size() == 2) {
+		for (auto& node : m_connectedNodes)
+			if (node->isObstacle())
+				indexSum += node->getIndex();			
+		if (indexSum / 2 != m_index)
+			return true;
+	}
+	return false;
+}
+
+void GraphNode::isTurn(bool p_isTurn) {
+	m_isTurn = p_isTurn;
+}
+
+bool GraphNode::isTurn(void) const {
+	return isCorner() || isIntersection();
 }
 
 void GraphNode::setParent(GraphNode* p_node) {
@@ -110,29 +130,6 @@ void GraphNode::setParent(GraphNode* p_node) {
 
 GraphNode* GraphNode::getParent(void) const {
 	return m_parentNode;
-}
-
-bool GraphNode::isIntersection(void) const {
-
-	int indexSum = 0;
-
-	if (m_edges.size() > 2) {
-		return true;
-	}
-
-	if (m_edges.size() == 2) {
-
-		for (auto& node : m_connectedNodes) {
-			if (node->isObstacle()) {
-				indexSum += node->getIndex();
-			}
-		}
-
-		if (indexSum / 2 != m_index) {
-			return true;
-		}
-	}
-	return false;
 }
 
 void GraphNode::addEdge(GraphEdge* p_edge) {
