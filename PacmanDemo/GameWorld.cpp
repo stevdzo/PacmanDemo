@@ -243,6 +243,8 @@ void GameWorld::onPausedGameState() {
 
 	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chIntro)) {
 
+		AudioManager::getInstance()->playSiren1Sound();
+
 		//m_pinky->isInsideBase(false);
 		m_pinky->exitBase();
 
@@ -278,8 +280,10 @@ void GameWorld::onRunningGameState() {
 		m_clyde->exitBase();
 	}
 
-	if (toggleFrightenedMode)
+	if (toggleFrightenedMode) {
 		frightenedTimer += m_deltaTime;
+		AudioManager::getInstance()->m_chSiren1->stop();
+	}
 
 	if (frightenedTimer > frightenedTimerThreshold) {
 		for (auto& ghost : m_ghosts) {
@@ -288,8 +292,10 @@ void GameWorld::onRunningGameState() {
 				ghost->returnPreviousEnemyState();
 			}
 		}
-		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
 			AudioManager::getInstance()->m_chFrightened->stop();
+			AudioManager::getInstance()->playSiren1Sound();
+		}
 
 		frightenedTimer = 0.0f;
 		currentBigDotGhostCounter = 1;

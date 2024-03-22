@@ -173,7 +173,7 @@ const int frightenedAnimRange      [2] = { 64, 65 };
 const int frightenedFlashAnimRange [2] = { 66, 67 };
 const int eatenAnimRange		   [4] = { 78, 79, 80, 81 };
 
-const char* assetsFilePath       = "resources/images/sprite_sheet_2.png";
+const char* assetsFilePath    = "resources/images/sprite_sheet_2.png";
 const char* pacFilePath       = "resources/images/sprite_sheet_2.png";
 const char* blinkyFilePath    = "resources/images/ghost_blinky.png";
 const char* pinkyFilePath     = "resources/images/ghost_pinky.png";
@@ -184,11 +184,12 @@ const char* bigDotFilePath    = "resources/images/dot_big.png";
 const char* smallDotFilePath  = "resources/images/dot_small.png";
 const char* cherryFilePath    = "resources/images/cherry.png";
 
-const char* pacEatSfxFilePath = "resources/sounds/credit.wav";
-const char* introSfxFilePath  = "resources/sounds/intro_sound.wav";
-const char* pacDieSfxFilePath = "resources/sounds/die.mp3";
+const char* pacEatSfxFilePath     = "resources/sounds/eat.wav";
+const char* introSfxFilePath      = "resources/sounds/intro_sound.wav";
+const char* pacDieSfxFilePath     = "resources/sounds/die.mp3";
 const char* frightenedSfxFilePath = "resources/sounds/frightened.wav";
-const char* eatGhostSfxFilePath = "resources/sounds/eat_ghost.wav";
+const char* eatGhostSfxFilePath   = "resources/sounds/eat_ghost.wav";
+const char* siren1SfxFilePath     = "resources/sounds/siren_1.wav";
 
 float tempTimer = 0.0f;
 float globalTimer = 0.0f;

@@ -141,6 +141,7 @@ void Player::onGhostCollision(Enemy* p_ghost) {
 			currentBigDotGhostCounter *= 2;
 
 			AudioManager::getInstance()->playEatGhostSound();
+
 			//p_ghost->isEaten(true);			
 			p_ghost->reverseDirection();
 			//ghost->returnPreviousEnemyState();

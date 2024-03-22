@@ -184,6 +184,7 @@ extern const char* introSfxFilePath;
 extern const char* pacDieSfxFilePath;
 extern const char* frightenedSfxFilePath;
 extern const char* eatGhostSfxFilePath;
+extern const char* siren1SfxFilePath;
 
 extern float tempTimer;
 extern float globalTimer;

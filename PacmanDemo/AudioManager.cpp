@@ -35,6 +35,7 @@ bool AudioManager::loadAudio() {
 	result = m_system->createSound(pacDieSfxFilePath, FMOD_DEFAULT, 0, &m_sfxPacDie);
 	result = m_system->createSound(frightenedSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxFrightened);
 	result = m_system->createSound(eatGhostSfxFilePath, FMOD_DEFAULT, 0, &m_sfxEatGhost);
+	result = m_system->createSound(siren1SfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxSiren1);
 
 	return true;
 }
@@ -59,6 +60,11 @@ void AudioManager::playFrightenedSound() {
 
 void AudioManager::playEatGhostSound() {
 	m_system->playSound(m_sfxEatGhost, 0, false, &m_chEatGhost);
+}
+
+void AudioManager::playSiren1Sound() {
+	if (!AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren1))
+		m_system->playSound(m_sfxSiren1, 0, false, &m_chSiren1);
 }
 
 bool AudioManager::isPlaying(FMOD::Channel* p_channel) {

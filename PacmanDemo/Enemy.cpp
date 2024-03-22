@@ -364,21 +364,31 @@ void Enemy::updateChaseTarget() {
 	case GhostType::inky: {
 
 		GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
-		if (node) {
+		if (node && node != m_currentNode) {
 			//m_inkyCurrentTargetNode = node;
 			m_playerNode = node;
 		}
-		else {
+
+		if (pathCompleted())
+			m_playerNode = m_player->getCurrentNode();
+
+		/*else if (!node){
 			
 			m_playerNode = m_player->getCurrentNode();
 		}
-			
-		if (!m_currentTargetNode) {
-			std::cout << "a" << std::endl;
-		}
-
-		/*else if (pathCompleted())
+		else if (pathCompleted())
 			m_playerNode = m_player->getCurrentNode();*/
+
+		/*if (getDistanceInNodes(m_playerNode) < pinkyTargetNodeDistance) {
+
+			m_playerNode = m_player->getCurrentNode();
+		}*/
+
+		//if (!m_currentTargetNode) {
+		//	//std::cout << "a" << std::endl;
+		//}
+
+		
 
 	}
 		break;
