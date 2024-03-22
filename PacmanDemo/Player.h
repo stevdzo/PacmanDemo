@@ -58,6 +58,8 @@ public:
 	bool isVisible(void);
 	bool isDeathAnimationFinished();
 
+	void checkForPortal();
+
 	void resetAnimation();
 
 	void setDefaultPosition() override;

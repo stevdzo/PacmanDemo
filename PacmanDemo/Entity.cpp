@@ -159,8 +159,6 @@ void Entity::update(float p_deltaTime) {
         m_previousNode = previousNode;
     }
     m_previousNode = m_currentNode;
-
-    checkForPortal();
 }
 
 void Entity::render() {

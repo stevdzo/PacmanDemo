@@ -103,9 +103,8 @@ void Enemy::render() {
 }
 
 void Enemy::renderWireframe() {
-	renderPath();	
-
-	if (toggleWireframe) {
+	
+	//if (toggleWireframe) {
 
 		switch (m_ghostType) {
 
@@ -123,24 +122,30 @@ void Enemy::renderWireframe() {
 
 			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pinkyR, pinkyG, pinkyB, GL_QUADS);
 
-			drawPoint(m_currentNode->getPosition().x, m_currentNode->getPosition().y, 16, 1.0, inkyG, inkyB);
+			//drawPoint(m_currentNode->getPosition().x, m_currentNode->getPosition().y, 16, 1.0, inkyG, inkyB);
 
-			drawPoint(m_previousNode->getPosition().x, m_previousNode->getPosition().y, 16, 1.0, 0.0f, inkyB);
+			//drawPoint(m_previousNode->getPosition().x, m_previousNode->getPosition().y, 16, 1.0, 0.0f, inkyB);
 
 			//drawPoint(m_nextNode->getPosition().x, m_nextNode->getPosition().y, 16, 1.0, 0.5f, 0.2);
 
-			/*if (m_currentTargetNode)
-				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, pinkyR, pinkyG, pinkyB);*/
+			if (m_currentTargetNode)
+				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, pinkyR, pinkyG, pinkyB);
 
 		} 
 		break;
 
 		case GhostType::inky: {
 
+			renderPath();
+
+
 			drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, inkyR, inkyG, inkyB, GL_QUADS);
 
 			drawPoint(m_currentNode->getPosition().x, m_currentNode->getPosition().y, 16, 1.0, inkyG, inkyB);
-			//drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, inkyR, inkyG, inkyB);
+
+			if (m_currentTargetNode)
+				drawPoint(m_currentTargetNode->getPosition().x, m_currentTargetNode->getPosition().y, 24, inkyR, inkyG, inkyB);
+
 		/*	GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
 			if (node) {
 				drawPoint(node->getPosition().x, node->getPosition().y, 24, inkyR, inkyG, inkyB);
@@ -166,7 +171,7 @@ void Enemy::renderWireframe() {
 		}
 		break;
 		}
-	}
+	//}
 
 	//Entity::renderWireframe();	
 }
@@ -282,11 +287,9 @@ void Enemy::onEnemyMoveRight() {
 }
 
 void Enemy::updateDirection() {
-	if (canCalculateNewDirection()) {
-		if (closeToNode()) {
+	if (canCalculateNewDirection())
+		if (closeToNode())
 			m_currentDirection = m_desiredDirection;
-		}
-	}
 }
 
 void Enemy::setPositionByNode(const int p_index) {
@@ -344,27 +347,39 @@ void Enemy::updateChaseTarget() {
 		m_playerNode = m_player->getCurrentNode();
 
 		break;
-	case GhostType::pinky: {
+	case GhostType::pinky: {	
 
+		
 		GraphNode* node = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), pinkyTargetNodeDistance);
-		if (node) {
+		if (node && node != m_currentNode) {
 			m_playerNode = node;
+		}		
+		if (getDistanceInNodes(m_playerNode) < pinkyTargetNodeDistance) {
 
-			if (m_playerNode == m_currentNode)
-				m_playerNode = m_player->getCurrentNode();
+			m_playerNode = m_player->getCurrentNode();
 		}
+
 	}
 		break;
 	case GhostType::inky: {
 
 		GraphNode* node = getNodeByTwoTargetsDoubled(m_player->getCurrentNode(), m_blinky->getCurrentNode(), m_player->getCurrentDirection());
 		if (node) {
-			m_inkyCurrentTargetNode = node;
-			m_playerNode = m_inkyCurrentTargetNode;
+			//m_inkyCurrentTargetNode = node;
+			m_playerNode = node;
+		}
+		else {
+			
+			m_playerNode = m_player->getCurrentNode();
 		}
 			
-		else if (pathCompleted())
-			m_playerNode = m_player->getCurrentNode();
+		if (!m_currentTargetNode) {
+			std::cout << "a" << std::endl;
+		}
+
+		/*else if (pathCompleted())
+			m_playerNode = m_player->getCurrentNode();*/
+
 	}
 		break;
 	case GhostType::clyde:
@@ -385,7 +400,8 @@ void Enemy::onChase() {
 	setSpeed(chaseScatterSpeed);
 	setDesiredDirection(getDirectionByNextNode());
 
-	if (m_currentNode->isTurn() || pathCompleted()) { 
+	if (!m_position.distanceToSq(m_nextNode->getPosition()) < nodeSize) {
+
 		updateChaseTarget();
 		findShortestPath(m_playerNode); 
 		m_currentTargetNode = m_playerNode;
@@ -434,28 +450,28 @@ void Enemy::onEaten() {
 	followPath();
 }
 
-void Enemy::onFrightened() {		
+void Enemy::onFrightened() {
 	setSpeed(frightenedSpeed);
-	if (closeToNode()) {
-		if (m_currentNode->isTurn()) {
-			if (!m_frightenedDirectionChosen) {		
+	if (m_currentNode->isTurn()) {
+		if (closeToNode()) {
+			if (!m_frightenedDirectionChosen) {
 				std::vector<Direction> possibleDirections = chooseDirectionWhenFrightened();
 				if (!possibleDirections.empty()) {
 					int randomDirection = rand() % possibleDirections.size();
 					Direction newDirection = possibleDirections[randomDirection];
-					m_desiredDirection = newDirection;		
+					m_desiredDirection = newDirection;
 					m_previousDirection = m_currentDirection;
 					m_currentDirection = m_desiredDirection;
-					m_frightenedDirectionChosen = true;		
+					m_frightenedDirectionChosen = true;
 
 					auto node = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 					if (node)
 						m_nextNode = node;
 				}
-			}			
+			}
 		}
 		else m_frightenedDirectionChosen = false;
-	}		
+	}
 }
 
 void Enemy::onBase() {
@@ -664,7 +680,7 @@ void Enemy::returnPreviousEnemyState() {
 }
 
 void Enemy::reverseDirection() {
-	if (!m_currentNode->isTurn() && !m_previousNode->isTurn())
+	if (!closeToNode())
 		m_currentDirection = getOppositeDirection();
 }
 
@@ -673,6 +689,10 @@ void Enemy::exitBase() {
 		m_baseNode = m_initialNode;
 		m_canGoOutsideBase = true;
 	}
+}
+
+void Enemy::checkForPortal() {
+	Entity::checkForPortal();
 }
 
 void Enemy::assignBlinkyToInky(Enemy* p_blinky) {
@@ -710,14 +730,12 @@ EnemyState Enemy::getCurrentState() const {
 std::vector<Direction> Enemy::chooseDirectionWhenFrightened() {
 	std::vector<Direction> directions;
 	m_previousDirection = m_currentDirection;
-	if (m_currentNode->isTurn()) {
-		for (auto& node : m_currentNode->getConnectedNodes()) {
-			if (!node->isObstacle() && !node->isEmptyNode() && node->getIndex() != baseEntranceBlockNodeIndex) {
-				Direction desiredDirection = getDirectionByGivenNode(node);
-				if (getOppositeDirection() != desiredDirection) {
-					directions.push_back(desiredDirection);
-					m_previousDirection = desiredDirection;
-				}
+	for (auto& node : m_currentNode->getConnectedNodes()) {
+		if (!node->isObstacle() && !node->isEmptyNode() && node->getIndex() != baseEntranceBlockNodeIndex) {
+			Direction desiredDirection = getDirectionByGivenNode(node);
+			if (getOppositeDirection() != desiredDirection) {
+				directions.push_back(desiredDirection);
+				m_previousDirection = desiredDirection;
 			}
 		}
 	}

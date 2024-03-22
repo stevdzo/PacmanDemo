@@ -30,8 +30,12 @@ void Player::update(float p_deltaTime) {
 
 	onGameWon();
 
+	//std::cout << m_currentNode->getIndex() << std::endl;
+
 	setVelocityByDirection();
 	updateDirection();
+
+	checkForPortal();
 }
 
 void Player::render() {
@@ -50,13 +54,13 @@ void Player::renderWireframe() {
 		auto desiredDirectionNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 		auto currentDirectionNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
 
-		if (desiredDirectionNode)
-			drawPoint(desiredDirectionNode->getPosition().x, desiredDirectionNode->getPosition().y, 14, pacR, pacG, pacB);
-
 		if (currentDirectionNode)
 			drawPoint(currentDirectionNode->getPosition().x, currentDirectionNode->getPosition().y, 14, 0.0f, 1.0f, 1.0f);
 
+		if (desiredDirectionNode)
+			drawPoint(desiredDirectionNode->getPosition().x, desiredDirectionNode->getPosition().y, 14, pacR, pacG, pacB);
 
+		
 		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, pacR, pacG, pacB, GL_QUADS);
 	}
 }
@@ -184,6 +188,7 @@ void Player::onLifeLost() {
 
 	m_health -= 1;
 	m_pacLives.erase(m_pacLives.end() - 1);
+
 }
 
 void Player::onPlayerMovement(int p_key) {
@@ -274,6 +279,19 @@ bool Player::isDeathAnimationFinished() {
 	return flag;
 }
 
+void Player::checkForPortal() {
+	//Entity::checkForPortal();
+
+	if (m_currentNode->getIndex() == leftPortalIndex && m_currentDirection == Direction::left) {
+		m_desiredDirection = Direction::left;
+		m_position = getNodeByIndex(rightPortalIndex)->getPosition();
+	}
+	if (m_currentNode->getIndex() == rightPortalIndex && m_currentDirection == Direction::right) {
+		m_desiredDirection = Direction::right;
+		m_position = getNodeByIndex(leftPortalIndex)->getPosition();
+	}
+}
+
 void Player::resetAnimation() {
 	m_sprite.setCurrentFrame(0);
 }
@@ -326,8 +344,10 @@ void Player::updateDirection() {
 		if (!isValidDirection(m_currentDirection) && !isValidDirection(m_desiredDirection)) {
 			m_currentDirection = Direction::none;
 			m_desiredDirection = Direction::none;
+
+			return;
 		}
-		if (!isValidDirection(m_desiredDirection)) {
+		else if (!isValidDirection(m_desiredDirection)) {
 			if (m_currentDirection == m_desiredDirection) {
 				m_currentDirection = Direction::none;
 				m_desiredDirection = Direction::none;
@@ -335,6 +355,6 @@ void Player::updateDirection() {
 			//else m_desiredDirection = m_currentDirection;
 		}
 		else
-			m_currentDirection = m_desiredDirection;
+			m_currentDirection = m_desiredDirection;		
 	}
 }

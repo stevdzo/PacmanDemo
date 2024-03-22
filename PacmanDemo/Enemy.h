@@ -131,6 +131,8 @@ public:
 
 	void exitBase();
 
+	void checkForPortal();
+
 	void assignBlinkyToInky(Enemy* m_enemy);
 
 	bool closeToNode();

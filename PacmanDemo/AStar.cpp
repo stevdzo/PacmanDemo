@@ -23,6 +23,9 @@ void AStar::render() {
 // GraphNode* p_targetNode - ciljni čvor neprijatelja
 std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_isInsideBase) {
 
+	/*if (p_startNode == p_targetNode)
+		return std::vector;*/
+
 	std::set<GraphNode*> openNodes;
 	std::set<GraphNode*> closedNodes;
 
