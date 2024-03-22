@@ -104,7 +104,7 @@ void Enemy::render() {
 
 void Enemy::renderWireframe() {
 	
-	//if (toggleWireframe) {
+	if (toggleWireframe) {
 
 		switch (m_ghostType) {
 
@@ -171,7 +171,7 @@ void Enemy::renderWireframe() {
 		}
 		break;
 		}
-	//}
+	}
 
 	//Entity::renderWireframe();	
 }
