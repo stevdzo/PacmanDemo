@@ -92,7 +92,7 @@ void Entity::updateDirection() {
 
 bool Entity::isValidDirection(const Direction p_direction) const {
     auto node = getNodeByDirectionFromCurrentNode(p_direction);
-    return !(node && (node->isEmptyNode() || node->isObstacle() || node->getIndex() == baseEntranceBlockNodeIndex));
+    return !(node && (!node->isValidNode() || node->isObstacle() || node->getIndex() == baseEntranceBlockNodeIndex));
 }
 
 bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2) const {
@@ -148,17 +148,14 @@ void Entity::update(float p_deltaTime) {
 
     m_sprite.animate(m_speed * 0.01f, p_deltaTime);
 
-    auto previousNode = getNodeByPosition(m_position);
-
     m_position += m_velocity * (m_speed * p_deltaTime);
 
-    m_currentNode = getNodeByPosition();
+    GraphNode* currentNode = getNodeByPosition();
 
-    if (previousNode != m_currentNode) {
-        m_currentNode = getNodeByPosition();
-        m_previousNode = previousNode;
+    if (currentNode != m_currentNode) {
+        m_previousNode = m_currentNode;
+        m_currentNode = currentNode;
     }
-    m_previousNode = m_currentNode;
 }
 
 void Entity::render() {
@@ -176,8 +173,9 @@ void Entity::restart(int p_nodeIndex, Direction p_direction) {
     m_desiredDirection = p_direction;
 }
 
-void Entity::setCurrentFramesRange(int p_startingFrame, int p_endingFrame) {
+void Entity::setCurrentFramesRange(int p_startingFrame, int p_endingFrame, bool p_isLooped) {
     m_sprite.setCurrentFramesRange(p_startingFrame, p_endingFrame);
+    m_sprite.isLooped(p_isLooped);
 }
 
 void Entity::setAnimationDelay(float p_animationDelay) {

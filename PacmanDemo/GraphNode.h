@@ -21,9 +21,10 @@ struct Index2D {
 
 enum class NodeType {
 
-	none = 0,
+	invalid = 0,
 	obstacle = 1,
-	valid = 2
+	valid = 2,
+	special = 3
 };
 
 class GraphEdge;
@@ -73,10 +74,12 @@ public:
 	NodeType getNodeType(void) const;
 
 	void isEmptyNode(bool);
-	bool isEmptyNode(void) const;
+	bool isValidNode(void) const;
 
 	void isObstacle(bool);
 	bool isObstacle(void) const;
+
+	bool isSpecialNode(void) const;
 
 	void isIntersection(bool);
 	bool isIntersection(void) const;

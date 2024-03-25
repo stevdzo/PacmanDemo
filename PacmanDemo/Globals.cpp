@@ -30,7 +30,7 @@ const int map[rows][columns] = {
 		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, 1, _, 2, 2, 2, _, 1, _, _, 1, _, _, 1, _, _, _, 1, _},
 		{_, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, 1, _, 0, 2, 0, _, 1, 1, 1, 1, _, _, 1, 1, 1, 1, 1, _},
 		{_, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, 2, 2, 2, 2, 2, _, _, _, _, _, 1, _, _, _, _, _},
-		{_, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, 0, 2, 0, 0, 1, _, _, _, _, _, 1, _, _, _, _, _},
+		{_, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, 0, 2, 0, 1, 1, _, _, _, _, _, 1, _, _, _, _, _},
 		{_, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, 1, _, 2, 2, 2, _, 1, 1, 1, 1, _, _, 1, 1, 1, 1, 1, _},
 		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, 1, _, 0, 0, 0, _, 1, _, _, 1, _, _, 1, _, _, _, 1, _},
 		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, 1, _, _, _, 1, _},
@@ -106,6 +106,7 @@ const float ghostDirectionChangeDistanceThreshold = 16.0f;
 const float pacDirectionChangeDistanceThreshold = 16.0f; // 0.8
 const float turnBufferDistanceThreshold = 200.0f;
 const float eatDistanceThreshold = 8.0f;
+const float ghostCollisionDistanceThreshold = 24.0f;
 
 const float clyde8NodesDistance = 256.0f;
 
@@ -194,14 +195,17 @@ const char* siren1SfxFilePath     = "resources/sounds/siren_1.wav";
 float tempTimer = 0.0f;
 float globalTimer = 0.0f;
 float gameStartTimer = 0.0f;
+float gameRestartTimer = 0.0f;
 float lifeLostDelayTimer = 0.0f;
 float nextLevelDelayTimer = 0.0f;
 float clydeSwitchStateTimer = 0.0f;
 float inkySwitchStateTimer = 0.0f;
 float frightenedTimer = 0.0f;
 
-const float gameStartTimerThreshold = 6.0f;
-const float lifeLostDelayTimerThreshold = 3.0f;
+const float gameStartTimerThreshold = 4.5f;
+const float gameRestartTimerThreshold = 2.0f;
+const float lifeLostDelayTimerThreshold1 = 2.0f;
+const float lifeLostDelayTimerThreshold2 = 3.0f;
 const float nextLevelDelayTimerThreshold = 3.0f;
 const float clydeSwitchStateTimerThreshold = 2.0f;
 const float inkySwitchStateTimerThreshold = 2.0f;
@@ -209,13 +213,14 @@ const float frightenedTimerThreshold = 7.0f;
 const float frightenedFlashTimerThreshold = 4.0f;
 
 int dotCounter = 0;
+const int maxDots = 246;
 const int inkyDotExitThreshold = 30;
 const int clydeDotExitThreshold = 70;
 
 const int initialGhostEatValue = 200;
 int currentBigDotGhostCounter = 1;
 
-GameState globalGameState = GameState::paused;
+GameState globalGameState = GameState::intro;
 
 EnemyState globalGhostState = EnemyState::scatter;
 

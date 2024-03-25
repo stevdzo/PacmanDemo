@@ -24,6 +24,8 @@ Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 void Player::update(float p_deltaTime) {
 
+	//if (!m_isAlive) return;
+
 	Entity::update(p_deltaTime);
 
 	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
@@ -42,6 +44,7 @@ void Player::render() {
 
 	if (m_isVisible)
 		Entity::render();
+
 	for (auto& pacLife : m_pacLives)
 		pacLife->render();
 }
@@ -49,7 +52,7 @@ void Player::render() {
 void Player::renderWireframe() {
 	//Entity::renderWireframe();
 
-	if (toggleWireframe) {
+	if (toggleWireframe && m_isVisible) {
 
 		auto desiredDirectionNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 		auto currentDirectionNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
@@ -68,7 +71,8 @@ void Player::renderWireframe() {
 void Player::restart(int p_nodeIndex, Direction p_direction) {
 	Entity::restart(p_nodeIndex, p_direction);
 	m_position += Vector2D(nodeSize / 2.0f, 0.0f);
-	//m_isAlive = true;
+	m_isAlive = true;
+	m_isVisible = true;	
 	resetAnimation();
 }
 
@@ -116,47 +120,38 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 		else
 			++it;
 	}
-	if (p_dots.empty())
+
+	if (dotCounter >= maxDots) {
 		m_allDotsEaten = true;
+		dotCounter = 0;
+	}
 }
 
 void Player::onGameWon() {
-	if (m_allDotsEaten) {	
-		globalGameState = GameState::next_level;
+	if (m_allDotsEaten) {
+		m_allDotsEaten = false;
+		globalGameState = GameState::next_level;	
+
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren1))
+			AudioManager::getInstance()->m_chSiren1->stop();
+
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
+			AudioManager::getInstance()->m_chFrightened->stop();
 	}
 }
 
 void Player::onGhostCollision(Enemy* p_ghost) {
 
-	if (m_position.distanceTo(p_ghost->getPosition()) < 24) {
+	if (m_position.distanceTo(p_ghost->getPosition()) <= ghostCollisionDistanceThreshold) {
 
-		if (p_ghost->getCurrentState() == EnemyState::chase ||
-			p_ghost->getCurrentState() == EnemyState::scatter) {			
+		if (p_ghost->getCurrentState() == globalGhostState) {			
 
 			onLifeLost();
 		}
-		else if (p_ghost->getCurrentState() == EnemyState::frightened) {
+		if (p_ghost->getCurrentState() == EnemyState::frightened) {
 
-			m_score += initialGhostEatValue * currentBigDotGhostCounter; // 200 * 1
-			currentBigDotGhostCounter *= 2;
-
-			AudioManager::getInstance()->playEatGhostSound();
-
-			//p_ghost->isEaten(true);			
-			p_ghost->reverseDirection();
-			//ghost->returnPreviousEnemyState();
-			p_ghost->changeEnemyState(EnemyState::eaten);
-
-			/*std::cout << "Current ghost Position: " << p_ghost->getPosition().x << " | " << p_ghost->getPosition().y << std::endl;
-			std::cout << "Current node position: " << p_ghost->getCurrentNode()->getPosition().x << " | " << p_ghost->getCurrentNode()->getPosition().y << std::endl;
-			std::cout << "Node index: " << p_ghost->getCurrentNode()->getIndex() << std::endl;*/
-			//std::cout << "Node index: " << p_ghost->getCurrentNode()->getIndex() << std::endl;
-			
-			//return;
+			onGhostEaten(p_ghost);
 		}
-		/*else if (p_ghost->getCurrentState() == EnemyState::eaten) {
-			return;
-		}*/
 	}
 }
 
@@ -177,19 +172,41 @@ void Player::onBigDotEaten() {
 
 void Player::onLifeLost() {
 
-	globalGameState = GameState::life_lost;
-
-	m_currentDirection = Direction::none;
-	m_velocity = Vector2D(0.0f, 0.0f);
-
+	m_isAlive = false;
+	
 	setAnimationDelay(deathAnimatonDelay);
-	setCurrentFramesRange(2, 13);
+	setCurrentFramesRange(2, 13, false);
+
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren1))
+		AudioManager::getInstance()->m_chSiren1->stop();
+
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
+		AudioManager::getInstance()->m_chFrightened->stop();
 
 	AudioManager::getInstance()->playDieSound();
 
 	m_health -= 1;
 	m_pacLives.erase(m_pacLives.end() - 1);
 
+	frightenedTimer = 0.0f;
+	toggleFrightenedMode = false;
+	currentBigDotGhostCounter = 1;
+
+	globalGameState = GameState::life_lost;
+}
+
+void Player::onGhostEaten(Enemy* p_ghost) {
+	
+	m_score += initialGhostEatValue * currentBigDotGhostCounter; // 200 * 1
+	currentBigDotGhostCounter *= 2;
+
+	AudioManager::getInstance()->playEatGhostSound();
+
+	std::cout << p_ghost->getCurrentNode()->getIndex() << std::endl;
+
+	p_ghost->reverseDirection();
+	//ghost->returnPreviousEnemyState();
+	p_ghost->changeEnemyState(EnemyState::eaten);
 }
 
 void Player::onPlayerMovement(int p_key) {
@@ -211,17 +228,17 @@ void Player::onPlayerMovement(int p_key) {
 				m_currentDirection = Direction::right;
 			m_desiredDirection = Direction::right;
 		}
-		else if (p_key == GLUT_KEY_LEFT) { // a
-			if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection))
+		if (p_key == GLUT_KEY_LEFT) { // a
+			 if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::left;
 			m_desiredDirection = Direction::left;
 		}
-		else if (p_key == GLUT_KEY_UP) {	// w
+		if (p_key == GLUT_KEY_UP) {	// w
 			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::up;
 			m_desiredDirection = Direction::up;
 		}
-		else if (p_key == GLUT_KEY_DOWN) { // s
+		if (p_key == GLUT_KEY_DOWN) { // s
 			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection))
 				m_currentDirection = Direction::down;
 			m_desiredDirection = Direction::down;
@@ -264,8 +281,8 @@ bool Player::isAlive(void) {
 	return m_isAlive;
 }
 
-void Player::isVisible(bool m_isVisible) {
-	m_isVisible = m_isVisible;
+void Player::isVisible(bool p_isVisible) {
+	m_isVisible = p_isVisible;
 }
 
 bool Player::isVisible(void) {
@@ -273,11 +290,7 @@ bool Player::isVisible(void) {
 }
 
 bool Player::isDeathAnimationFinished() {
-
-	bool flag = getCurrentFrame() == 13;
-	if (flag) m_sprite.setCurrentFrame(13);
-
-	return flag;
+	return getCurrentFrame() != 13;
 }
 
 void Player::checkForPortal() {
@@ -295,6 +308,8 @@ void Player::checkForPortal() {
 
 void Player::resetAnimation() {
 	m_sprite.setCurrentFrame(0);
+	m_sprite.setAnimationDelay(normalAnimationDelay);
+	m_sprite.isLooped(true);
 }
 
 void Player::setDefaultPosition() {
@@ -305,34 +320,37 @@ void Player::setDefaultPosition() {
 
 void Player::setVelocityByDirection() {
 
-	if (!m_deathAnimationStarted) {
+	if (!m_isAlive) {
+		m_currentDirection = Direction::none;
+		m_desiredDirection = Direction::none;
+		m_velocity = Vector2D(0.0f, 0.0f);
+	}
 
-		switch (m_currentDirection) {
+	switch (m_currentDirection) {
 
-		case Direction::up:
-			m_velocity = Vector2D(0.0f, 1.0f);
-			//m_sprite.setCurrentFramesRange(6, 8);
-			m_sprite.setCurrentFramesRange(28, 29);
-			break;
-		case Direction::down:
-			m_velocity = Vector2D(0.0f, -1.0f);
-			//m_sprite.setCurrentFramesRange(9, 11);
-			m_sprite.setCurrentFramesRange(42, 43);
-			break;
-		case Direction::left:
-			m_velocity = Vector2D(-1.0f, 0.0f);
-			//m_sprite.setCurrentFramesRange(3, 5);
-			m_sprite.setCurrentFramesRange(14, 15);
-			break;
-		case Direction::right:
-			m_velocity = Vector2D(1.0f, 0.0f);
-			//m_sprite.setCurrentFramesRange(0, 2);
-			m_sprite.setCurrentFramesRange(0, 1);
-			break;
-		case Direction::none:
-			m_velocity = Vector2D(0.0f, 0.0f);
-			break;
-		}
+	case Direction::up:
+		m_velocity = Vector2D(0.0f, 1.0f);
+		//m_sprite.setCurrentFramesRange(6, 8);
+		m_sprite.setCurrentFramesRange(28, 29);
+		break;
+	case Direction::down:
+		m_velocity = Vector2D(0.0f, -1.0f);
+		//m_sprite.setCurrentFramesRange(9, 11);
+		m_sprite.setCurrentFramesRange(42, 43);
+		break;
+	case Direction::left:
+		m_velocity = Vector2D(-1.0f, 0.0f);
+		//m_sprite.setCurrentFramesRange(3, 5);
+		m_sprite.setCurrentFramesRange(14, 15);
+		break;
+	case Direction::right:
+		m_velocity = Vector2D(1.0f, 0.0f);
+		//m_sprite.setCurrentFramesRange(0, 2);
+		m_sprite.setCurrentFramesRange(0, 1);
+		break;
+	case Direction::none:
+		m_velocity = Vector2D(0.0f, 0.0f);
+		break;
 	}
 }
 

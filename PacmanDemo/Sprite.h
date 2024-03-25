@@ -28,6 +28,7 @@ private:
 	bool m_isTransparent;
 	bool m_isSpriteSheet;
 	bool m_hasAnimationChanged;
+	bool m_isLooped;
 
 public:
 
@@ -50,8 +51,12 @@ public:
 	void setAnimationElapsedTime(float);
 
 	bool isTransparent();
+
 	bool hasAnimationChanged();
 	void hasAnimationChanged(bool);
+
+	bool isLooped();
+	void isLooped(bool);
 
 	void animate(float p_speed, float p_deltaTime);
 };

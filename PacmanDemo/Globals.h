@@ -44,7 +44,8 @@ enum class GameState {
 	paused = 1,
 	game_over = 2,
 	life_lost = 3,
-	next_level = 4
+	next_level = 4,
+	intro = 5
 };
 
 struct StateInterval {
@@ -102,6 +103,7 @@ extern const float ghostDirectionChangeDistanceThreshold;
 extern const float pacDirectionChangeDistanceThreshold;
 extern const float turnBufferDistanceThreshold;
 extern const float eatDistanceThreshold;
+extern const float ghostCollisionDistanceThreshold;
 
 extern const float clyde8NodesDistance;
 
@@ -189,6 +191,7 @@ extern const char* siren1SfxFilePath;
 extern float tempTimer;
 extern float globalTimer;
 extern float gameStartTimer;
+extern float gameRestartTimer;
 extern float lifeLostDelayTimer;
 extern float nextLevelDelayTimer;
 extern float clydeSwitchStateTimer;
@@ -196,7 +199,9 @@ extern float inkySwitchStateTimer;
 extern float frightenedTimer;
 
 extern const float gameStartTimerThreshold;
-extern const float lifeLostDelayTimerThreshold;
+extern const float gameRestartTimerThreshold;
+extern const float lifeLostDelayTimerThreshold1;
+extern const float lifeLostDelayTimerThreshold2;
 extern const float nextLevelDelayTimerThreshold;
 extern const float clydeSwitchStateTimerThreshold;
 extern const float inkySwitchStateTimerThreshold;
@@ -204,6 +209,7 @@ extern const float frightenedTimerThreshold;
 extern const float frightenedFlashTimerThreshold;
 
 extern int dotCounter;
+extern const int maxDots;
 extern const int inkyDotExitThreshold;
 extern const int clydeDotExitThreshold;
 

@@ -31,6 +31,7 @@ private:
 	GraphNode* m_initialNode;
 
 	GraphNode* m_inkyCurrentTargetNode; // only for inky
+	GraphNode* m_clydeCurrentTargetNode; // only for clyde
 
 	int m_scatterNodeIndices[3];
 	int m_baseNodeIndices[3];
@@ -45,6 +46,7 @@ private:
 	bool m_canGoOutsideBase;
 	bool m_isEaten;
 	bool m_hasGlobalStateChanged;
+	bool m_canChangeTarget;
 
 	bool m_canExitFrightened;
 
@@ -105,12 +107,6 @@ public:
 	bool isFrightened(void);
 	void isFrightened(bool);
 
-	bool isEaten(void);
-	void isEaten(bool);
-
-	bool isInsideBase(void);
-	void isInsideBase(bool);
-
 	GhostType getGhostType() const;
 	GraphNode* getCurrentTargetNode() const;
 
@@ -136,6 +132,7 @@ public:
 	void assignBlinkyToInky(Enemy* m_enemy);
 
 	bool closeToNode();
+	bool canUpdateChaseTarget();
 	bool canCalculateNewDirection() const;
 
 	bool canExitFrightened(void) const;

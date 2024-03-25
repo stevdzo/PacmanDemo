@@ -43,7 +43,7 @@ void GraphEdge::render() {
 
 void GraphEdge::renderWireframe() {
 	if (toggleWireframe) {
-		if (!m_from->isEmptyNode() && !m_to->isEmptyNode()) {
+		if ((m_from->isValidNode() || m_from->isSpecialNode()) && (m_to->isValidNode() || m_to->isSpecialNode())) {
 			drawLine(m_from->getPosition().x, m_from->getPosition().y, m_to->getPosition().x, m_to->getPosition().y, 0.0f, 1.0f, 1.0f);
 		}
 	}

@@ -23,8 +23,8 @@ void AStar::render() {
 // GraphNode* p_targetNode - ciljni čvor neprijatelja
 std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_isInsideBase) {
 
-	/*if (p_startNode == p_targetNode)
-		return std::vector;*/
+	if (p_startNode->isObstacle() || !p_startNode->isValidNode())
+		return std::vector<GraphNode*>();
 
 	std::set<GraphNode*> openNodes;
 	std::set<GraphNode*> closedNodes;
@@ -48,15 +48,24 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 			return finalPath;
 		}
 
-		for (auto* adjNode : currentNode->getConnectedNodes()) {
+		for (auto* adjNode : currentNode->getConnectedNodes()) {			
+			
+			if (closedNodes.count(adjNode) || adjNode->isObstacle() || !adjNode->isValidNode() || adjNode->getIndex() == 483)
+				continue;	
 
 			// Dodatna provera koje ne dozvoljava duhovima da krenu u suprotnom smeru.
-			if (!p_isInsideBase && p_startNode != p_previousNode && adjNode == p_previousNode) {
-				continue;
+			if (!p_isInsideBase) {
+				if (adjNode == p_previousNode &&
+					p_targetNode != p_startNode &&
+					p_targetNode != p_previousNode &&
+					p_previousNode->getIndex() != 453) {
+					continue;
+				}
 			}
 
-			if (closedNodes.count(adjNode) || adjNode->isObstacle() || adjNode->isEmptyNode())
-				continue;	
+			if (p_startNode == p_targetNode) {
+				continue;
+			}
 
 			adjNode->setParent(currentNode);
 

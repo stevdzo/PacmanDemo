@@ -7,7 +7,7 @@ GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 	m_hCost = 0;
 	m_fCost = 0;
 
-	m_nodeType = NodeType::none;
+	m_nodeType = NodeType::invalid;
 
 	m_isEmptyNode = false;
 	m_isObstacle = false;
@@ -20,7 +20,7 @@ GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameO
 	m_hCost = 0;
 	m_fCost = 0;
 
-	m_nodeType = NodeType::none;
+	m_nodeType = NodeType::invalid;
 
 	m_isEmptyNode = false;
 	m_isObstacle = false;
@@ -78,9 +78,8 @@ void GraphNode::isEmptyNode(bool p_emptyNode) {
 	m_isEmptyNode = p_emptyNode;
 }
 
-bool GraphNode::isEmptyNode(void) const {
-	return m_nodeType == NodeType::none;
-	//return m_isEmptyNode;
+bool GraphNode::isValidNode(void) const {
+	return m_nodeType == NodeType::valid;
 }
 
 void GraphNode::isObstacle(bool p_isObstacle) {
@@ -89,7 +88,10 @@ void GraphNode::isObstacle(bool p_isObstacle) {
 
 bool GraphNode::isObstacle(void) const {
 	return m_nodeType == NodeType::obstacle;
-	//return m_isObstacle;
+}
+
+bool GraphNode::isSpecialNode(void) const {
+	return m_nodeType == NodeType::special;
 }
 
 void GraphNode::isIntersection(bool p_isIntersection) {
@@ -158,7 +160,7 @@ void GraphNode::render() {
 
 void GraphNode::renderWireframe() {
 	if (toggleWireframe)
-		if (!isEmptyNode() && isObstacle()) {
+		if (isObstacle()) {
 			drawRectangle(m_position.x, m_position.y, m_size.x, m_size.y, 0.0f, 0.0f, 1.0f, GL_LINE_LOOP);			
 		}
 	/*char cost[50];

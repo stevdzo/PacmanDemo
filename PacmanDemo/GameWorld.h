@@ -46,10 +46,14 @@ public:
 	void initDots();
 
 	void update(float p_deltaTime);
+	void updateGhosts(float p_deltaTime);
+	void updatePlayer(float p_deltaTime);
+
 	void render();
 	void renderWireframe();
 	void renderUi();
 
+	void onIntroGameState();
 	void onPausedGameState();
 	void onRunningGameState();
 	void onGameOverGameState();

@@ -14,9 +14,7 @@ private:
 	int m_health;
 
 	bool m_isAlive;
-
 	bool m_deathAnimationStarted;
-
 	bool m_allDotsEaten;
 
 	PlayerState m_playerState;
@@ -49,6 +47,7 @@ public:
 	void onGhostCollision(Enemy* p_ghost);
 	void onBigDotEaten();
 	void onLifeLost();	
+	void onGhostEaten(Enemy* p_ghost);	
 	void onPlayerMovement(int = 0);
 	void onPlayerJoystickMovement(int p_x, int p_y, int p_z);
 

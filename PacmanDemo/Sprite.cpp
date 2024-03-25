@@ -19,6 +19,7 @@ Sprite::Sprite(
 	m_endingFrame = 0;
 
 	m_hasAnimationChanged = false;
+	m_isLooped = true;
 
 	m_animationDelay = normalAnimationDelay;
 	m_animationElapsedTime = 0.0f;
@@ -57,27 +58,22 @@ void Sprite::setCurrentFramesRange(int p_start, int p_end) {
 }
 
 int Sprite::getTextureIndex() {
-
 	return this->m_textureIndex;
 }
 
 int Sprite::getCurrentFrameIndex() {
-
 	return this->m_currentFrame;
 }
 
 int Sprite::getCurrentFrame() {
-
 	return this->m_texture;
 }
 
 int Sprite::getNumberOfFramesX() {
-
 	return this->m_numberOfFramesX;
 }
 
 int Sprite::getNumberOfFramesY() {
-
 	return this->m_numberOfFramesY;
 }
 
@@ -109,12 +105,25 @@ void Sprite::hasAnimationChanged(bool p_hasAnimationChanged) {
 	this->m_hasAnimationChanged = p_hasAnimationChanged;
 }
 
+bool Sprite::isLooped() {
+	return m_isLooped;
+}
+
+void Sprite::isLooped(bool p_isLooped) {
+	m_isLooped = p_isLooped;
+}
+
 void Sprite::animate(float p_speed, float p_deltaTime) {
 
 	m_animationElapsedTime += p_deltaTime * p_speed;
 	if (m_animationElapsedTime >= m_animationDelay) {
 		m_currentFrame++;
-		if (m_currentFrame > m_endingFrame) m_currentFrame = m_startingFrame;
+		if (m_currentFrame > m_endingFrame)
+			if (m_isLooped)
+				m_currentFrame = m_startingFrame;
+			else
+				m_currentFrame--;
+
 		m_animationElapsedTime = 0.0f;
 	}
 	if (m_hasAnimationChanged) {
