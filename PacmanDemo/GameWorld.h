@@ -60,7 +60,14 @@ public:
 	void onNextLevelGameState();
 	void onLifeLostGameState();
 
+	void manageFrightenedState();
+	void manageRetreatingSound();
+	void manageSirenSound();
+	void manageCollision();
 	void manageGhostStates();
+
+	void adjustLevelStats();
+	void flashBackgroundOnNextLevel();
 
 	void gameOver();
 	void restart();

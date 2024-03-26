@@ -144,8 +144,8 @@ void Enemy::renderPath() {
 	}
 }
 
-void Enemy::restart(int p_nodeIndex, Direction p_direction) {
-	//Entity::restart(p_nodeIndex, p_direction);
+void Enemy::restart() {
+	Entity::restart();
 
 	m_currentTargetNode = m_currentNode;
 	m_scatterNode = getNodeByIndex(m_scatterNodeIndices[0]);
@@ -165,7 +165,7 @@ void Enemy::restart(int p_nodeIndex, Direction p_direction) {
 
 	m_inBase = m_ghostType == GhostType::blinky ? false : true;
 
-	m_sprite.setCurrentFrame(m_animRange[0]);
+	m_sprite.setCurrentFrame(m_animRange[0]);	
 
 	if (m_ghostType != GhostType::blinky)
 		changeEnemyState(EnemyState::base);
@@ -397,7 +397,8 @@ void Enemy::onEaten() {
 	if (pathCompleted()) {
 
 		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
-		changeEnemyState(EnemyState::base);
+		changeEnemyState(EnemyState::base);		
+
 		//returnPreviousEnemyState();				
 	}
 	followPath();
@@ -614,6 +615,16 @@ void Enemy::exitBase() {
 
 void Enemy::checkForPortal() {
 	Entity::checkForPortal();
+}
+
+void Enemy::setSpeed(const float p_speed) {
+	if (m_currentEnemyState == globalGhostState &&
+		m_currentNode->isTunnelNode()) {
+			Entity::setSpeed(ghostTunnelSpeed);
+			return;
+		}
+
+	Entity::setSpeed(p_speed);
 }
 
 void Enemy::assignBlinkyToInky(Enemy* p_blinky) {

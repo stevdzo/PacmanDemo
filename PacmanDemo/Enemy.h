@@ -74,7 +74,7 @@ public:
 	void renderWireframe() override;
 	void renderPath();
 
-	void restart(int p_nodeIndex, Direction p_direction) override;
+	void restart() override;
 
 	void setVelocityByDirection() override;
 
@@ -128,6 +128,8 @@ public:
 	void exitBase();
 
 	void checkForPortal();
+
+	void setSpeed(const float p_speed);
 
 	void assignBlinkyToInky(Enemy* m_enemy);
 

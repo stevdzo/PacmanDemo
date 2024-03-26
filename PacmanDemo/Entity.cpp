@@ -166,11 +166,8 @@ void Entity::renderWireframe() {
    GameObject::renderWireframe();   
 }
 
-void Entity::restart(int p_nodeIndex, Direction p_direction) {
-    m_currentNode = getNodeByIndex(p_nodeIndex);
-    m_position = m_currentNode->getPosition();  
-    m_currentDirection = p_direction;
-    m_desiredDirection = p_direction;
+void Entity::restart() {    
+    
 }
 
 void Entity::setCurrentFramesRange(int p_startingFrame, int p_endingFrame, bool p_isLooped) {
@@ -203,7 +200,7 @@ void Entity::setDesiredDirection(const Direction p_direction) {
     if (m_desiredDirection != p_direction) m_desiredDirection = p_direction;
 }
 
-void Entity::setSpeed(const float p_speed) {
+void Entity::setSpeed(const float p_speed) {   
     if (m_speed != p_speed) m_speed = p_speed;
 }
 

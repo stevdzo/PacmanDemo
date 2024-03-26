@@ -48,7 +48,7 @@ public:
 	virtual void render();
 	virtual void renderWireframe();
 
-	virtual void restart(int p_nodeIndex, Direction p_direction);
+	virtual void restart();
 
 	virtual void setCurrentFramesRange(int p_startingFrame, int p_endingFrame, bool p_isLooped = true);
 	virtual void setAnimationDelay(float p_animationDelay);

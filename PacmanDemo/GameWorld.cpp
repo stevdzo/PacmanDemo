@@ -26,6 +26,9 @@ void GameWorld::init() {
 	m_background->setPosition(Vector2D((screenWidth-400) / 2, screenHeight / 2));
 	m_background->setSize(Vector2D(screenWidth-400, screenHeight));
 
+	m_background->addBgrSprites(Sprite(mazeFlash1FilePath, 1, 1, false));
+	m_background->addBgrSprites(Sprite(mazeFlash2FilePath, 1, 1, false));
+
 	m_player = new Player(Sprite(assetsFilePath));
 
 	m_blinky = new Enemy(GhostType::blinky, Sprite(assetsFilePath), blinkyScatterNodeIndices, blinkyBaseNodeIndices, blinkyAnimRange, blinkyInitialState, m_player);
@@ -115,11 +118,16 @@ void GameWorld::updateGhosts(float p_deltaTime) {
 	m_inky->update(m_deltaTime);
 	m_pinky->update(m_deltaTime);
 	m_blinky->update(m_deltaTime);
+
+	if (dotCounter >= inkyDotExitThreshold)
+		m_inky->exitBase();
+
+	if (dotCounter >= clydeDotExitThreshold)
+		m_clyde->exitBase();
 }
 
 void GameWorld::updatePlayer(float p_deltaTime) {
 	m_player->update(m_deltaTime);
-	m_player->eatDot(m_dots);
 }
 
 void GameWorld::render() {
@@ -131,25 +139,19 @@ void GameWorld::render() {
 	for (auto& dot : m_dots) {
 		dot->renderWireframe();
 		dot->render();
-	}	
+	}
 
-	//m_astar.render();
-
-	m_clyde->render();
-	m_inky->render();
-	m_pinky->render();
-	m_blinky->render();
+	if (globalGameState != GameState::next_level) {
+		m_clyde->render();
+		m_inky->render();
+		m_pinky->render();
+		m_blinky->render();
+	}
 
 	m_player->render();
 
-	//m_cherry->render();
-
 	renderWireframe();
 	renderUi();
-
-	//std::cout << "Pinky current state: " << static_cast<int>(m_pinky->getCurrentState()) << std::endl;
-	//std::cout << "Inky current nodfe: " << static_cast<int>(m_inky->getCurrentState()) << std::endl;
-	//std::cout << "Current GLOBAL state: " << static_cast<int>(globalGameState) << std::endl;
 
 	glutSwapBuffers();
 }
@@ -169,8 +171,6 @@ void GameWorld::renderWireframe() {
 }
 
 void GameWorld::gameOver() {
-
-
 }
 
 void GameWorld::restart() {
@@ -182,12 +182,12 @@ void GameWorld::restart() {
 	m_inky->setPositionByNode(inkyStartNodeIndex);
 	m_clyde->setPositionByNode(clydeStartNodeIndex);
 
-	m_blinky->restart(blinkyStartNodeIndex, Direction::right);
-	m_pinky->restart(pinkyStartNodeIndex, Direction::right);
-	m_inky->restart(inkyStartNodeIndex, Direction::right);
-	m_clyde->restart(clydeStartNodeIndex, Direction::right);
+	m_blinky->restart();
+	m_pinky->restart();
+	m_inky->restart();
+	m_clyde->restart();
 
-	m_player->restart(playerStartNodeIndex, Direction::left);		
+	m_player->restart();
 
 	frightenedTimer = 0.0f;
 	currentBigDotGhostCounter = 1;
@@ -197,6 +197,67 @@ void GameWorld::restart() {
 void GameWorld::restartGame() {
 	restart();
 	m_player->restartGame();
+}
+
+void GameWorld::manageFrightenedState() {
+	if (toggleFrightenedMode) {
+		frightenedTimer += m_deltaTime;
+		AudioManager::getInstance()->m_chSiren->stop();
+	}
+
+	if (frightenedTimer > frightenedTimerThreshold) {
+		for (auto& ghost : m_ghosts) {
+			if (ghost->getCurrentState() == EnemyState::frightened) {
+				ghost->reverseDirection();
+				//ghost->returnPreviousEnemyState();
+				ghost->changeEnemyState(globalGhostState);
+			}
+		}
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
+			AudioManager::getInstance()->m_chFrightened->stop();
+			AudioManager::getInstance()->playSirenSound();
+		}
+
+		frightenedTimer = 0.0f;
+		currentBigDotGhostCounter = 1;
+		toggleFrightenedMode = false;
+	}
+}
+
+void GameWorld::manageRetreatingSound() {
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chRetreating)) {
+		bool allEaten = std::all_of(m_ghosts.begin(), m_ghosts.end(), [](Enemy*& ghost) {
+			return ghost->getCurrentState() != EnemyState::eaten;
+		});
+		if (allEaten)
+			AudioManager::getInstance()->m_chRetreating->stop();
+	}
+}
+
+void GameWorld::manageSirenSound() {
+	if (dotCounter == 60 + currentLevel * (2 + currentLevel) && !siren2Executed) {
+		AudioManager::getInstance()->changeSirenSound();
+		siren2Executed = true;
+	}
+	if (dotCounter == 90 + currentLevel * (2 + currentLevel) && !siren3Executed) {
+		AudioManager::getInstance()->changeSirenSound();
+		siren3Executed = true;
+	}
+	if (dotCounter == 130 + currentLevel * (2 + currentLevel) && !siren4Executed) {
+		AudioManager::getInstance()->changeSirenSound();
+		siren4Executed = true;
+	}
+	if (dotCounter == 170 + currentLevel * (2 + currentLevel) && !siren5Executed) {
+		AudioManager::getInstance()->changeSirenSound();
+		siren5Executed = true;
+	}
+}
+
+void GameWorld::manageCollision() {
+	for (auto& ghost : m_ghosts)
+		m_player->onGhostCollision(ghost);
+
+	m_player->onDotCollision(m_dots);
 }
 
 void GameWorld::manageGhostStates() {
@@ -218,17 +279,52 @@ void GameWorld::manageGhostStates() {
 	}
 }
 
+void GameWorld::adjustLevelStats() {
+
+	currentLevel += 1;
+
+	pacSpeed          += pacSpeed          * 0.1 + currentLevel * 10/2;
+	pacDotSpeed       += pacDotSpeed       * 0.1 + currentLevel * 10/2;
+	ghostTunnelSpeed  += ghostTunnelSpeed  * 0.1 + currentLevel * 10/2;
+	chaseScatterSpeed += chaseScatterSpeed * 0.1 + currentLevel * 10/2;
+	eatenSpeed        += eatenSpeed        * 0.1 + currentLevel * 10/2;
+	frightenedSpeed   += frightenedSpeed   * 0.1 + currentLevel * 10/2;
+	baseSpeed         += baseSpeed         * 0.1 + currentLevel * 10/2;
+}
+
+void GameWorld::flashBackgroundOnNextLevel() {
+}
+
 void GameWorld::renderUi() {
 
-	TextRenderer::getInstance()->drawStrokeText((char*) "HIGH SCORE", screenWidth - 200 - 50, screenHeight / 2 + 50, 1, 1, 0);
+	int offsetX = 350;
+	int offsetY = 100;
+
+	char level[50];
+	sprintf_s(level, 50, "Level: %i", currentLevel);
+	TextRenderer::getInstance()->drawStrokeText(level, screenWidth - offsetX, screenHeight / 2 + offsetY, 1, 1, 0);
+
+	char dots[50];
+	sprintf_s(dots, 50, "Dots eaten: %i", dotCounter);
+	TextRenderer::getInstance()->drawStrokeText(dots, screenWidth - offsetX, screenHeight / 2 + offsetY/2, 1, 1, 0);
 
 	char score[50];
-	sprintf_s(score, 50, "%i", static_cast<int>(m_player->getScore()));
-	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - 200, screenHeight / 2, 1, 1, 0);
+	sprintf_s(score, 50, "Score: %i", static_cast<int>(m_player->getScore()));
+	TextRenderer::getInstance()->drawStrokeText(score, screenWidth - offsetX, screenHeight / 2, 1, 1, 0);
 
 	char timer[50];
-	sprintf_s(timer, 50, "%.2f", globalTimer);
-	TextRenderer::getInstance()->drawStrokeText(timer, screenWidth - 200, screenHeight / 2 - 50, 1, 1, 0);
+	sprintf_s(timer, 50, "Timer: %.2f", globalTimer);
+	TextRenderer::getInstance()->drawStrokeText(timer, screenWidth - offsetX, screenHeight / 2 - offsetY/2, 1, 1, 0);
+
+	char* currState = (char*) " ";
+	if (globalGhostState == EnemyState::chase)
+		currState = (char*) "Chase";
+	if (globalGhostState == EnemyState::scatter)
+		currState = (char*) "Scatter";
+
+	char state[50];
+	sprintf_s(state, 50, "Global state: %s", currState);
+	TextRenderer::getInstance()->drawStrokeText(state, screenWidth - offsetX, screenHeight / 2 - offsetY, 1, 1, 0);
 }
 
 void GameWorld::keyboardSpec(int p_key, int p_x, int p_y) {
@@ -258,7 +354,7 @@ void GameWorld::onIntroGameState() {
 	if (gameStartTimer > gameStartTimerThreshold) {
 		gameStartTimer = 0.0f;
 
-		AudioManager::getInstance()->playSiren1Sound();
+		AudioManager::getInstance()->playSirenSound();
 		m_pinky->exitBase();
 		gameStartTimer = 0.0f;
 		globalGameState = GameState::running;
@@ -274,62 +370,39 @@ void GameWorld::onPausedGameState() {
 		gameStartTimer = 0.0f;
 
 		m_pinky->exitBase();
-		AudioManager::getInstance()->playSiren1Sound();
+		AudioManager::getInstance()->playSirenSound();
 		globalGameState = GameState::running;
 	}
 }
 
 void GameWorld::onRunningGameState() {
 
-	if (!toggleFrightenedMode)
+	if (!toggleFrightenedMode) {
 		globalTimer += m_deltaTime;
+		manageGhostStates();
+	}
 
 	updateGhosts(m_deltaTime);
 	updatePlayer(m_deltaTime);
-	
-	if (dotCounter >= inkyDotExitThreshold)
-		m_inky->exitBase();
 
-	if (dotCounter >= clydeDotExitThreshold)
-		m_clyde->exitBase();
-
-	if (toggleFrightenedMode) {
-		frightenedTimer += m_deltaTime;
-		AudioManager::getInstance()->m_chSiren1->stop();
-	}
-
-	if (frightenedTimer > frightenedTimerThreshold) {
-		for (auto& ghost : m_ghosts) {
-			if (ghost->getCurrentState() == EnemyState::frightened) {
-				ghost->reverseDirection();
-				//ghost->returnPreviousEnemyState();
-				ghost->changeEnemyState(globalGhostState);
-			}
-		}
-		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened)) {
-			AudioManager::getInstance()->m_chFrightened->stop();
-			AudioManager::getInstance()->playSiren1Sound();
-		}
-
-		frightenedTimer = 0.0f;
-		currentBigDotGhostCounter = 1;
-		toggleFrightenedMode = false;
-	}
-
-	if (!toggleFrightenedMode)
-		manageGhostStates();
-
-	for (auto& ghost : m_ghosts)
-		m_player->onGhostCollision(ghost);	
+	manageFrightenedState();
+	manageRetreatingSound();
+	manageSirenSound();
+	manageCollision();	
 }
 
 void GameWorld::onGameOverGameState() {
+
+	//std::cout << "GAME OVER " << std::endl;
+
 	exit(0);
 }
 
 void GameWorld::onNextLevelGameState() {
 
 	nextLevelDelayTimer += m_deltaTime;
+
+	m_background->flashBackground(m_deltaTime);
 
 	if (nextLevelDelayTimer > nextLevelDelayTimerThreshold) {
 		//restartGame();
@@ -338,8 +411,22 @@ void GameWorld::onNextLevelGameState() {
 		hasIntervalStateChanged = false;
 		globalGhostState = EnemyState::scatter;
 
+		
+
 		initDots();
 		restart();
+
+		siren1Executed = false;
+		siren2Executed = false;
+		siren3Executed = false;
+		siren4Executed = false;
+		siren5Executed = false;
+
+		currentSirenSoundIndex = 0;
+
+		adjustLevelStats();
+
+		m_background->resetSprite();
 
 		globalGameState = GameState::paused;	
 	}
@@ -357,12 +444,12 @@ void GameWorld::onLifeLostGameState() {
 	}
 
 	if (lifeLostDelayTimer > lifeLostDelayTimerThreshold2) {
-		lifeLostDelayTimer = 0.0f;
+		lifeLostDelayTimer = 0.0f;	
 
-		if (m_player->getHealth() <= 0) {
+		if (m_player->gameOver()) {			
 			globalGameState = GameState::game_over;
-			//exit(0);
-		}			
+			return;
+		}
 
 		restart();
 		globalGameState = GameState::paused;

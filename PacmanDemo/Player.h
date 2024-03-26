@@ -31,7 +31,7 @@ public:
 	void render() override;
 	void renderWireframe() override;
 
-	void restart(int p_nodeIndex, Direction p_direction) override;
+	void restart() override;
 	void restartGame();
 
 	int getScore(void) const;
@@ -41,9 +41,11 @@ public:
 
 	void createUIHealth();
 
-	void eatDot(std::vector<Dot*>&);
+	void onDotCollision(std::vector<Dot*>&);
 
-	void onGameWon();
+	void checkGameOver();
+	void checkGameWon();
+
 	void onGhostCollision(Enemy* p_ghost);
 	void onBigDotEaten();
 	void onLifeLost();	
@@ -57,7 +59,11 @@ public:
 	bool isVisible(void);
 	bool isDeathAnimationFinished();
 
+	bool gameOver();
+
 	void checkForPortal();
+
+	void manageSpeed();
 
 	void resetAnimation();
 

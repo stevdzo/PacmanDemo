@@ -15,13 +15,13 @@ const int rightPortalIndex = 915; // 884
 
 const int _ = -1;
 const int map[rows][columns] = {
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		{_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _},
-		{_, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, _},
-		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, _, _, 1, 1, 1, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 3, _, _, _, _, _, _, _, _, _, _, _, _, _, _},
+		{_, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, _},
+		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, _, _, 1, 1, 1, 1, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
 		{_, 1, _, _, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, _},
 		{_, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, 1, _, _, _, 1, _},
 		{_, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, 1, _, _, _, 1, _},
@@ -38,13 +38,13 @@ const int map[rows][columns] = {
 		{_, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, 1, _, _, _, 1, _},
 		{_, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, 1, _, _, _, 1, _},
 		{_, 1, _, _, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, _},
-		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, _, _, 1, 1, 1, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
-		{_, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, _, _, _, 1, _, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, _},
-		{_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 1, _, _, _, _, _, _, _, _, _, _, _, _, _, _},
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, _, _, 1, _, _, _, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, _, _, 1, 1, 1, 1, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, _, _, 1, _, _, 1, _, _, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, _, _, 1, _, _, _, 1, _},
+		{_, 1, 1, 1, 1, _, _, 1, 1, 1, 1, _, _, _, _, _, 3, _, _, _, _, _, 1, 1, 1, 1, 1, 1, 1, 1, _},
+		{_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 3, _, _, _, _, _, _, _, _, _, _, _, _, _, _},
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 const int dots[rows][columns] = {
@@ -112,12 +112,13 @@ const float clyde8NodesDistance = 256.0f;
 
 const int respawnNodeIndex = 450; 
 
-const float chaseScatterSpeed = 290.0f;
-//const float chaseScatterSpeed = 50;
-const float eatenSpeed = 400.0f;
-const float frightenedSpeed = 170.0f;
-//const float frightenedSpeed = 50.0f;
-const float baseSpeed = 100.0f;
+float pacSpeed = 330.0f;
+float pacDotSpeed = 230.0f;
+float ghostTunnelSpeed = 150.0f;
+float chaseScatterSpeed = 260.0f;
+float eatenSpeed = 400.0f;
+float frightenedSpeed = 170.0f;
+float baseSpeed = 100.0f;
 
 const float pacR = 254.0f/255.0f;
 const float pacG = 255.0f/255.0f;
@@ -174,16 +175,18 @@ const int frightenedAnimRange      [2] = { 64, 65 };
 const int frightenedFlashAnimRange [2] = { 66, 67 };
 const int eatenAnimRange		   [4] = { 78, 79, 80, 81 };
 
-const char* assetsFilePath    = "resources/images/sprite_sheet_2.png";
-const char* pacFilePath       = "resources/images/sprite_sheet_2.png";
-const char* blinkyFilePath    = "resources/images/ghost_blinky.png";
-const char* pinkyFilePath     = "resources/images/ghost_pinky.png";
-const char* inkyFilePath      = "resources/images/ghost_inky.png";
-const char* clydeFilePath     = "resources/images/ghost_clyde.png";
-const char* mazeFilePath      = "resources/images/mazelevel.png";
-const char* bigDotFilePath    = "resources/images/dot_big.png";
-const char* smallDotFilePath  = "resources/images/dot_small.png";
-const char* cherryFilePath    = "resources/images/cherry.png";
+const char* assetsFilePath     = "resources/images/sprite_sheet_2.png";
+const char* pacFilePath        = "resources/images/sprite_sheet_2.png";
+const char* blinkyFilePath     = "resources/images/ghost_blinky.png";
+const char* pinkyFilePath      = "resources/images/ghost_pinky.png";
+const char* inkyFilePath       = "resources/images/ghost_inky.png";
+const char* clydeFilePath      = "resources/images/ghost_clyde.png";
+const char* mazeFilePath       = "resources/images/mazelevel.png";
+const char* mazeFlash1FilePath = "resources/images/maze_flash_1.png";
+const char* mazeFlash2FilePath = "resources/images/maze_flash_2.png";
+const char* bigDotFilePath     = "resources/images/dot_big.png";
+const char* smallDotFilePath   = "resources/images/dot_small.png";
+const char* cherryFilePath     = "resources/images/cherry.png";
 
 const char* pacEatSfxFilePath     = "resources/sounds/eat.wav";
 const char* introSfxFilePath      = "resources/sounds/intro_sound.wav";
@@ -191,6 +194,11 @@ const char* pacDieSfxFilePath     = "resources/sounds/die.mp3";
 const char* frightenedSfxFilePath = "resources/sounds/frightened.wav";
 const char* eatGhostSfxFilePath   = "resources/sounds/eat_ghost.wav";
 const char* siren1SfxFilePath     = "resources/sounds/siren_1.wav";
+const char* siren2SfxFilePath	  = "resources/sounds/siren_2.wav";
+const char* siren3SfxFilePath	  = "resources/sounds/siren_3.wav";
+const char* siren4SfxFilePath	  = "resources/sounds/siren_4.wav";
+const char* siren5SfxFilePath	  = "resources/sounds/siren_5.wav";
+const char* retreatingSfxFilePath = "resources/sounds/retreating.wav";
 
 float tempTimer = 0.0f;
 float globalTimer = 0.0f;
@@ -212,6 +220,8 @@ const float inkySwitchStateTimerThreshold = 2.0f;
 const float frightenedTimerThreshold = 7.0f;
 const float frightenedFlashTimerThreshold = 4.0f;
 
+int eatenCount = 0;
+
 int dotCounter = 0;
 const int maxDots = 246;
 const int inkyDotExitThreshold = 30;
@@ -219,6 +229,16 @@ const int clydeDotExitThreshold = 70;
 
 const int initialGhostEatValue = 200;
 int currentBigDotGhostCounter = 1;
+
+int currentLevel = 1;
+int currentSirenSoundIndex = 0;
+int previousSirenSoundIndex = -1;
+
+bool siren1Executed = false;
+bool siren2Executed = false;
+bool siren3Executed = false;
+bool siren4Executed = false;
+bool siren5Executed = false;
 
 GameState globalGameState = GameState::intro;
 

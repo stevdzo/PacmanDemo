@@ -15,6 +15,9 @@ GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite), m_isVisible(true) 
 	m_size = Vector2D(32.0f, 32.0f);
 	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
+
+	if (!p_sprite.isTransparent())
+		m_mazeFlashBgrs.push_back(p_sprite);
 }
 
 GameObject::GameObject(Vector2D p_position) : m_position(p_position), m_previousPosition(p_position) {
@@ -83,6 +86,18 @@ bool GameObject::isVisible(void) const {
 	return m_isVisible;
 }
 
+void GameObject::addBgrSprites(Sprite p_spr) {
+	m_mazeFlashBgrs.push_back(p_spr);
+}
+
+void GameObject::setSprite(Sprite p_sprite) {
+	m_sprite = p_sprite;
+}
+
+Sprite GameObject::getSprite() const {
+	return m_sprite;
+}
+
 void GameObject::setPosition(Vector2D p_position) {
 	m_position = p_position;
 }
@@ -105,4 +120,14 @@ void GameObject::setWireFrameColor(Vector3D p_wireframeColor) {
 
 Vector3D GameObject::getWireFrameColor() const {
 	return m_wireframeColor;
+}
+
+void GameObject::flashBackground(float p_deltaTime) {
+	((int)(nextLevelDelayTimer * 10) % 7 == 0) ?
+		m_sprite = m_mazeFlashBgrs[2] :
+		m_sprite = m_mazeFlashBgrs[1];
+}
+
+void GameObject::resetSprite() {
+	m_sprite = m_mazeFlashBgrs[0];
 }

@@ -14,30 +14,29 @@ void Graph::initNodes() {
             switch (map[row][col]) {
 
             case -1: {
-               // node->isObstacle(true);
                 node->setNodeType(NodeType::obstacle);
             }
                 break;
             case 0: {
-                //node->isEmptyNode(true);
                 node->setNodeType(NodeType::invalid);
             }
                 break;
             case 1: {
-                //node->isObstacle(false);
                 node->setNodeType(NodeType::valid);
             }
                 break;
             case 2: {
-               // node->isObstacle(false);
                 node->setPosition(node->getPosition() + Vector2D(nodeSize /2.0f, 0.0f));
                 node->setNodeType(NodeType::valid);
             }
                   break;
             case 3: {
+
                 //node->isObstacle(false);
-                node->setPosition(node->getPosition() - Vector2D(nodeSize / 2.0f, 0.0f));
-                node->setNodeType(NodeType::special);
+                //node->setPosition(node->getPosition() - Vector2D(nodeSize / 2.0f, 0.0f));
+
+                node->isTunnelNode(true);
+                node->setNodeType(NodeType::valid);
             }
                   break;
             }
@@ -69,15 +68,6 @@ void Graph::initEdges() {
 
                             m_nodeMatrix[row][col]->addEdge(edge);
                         }
-
-                        //if (m_nodeMatrix[row][col]->isSpecialNode()) {
-
-                        //    GraphEdge* edge = new GraphEdge(m_nodeMatrix[row][col], m_nodeMatrix[row + i][col + j]);
-                        //    m_nodeMatrix[row][col]->addEdge(edge);
-
-                        //   // continue;
-                        //}
-
                         m_nodeMatrix[row][col]->addConnectedNode(m_nodeMatrix[row + i][col + j]);
                     }                 
                 }
@@ -88,16 +78,6 @@ void Graph::initEdges() {
             if (m_nodeMatrix[row][col]->getIndex() == rightPortalIndex) {
                 m_nodeMatrix[row][col]->addConnectedNode(m_nodeVector[leftPortalIndex]);
             }
-           /* if (m_nodeMatrix[row][col]->isSpecialNode()) {
-
-                GraphEdge* edge = new GraphEdge(m_nodeMatrix[row][col], m_nodeMatrix[row - 1][col]);
-                m_nodeMatrix[row][col]->addEdge(edge);
-                edge = new GraphEdge(m_nodeMatrix[row][col], m_nodeMatrix[row + 1][col]);
-                m_nodeMatrix[row][col]->addEdge(edge);
-
-                m_nodeMatrix[row][col]->addConnectedNode(m_nodeMatrix[row - 1][col]);
-                m_nodeMatrix[row][col]->addConnectedNode(m_nodeMatrix[row + 1][col]);
-            }*/
         }
     }
 }
@@ -244,8 +224,8 @@ GraphNode* Graph::getNodeInPlayerDirection(const GraphNode* p_node, const Direct
     GraphNode* node = m_nodeMatrix[targetRow][targetCol];
     if (targetRow >= 0 && targetRow < static_cast<int>(m_nodeMatrix.size()) &&
         targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&
-        !node->isObstacle() &&
         node->isValidNode())
+
         return node;
 
     else return (GraphNode*) nullptr;
@@ -291,7 +271,6 @@ GraphNode* Graph::calculateInkyTargetNode(const GraphNode* p_node1, const GraphN
     GraphNode* node = m_nodeMatrix[targetRow][targetCol];
     if (targetRow >= 0 && targetRow < static_cast<int>(m_nodeMatrix.size()) &&
         targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&
-        !node->isObstacle() &&
         node->isValidNode())
          return node;
          

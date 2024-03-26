@@ -40,11 +40,10 @@ private:
 
 	NodeType m_nodeType;
 
-	bool m_isEmptyNode;
-	bool m_isObstacle;
 	bool m_isIntersection;
 	bool m_isCorner;
 	bool m_isTurn;
+	bool m_isTunnelNode;
 
 	GraphNode* m_parentNode;
 
@@ -73,12 +72,8 @@ public:
 	void setNodeType(NodeType p_nodeType);
 	NodeType getNodeType(void) const;
 
-	void isEmptyNode(bool);
 	bool isValidNode(void) const;
-
-	void isObstacle(bool);
 	bool isObstacle(void) const;
-
 	bool isSpecialNode(void) const;
 
 	void isIntersection(bool);
@@ -89,6 +84,9 @@ public:
 
 	void isTurn(bool);
 	bool isTurn(void) const;
+
+	void isTunnelNode(bool);
+	bool isTunnelNode(void) const;
 
 	void setParent(GraphNode* p_node);
 	GraphNode* getParent(void) const;

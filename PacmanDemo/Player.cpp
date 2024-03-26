@@ -5,8 +5,8 @@
 Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 	m_score = 0;
-	m_health = 3;
-	m_speed = 300.0f;
+	m_health = 5;
+	m_speed = pacSpeed;
 
 	m_currentNode = getNodeByIndex(441);
 	m_position = m_currentNode->getPosition();
@@ -24,20 +24,18 @@ Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 void Player::update(float p_deltaTime) {
 
-	//if (!m_isAlive) return;
-
 	Entity::update(p_deltaTime);
 
 	m_nextNode = getNodeByDirectionFromCurrentNode(m_desiredDirection);
 
-	onGameWon();
-
-	//std::cout << m_currentNode->getIndex() << std::endl;
+	checkGameOver();
+	checkGameWon();
 
 	setVelocityByDirection();
 	updateDirection();
 
 	checkForPortal();
+	manageSpeed();
 }
 
 void Player::render() {
@@ -45,8 +43,9 @@ void Player::render() {
 	if (m_isVisible)
 		Entity::render();
 
-	for (auto& pacLife : m_pacLives)
-		pacLife->render();
+	if (!m_pacLives.empty())
+		for (auto& pacLife : m_pacLives)
+			pacLife->render();
 }
 
 void Player::renderWireframe() {
@@ -68,11 +67,21 @@ void Player::renderWireframe() {
 	}
 }
 
-void Player::restart(int p_nodeIndex, Direction p_direction) {
-	Entity::restart(p_nodeIndex, p_direction);
+void Player::restart() {
+	Entity::restart();
+
+	m_currentNode = getNodeByIndex(playerStartNodeIndex);
+	m_position = m_currentNode->getPosition();
 	m_position += Vector2D(nodeSize / 2.0f, 0.0f);
+
 	m_isAlive = true;
 	m_isVisible = true;	
+	m_allDotsEaten = false;
+
+	m_currentDirection = Direction::left;
+	m_desiredDirection = Direction::left;
+	m_velocity = Vector2D(-1.0f, 0.0f);
+
 	resetAnimation();
 }
 
@@ -96,14 +105,14 @@ void Player::setGhosts(const std::vector<Enemy*>& p_ghosts) {
 }
 
 void Player::createUIHealth() {
-	for (size_t i = 1; i <= 3; i++) {
+	for (size_t i = 1; i <= 5; i++) {
 		auto pacImg = new GameObject(Sprite(pacFilePath));
-		pacImg->setPosition(Vector2D(screenWidth - (300 - 30 * i), screenHeight / 2 - 100));
+		pacImg->setPosition(Vector2D(screenWidth - (380 - 30 * i), screenHeight / 2 - 150));
 		m_pacLives.push_back(pacImg);
 	}
 }
 
-void Player::eatDot(std::vector<Dot*>& p_dots) {
+void Player::onDotCollision(std::vector<Dot*>& p_dots) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
 		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {			
 			if ((*it)->getType() == DotType::big) {
@@ -127,31 +136,32 @@ void Player::eatDot(std::vector<Dot*>& p_dots) {
 	}
 }
 
-void Player::onGameWon() {
+void Player::checkGameOver() {
+}
+
+void Player::checkGameWon() {
 	if (m_allDotsEaten) {
 		m_allDotsEaten = false;
-		globalGameState = GameState::next_level;	
+		globalGameState = GameState::next_level;
 
-		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren1))
-			AudioManager::getInstance()->m_chSiren1->stop();
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren))
+			AudioManager::getInstance()->m_chSiren->stop();
 
 		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
 			AudioManager::getInstance()->m_chFrightened->stop();
+
+		if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chRetreating))
+			AudioManager::getInstance()->m_chRetreating->stop();
 	}
 }
 
 void Player::onGhostCollision(Enemy* p_ghost) {
 
 	if (m_position.distanceTo(p_ghost->getPosition()) <= ghostCollisionDistanceThreshold) {
-
-		if (p_ghost->getCurrentState() == globalGhostState) {			
-
-			onLifeLost();
-		}
-		if (p_ghost->getCurrentState() == EnemyState::frightened) {
-
+		if (p_ghost->getCurrentState() == globalGhostState)			
+			onLifeLost();		
+		if (p_ghost->getCurrentState() == EnemyState::frightened)
 			onGhostEaten(p_ghost);
-		}
 	}
 }
 
@@ -177,11 +187,14 @@ void Player::onLifeLost() {
 	setAnimationDelay(deathAnimatonDelay);
 	setCurrentFramesRange(2, 13, false);
 
-	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren1))
-		AudioManager::getInstance()->m_chSiren1->stop();
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chSiren))
+		AudioManager::getInstance()->m_chSiren->stop();
 
 	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chFrightened))
 		AudioManager::getInstance()->m_chFrightened->stop();
+
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chRetreating))
+		AudioManager::getInstance()->m_chRetreating->stop();
 
 	AudioManager::getInstance()->playDieSound();
 
@@ -201,8 +214,7 @@ void Player::onGhostEaten(Enemy* p_ghost) {
 	currentBigDotGhostCounter *= 2;
 
 	AudioManager::getInstance()->playEatGhostSound();
-
-	std::cout << p_ghost->getCurrentNode()->getIndex() << std::endl;
+	AudioManager::getInstance()->playRetreatingSound();
 
 	p_ghost->reverseDirection();
 	//ghost->returnPreviousEnemyState();
@@ -216,7 +228,7 @@ void Player::onPlayerMovement(int p_key) {
 	if (globalGameState == GameState::running) {
 
 		if (p_key == '2') {
-			restart(playerStartNodeIndex, Direction::left);
+			restart();
 		}
 
 		if (p_key == '5') {
@@ -293,6 +305,10 @@ bool Player::isDeathAnimationFinished() {
 	return getCurrentFrame() != 13;
 }
 
+bool Player::gameOver() {
+	return m_health == 0;
+}
+
 void Player::checkForPortal() {
 	//Entity::checkForPortal();
 
@@ -304,6 +320,14 @@ void Player::checkForPortal() {
 		m_desiredDirection = Direction::right;
 		m_position = getNodeByIndex(leftPortalIndex)->getPosition();
 	}
+}
+
+void Player::manageSpeed() {
+
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chEat)) 
+		setSpeed(pacDotSpeed);
+	else
+		setSpeed(pacSpeed);
 }
 
 void Player::resetAnimation() {

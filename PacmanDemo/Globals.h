@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <set>
 #include <random>
@@ -107,10 +108,13 @@ extern const float ghostCollisionDistanceThreshold;
 
 extern const float clyde8NodesDistance;
 
-extern const float chaseScatterSpeed;
-extern const float eatenSpeed;
-extern const float frightenedSpeed;
-extern const float baseSpeed;
+extern float pacSpeed;
+extern float pacDotSpeed;
+extern float ghostTunnelSpeed;
+extern float chaseScatterSpeed;
+extern float eatenSpeed;
+extern float frightenedSpeed;
+extern float baseSpeed;
 
 extern const float pacR;
 extern const float pacG;
@@ -177,6 +181,8 @@ extern const char* pinkyFilePath;
 extern const char* inkyFilePath;
 extern const char* clydeFilePath;
 extern const char* mazeFilePath;
+extern const char* mazeFlash1FilePath;
+extern const char* mazeFlash2FilePath;
 extern const char* bigDotFilePath;
 extern const char* smallDotFilePath;
 extern const char* cherryFilePath;
@@ -187,6 +193,11 @@ extern const char* pacDieSfxFilePath;
 extern const char* frightenedSfxFilePath;
 extern const char* eatGhostSfxFilePath;
 extern const char* siren1SfxFilePath;
+extern const char* siren2SfxFilePath;
+extern const char* siren3SfxFilePath;
+extern const char* siren4SfxFilePath;
+extern const char* siren5SfxFilePath;
+extern const char* retreatingSfxFilePath;
 
 extern float tempTimer;
 extern float globalTimer;
@@ -208,6 +219,7 @@ extern const float inkySwitchStateTimerThreshold;
 extern const float frightenedTimerThreshold;
 extern const float frightenedFlashTimerThreshold;
 
+extern int eatenCount;
 extern int dotCounter;
 extern const int maxDots;
 extern const int inkyDotExitThreshold;
@@ -216,7 +228,15 @@ extern const int clydeDotExitThreshold;
 extern const int initialGhostEatValue;
 extern int currentBigDotGhostCounter;
 
-static int currentLevel = 1;
+extern int currentLevel;
+extern int currentSirenSoundIndex;
+extern int previousSirenSoundIndex;
+
+extern bool siren1Executed;
+extern bool siren2Executed;
+extern bool siren3Executed;
+extern bool siren4Executed;
+extern bool siren5Executed;
 
 extern GameState globalGameState;
 

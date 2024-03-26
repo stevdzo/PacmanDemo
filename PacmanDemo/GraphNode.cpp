@@ -9,10 +9,9 @@ GraphNode::GraphNode(int p_index) : m_index(p_index), GameObject() {
 
 	m_nodeType = NodeType::invalid;
 
-	m_isEmptyNode = false;
-	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
+	m_isTunnelNode = false;
 }
 
 GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameObject(p_position) {
@@ -22,11 +21,10 @@ GraphNode::GraphNode(int p_index, Vector2D p_position) : m_index(p_index), GameO
 
 	m_nodeType = NodeType::invalid;
 
-	m_isEmptyNode = false;
-	m_isObstacle = false;
 	m_isIntersection = false;
 	m_isCorner = false;
 	m_isTurn = false;
+	m_isTunnelNode = false;
 }
 
 void GraphNode::setIndex(int p_index) {
@@ -74,16 +72,8 @@ NodeType GraphNode::getNodeType(void) const {
 	return m_nodeType;
 }
 
-void GraphNode::isEmptyNode(bool p_emptyNode) {
-	m_isEmptyNode = p_emptyNode;
-}
-
 bool GraphNode::isValidNode(void) const {
 	return m_nodeType == NodeType::valid;
-}
-
-void GraphNode::isObstacle(bool p_isObstacle) {
-	m_isObstacle = p_isObstacle;
 }
 
 bool GraphNode::isObstacle(void) const {
@@ -124,6 +114,14 @@ void GraphNode::isTurn(bool p_isTurn) {
 
 bool GraphNode::isTurn(void) const {
 	return isCorner() || isIntersection();
+}
+
+void GraphNode::isTunnelNode(bool p_isTunnelNode) {
+	m_isTunnelNode = p_isTunnelNode;
+}
+
+bool GraphNode::isTunnelNode(void) const {
+	return m_isTunnelNode;
 }
 
 void GraphNode::setParent(GraphNode* p_node) {
