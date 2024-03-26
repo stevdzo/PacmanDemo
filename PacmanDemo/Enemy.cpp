@@ -60,7 +60,8 @@ void Enemy::update(float p_deltaTime) {
 	
 	flashOnFrightened(p_deltaTime);
 
-	if (m_ghostType == GhostType::clyde)
+	if (m_ghostType == GhostType::clyde &&
+		m_currentEnemyState == globalGhostState)
 		shouldClydeSwitchState(p_deltaTime);
 
 	checkForPortal();
@@ -383,8 +384,6 @@ void Enemy::onScatter() {
 void Enemy::onEaten() {
 	setSpeed(eatenSpeed);
 	setDesiredDirection(getDirectionByNextNode());	
-
-	std::cout << m_inBase << std::endl;
 
 	if (m_currentNode == getNodeByIndex(baseEntranceNodeIndex)) {
 

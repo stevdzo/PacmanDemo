@@ -269,15 +269,10 @@ void GameWorld::onPausedGameState() {
 
 	gameStartTimer += m_deltaTime;
 
-	
-
 	if (gameStartTimer > gameRestartTimerThreshold) {
-
-		std::cout << "GO TO RUNNING" << std::endl;
 
 		gameStartTimer = 0.0f;
 
-	
 		m_pinky->exitBase();
 		AudioManager::getInstance()->playSiren1Sound();
 		globalGameState = GameState::running;
