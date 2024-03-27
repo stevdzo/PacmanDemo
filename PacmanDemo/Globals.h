@@ -2,6 +2,9 @@
 #define _GLOBALS_H
 
 #include <iostream>
+#include <iomanip>
+#include <string>
+#include <sstream>
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -202,6 +205,7 @@ extern const char* siren4SfxFilePath;
 extern const char* siren5SfxFilePath;
 extern const char* retreatingSfxFilePath;
 
+extern float elapsedTime;
 extern float tempTimer;
 extern float globalTimer;
 extern float gameStartTimer;
@@ -256,5 +260,7 @@ void drawCircle(float posX, float posY, float radius, float red, float green, fl
 void drawPoint(float posX, float posY, float size, float red, float green, float blue);
 void drawLine(float posX1, float posY1, float posX2, float posY2, float red, float green, float blue); 
 void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, float green, float blue, int type);
+
+std::string formatElapsedTime(float seconds);
 
 #endif

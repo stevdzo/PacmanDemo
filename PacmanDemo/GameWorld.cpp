@@ -302,8 +302,10 @@ void GameWorld::flashBackgroundOnNextLevel() {
 
 void GameWorld::renderUi() {
 
-	int offsetX = 350;
+	int offsetX = 400;
 	int offsetY = 100;
+
+	TextRenderer::getInstance()->drawStrokeText((char*) formatElapsedTime(elapsedTime).c_str(), screenWidth - offsetX, screenHeight - offsetY, 1, 1, 0);
 
 	char level[50];
 	sprintf_s(level, 50, "Level: %i", currentLevel);
@@ -331,8 +333,7 @@ void GameWorld::renderUi() {
 	sprintf_s(state, 50, "Global state: %s", currState);
 	TextRenderer::getInstance()->drawStrokeText(state, screenWidth - offsetX, screenHeight / 2 - offsetY, 1, 1, 0);
 
-
-	char* inkyCurrState = (char*) " ";
+	/*char* inkyCurrState = (char*) " ";
 	if (m_inky->getCurrentState() == EnemyState::chase)
 		inkyCurrState = (char*)"Chase";
 	if (m_inky->getCurrentState() == EnemyState::scatter)
@@ -346,7 +347,7 @@ void GameWorld::renderUi() {
 
 	char state2[50];
 	sprintf_s(state2, 50, "Inky state: %s", inkyCurrState);
-	TextRenderer::getInstance()->drawStrokeText(state2, screenWidth - offsetX, screenHeight / 2 - offsetY*2, 1, 1, 0);
+	TextRenderer::getInstance()->drawStrokeText(state2, screenWidth - offsetX, screenHeight / 2 - offsetY*2, 1, 1, 0);*/
 }
 
 void GameWorld::keyboardSpec(int p_key, int p_x, int p_y) {
@@ -501,6 +502,8 @@ void GameWorld::idle() {
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
 	m_deltaTime = (float) (currentTime - m_previousTime) / 1000;
 	m_previousTime = currentTime;
+
+	elapsedTime += m_deltaTime;
 
 	update(m_deltaTime);
 

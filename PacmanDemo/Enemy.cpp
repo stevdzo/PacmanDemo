@@ -397,7 +397,9 @@ void Enemy::onEaten() {
 	if (pathCompleted()) {
 
 		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
+
 		changeEnemyState(EnemyState::base);		
+
 
 		//returnPreviousEnemyState();				
 	}
@@ -501,13 +503,11 @@ void Enemy::toggleBaseNode() {
 		else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1])) {
 			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
 		}
+
+
 	}
 
 	if (m_canGoOutsideBase && m_baseNode == m_initialNode) {
-
-		/*if (m_ghostType != GhostType::pinky)
-			std::cout << "WHY" << std::endl;*/
-
 		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
 	}
 
@@ -571,33 +571,6 @@ void Enemy::changeEnemyState(EnemyState p_enemyState) {
 	m_currentEnemyState = p_enemyState;
 
 	m_path.clear();
-
-	/*if (p_enemyState == EnemyState::base) {
-		findShortestPath(m_baseNode);
-		return;
-	}
-
-	if (p_enemyState == EnemyState::eaten) {
-		m_currentTargetNode = m_eatenNode;
-		findShortestPath(m_eatenNode);
-		return;
-	}
-
-	if (p_enemyState == EnemyState::frightened) {		
-		return;
-	}
-	 
-	if (p_enemyState == EnemyState::chase) {
-		updateChaseTarget();
-		findShortestPath(m_playerNode);
-		return;
-	}
-
-	if (p_enemyState == EnemyState::scatter) {
-		setScatterNode(getNodeByIndex(m_scatterNodeIndices[0]));
-		findShortestPath(m_scatterNode);
-		return;
-	}*/
 }
 
 void Enemy::returnPreviousEnemyState() {
@@ -611,7 +584,7 @@ void Enemy::reverseDirection() {
 }
 
 void Enemy::exitBase() {
-	if (!m_canGoOutsideBase && !toggleFrightenedMode) {
+	if (!m_canGoOutsideBase) {
 		m_baseNode = m_initialNode;
 		m_canGoOutsideBase = true;
 	}
@@ -624,9 +597,9 @@ void Enemy::checkForPortal() {
 void Enemy::setSpeed(const float p_speed) {
 	if (m_currentEnemyState == globalGhostState &&
 		m_currentNode->isTunnelNode()) {
-			Entity::setSpeed(ghostTunnelSpeed);
-			return;
-		}
+		Entity::setSpeed(ghostTunnelSpeed);
+		return;
+	}
 
 	Entity::setSpeed(p_speed);
 }

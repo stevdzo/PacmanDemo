@@ -161,7 +161,7 @@ const int pinkyScatterNodeIndices  [] = { 246, 89 , 211 };
 const int inkyScatterNodeIndices   [] = { 688, 714, 498 };
 const int clydeScatterNodeIndices  [] = { 223, 187, 405 };
 
-const int blinkyBaseNodeIndices    [] = { 0,   0,   453 };
+const int blinkyBaseNodeIndices    [] = { 449, 451, 453 };
 const int pinkyBaseNodeIndices     [] = { 449, 451, 453 };
 const int inkyBaseNodeIndices      [] = { 389, 387, 453 };
 const int clydeBaseNodeIndices     [] = { 513, 511, 453 };
@@ -203,6 +203,7 @@ const char* siren4SfxFilePath	  = "resources/sounds/siren_4.wav";
 const char* siren5SfxFilePath	  = "resources/sounds/siren_5.wav";
 const char* retreatingSfxFilePath = "resources/sounds/retreating.wav";
 
+float elapsedTime = 0.0f;
 float tempTimer = 0.0f;
 float globalTimer = 0.0f;
 float gameStartTimer = 0.0f;
@@ -298,4 +299,21 @@ void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, 
 	glVertex2f(posX + sizeW/2, posY + sizeH/2);
 	glVertex2f(posX - sizeW/2, posY + sizeH/2);
 	glEnd();
+}
+
+std::string formatElapsedTime(float elapsed) {
+
+	int hours        =  (int)  elapsed / 3600;
+	int minutes      = ((int)  elapsed % 3600) / 60;
+	int seconds      =  (int)  elapsed % 60;
+	int milliseconds =  (int)(elapsed * 1000) % 1000;
+
+	std::stringstream formattedTime;
+	formattedTime << "Elapsed: " 
+		<< std::setw(2) << std::setfill('0') << hours   << ":"
+		<< std::setw(2) << std::setfill('0') << minutes << ":"
+		<< std::setw(2) << std::setfill('0') << seconds << ":"
+		<< std::setw(2) << std::setfill('0') << milliseconds;
+
+	return formattedTime.str();
 }
