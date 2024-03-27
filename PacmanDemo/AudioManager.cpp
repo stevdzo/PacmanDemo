@@ -39,7 +39,7 @@ bool AudioManager::loadAudio() {
 	result = m_system->createSound(frightenedSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxFrightened);	
 	result = m_system->createSound(retreatingSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxRetreating);
 
-	for (size_t i = 0; i < 5; i++) {
+	for (size_t i = 0; i < sirensSize; i++) {
 		FMOD::Sound* s;
 		m_sirens.push_back(s);
 	}
@@ -87,7 +87,7 @@ void AudioManager::playRetreatingSound() {
 
 void AudioManager::changeSirenSound() {
 	
-	if (currentSirenSoundIndex < 4)
+	if (currentSirenSoundIndex < sirensSize - 1)
 		currentSirenSoundIndex++;
 
 	if (isPlaying(m_chSiren))

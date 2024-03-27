@@ -27,6 +27,7 @@ void Graph::initNodes() {
                 break;
             case 2: {
                 node->setPosition(node->getPosition() + Vector2D(nodeSize /2.0f, 0.0f));
+                node->isBaseNode(true);
                 node->setNodeType(NodeType::valid);
             }
                   break;

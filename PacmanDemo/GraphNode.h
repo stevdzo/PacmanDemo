@@ -44,6 +44,7 @@ private:
 	bool m_isCorner;
 	bool m_isTurn;
 	bool m_isTunnelNode;
+	bool m_isBaseNode;
 
 	GraphNode* m_parentNode;
 
@@ -87,6 +88,9 @@ public:
 
 	void isTunnelNode(bool);
 	bool isTunnelNode(void) const;
+
+	void isBaseNode(bool);
+	bool isBaseNode(void) const;
 
 	void setParent(GraphNode* p_node);
 	GraphNode* getParent(void) const;

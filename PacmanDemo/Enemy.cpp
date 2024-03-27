@@ -307,12 +307,12 @@ void Enemy::updateChaseTarget() {
 		m_currentTargetNode = m_player->getCurrentNode();
 
 		GraphNode* node = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), pinkyTargetNodeDistance);
-		if (node && node != m_currentNode) {
+		if (node && node != m_currentNode && !node->isBaseNode()) {
 			m_playerNode = node;
 		}		
 
-		//if (pathCompleted())
-			//m_playerNode = m_currentTargetNode;
+		if (pathCompleted())
+			m_playerNode = m_currentTargetNode;
 	}
 		break;
 	case GhostType::inky: {
@@ -504,10 +504,14 @@ void Enemy::toggleBaseNode() {
 	}
 
 	if (m_canGoOutsideBase && m_baseNode == m_initialNode) {
+
+		/*if (m_ghostType != GhostType::pinky)
+			std::cout << "WHY" << std::endl;*/
+
 		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
 	}
 
-	if (m_previousNode == getNodeByIndex(baseEntranceBlockNodeIndex)) {
+	if (m_currentNode == getNodeByIndex(baseEntranceNodeIndex)) {
 		m_inBase = false;
 
 		if (toggleFrightenedMode && m_previousEnemyState != EnemyState::eaten) {
@@ -561,12 +565,12 @@ void Enemy::shouldInkySwitchState(float p_deltaTime) {
 void Enemy::changeEnemyState(EnemyState p_enemyState) {
 
 	if (m_currentEnemyState == p_enemyState)
-		return;
-
-	m_path.clear();
+		return;	
 
 	m_previousEnemyState = m_currentEnemyState;
 	m_currentEnemyState = p_enemyState;
+
+	m_path.clear();
 
 	/*if (p_enemyState == EnemyState::base) {
 		findShortestPath(m_baseNode);

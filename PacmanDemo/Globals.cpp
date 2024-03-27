@@ -112,13 +112,15 @@ const float clyde8NodesDistance = 256.0f;
 
 const int respawnNodeIndex = 450; 
 
-float pacSpeed = 330.0f;
+float pacSpeed = 310.0f;
 float pacDotSpeed = 230.0f;
 float ghostTunnelSpeed = 150.0f;
 float chaseScatterSpeed = 260.0f;
 float eatenSpeed = 400.0f;
 float frightenedSpeed = 170.0f;
 float baseSpeed = 100.0f;
+const float maxSpeed = 500.0f;
+const float speedIncreaseCoeff = 0.05f;
 
 const float pacR = 254.0f/255.0f;
 const float pacG = 255.0f/255.0f;
@@ -145,6 +147,7 @@ const float deathAnimatonDelay = 0.4;
 
 const int baseEntranceNodeIndex = 453; // čvor ispred ulaza u bazu
 const int baseEntranceBlockNodeIndex = 452; // čvor kojim blokiram ulaz u bazu
+const int specialBlockNodeIndex = 483; // specijalni čvor koji se takođe ignoriše
 
 const int playerStartNodeIndex = 441;
 
@@ -232,7 +235,7 @@ int currentBigDotGhostCounter = 1;
 
 int currentLevel = 1;
 int currentSirenSoundIndex = 0;
-int previousSirenSoundIndex = -1;
+const int sirensSize = 5;
 
 bool siren1Executed = false;
 bool siren2Executed = false;

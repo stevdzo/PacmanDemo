@@ -115,6 +115,8 @@ extern float chaseScatterSpeed;
 extern float eatenSpeed;
 extern float frightenedSpeed;
 extern float baseSpeed;
+extern const float maxSpeed;
+extern const float speedIncreaseCoeff;
 
 extern const float pacR;
 extern const float pacG;
@@ -144,6 +146,7 @@ extern const int respawnNodeIndex;
 extern const int baseEntranceNodeIndex;
 
 extern const int baseEntranceBlockNodeIndex;
+extern const int specialBlockNodeIndex;
 
 extern const int playerStartNodeIndex;
 
@@ -230,7 +233,7 @@ extern int currentBigDotGhostCounter;
 
 extern int currentLevel;
 extern int currentSirenSoundIndex;
-extern int previousSirenSoundIndex;
+extern const int sirensSize;
 
 extern bool siren1Executed;
 extern bool siren2Executed;

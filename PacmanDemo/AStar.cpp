@@ -58,14 +58,15 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 				if (adjNode == p_previousNode &&
 					p_targetNode != p_startNode &&
 					p_targetNode != p_previousNode &&
-					p_previousNode->getIndex() != 453) {
+					adjNode->getIndex() != 453) {
 					continue;
 				}
 			}
 
-			if (p_startNode == p_targetNode) {
+
+			/*if (p_startNode == p_targetNode) {
 				continue;
-			}
+			}*/
 
 			adjNode->setParent(currentNode);
 

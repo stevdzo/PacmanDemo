@@ -92,7 +92,7 @@ void Entity::updateDirection() {
 
 bool Entity::isValidDirection(const Direction p_direction) const {
     auto node = getNodeByDirectionFromCurrentNode(p_direction);
-    return !(node && (!node->isValidNode() || node->isObstacle() || node->getIndex() == baseEntranceBlockNodeIndex));
+    return !(node && (!node->isValidNode() || node->getIndex() == baseEntranceBlockNodeIndex || node->getIndex() == specialBlockNodeIndex));
 }
 
 bool Entity::isOppositeDirection(Direction p_direction1, Direction p_direction2) const {
@@ -134,8 +134,6 @@ Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
     m_speed = 0.0f;
-    /*m_currentDirection = Direction::left;
-    m_desiredDirection = Direction::left;*/
 }
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
@@ -201,7 +199,7 @@ void Entity::setDesiredDirection(const Direction p_direction) {
 }
 
 void Entity::setSpeed(const float p_speed) {   
-    if (m_speed != p_speed) m_speed = p_speed;
+    if (m_speed != p_speed && p_speed < maxSpeed) m_speed = p_speed;
 }
 
 void Entity::setDefaultPosition() {

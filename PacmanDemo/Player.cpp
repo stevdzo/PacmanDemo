@@ -13,7 +13,6 @@ Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 	m_position += Vector2D(nodeSize/2.0f, 0.0f);
 	m_isAlive = true;
 	m_isVisible = true;
-	m_deathAnimationStarted = false;
 	m_allDotsEaten = false;
 	m_currentDirection = Direction::left;
 	m_desiredDirection = Direction::left;
@@ -57,7 +56,7 @@ void Player::renderWireframe() {
 		auto currentDirectionNode = getNodeByDirectionFromCurrentNode(m_currentDirection);
 
 		if (currentDirectionNode)
-			drawPoint(currentDirectionNode->getPosition().x, currentDirectionNode->getPosition().y, 14, 0.0f, 1.0f, 1.0f);
+			drawPoint(currentDirectionNode->getPosition().x, currentDirectionNode->getPosition().y, 18, 0.0f, 1.0f, 1.0f);
 
 		if (desiredDirectionNode)
 			drawPoint(desiredDirectionNode->getPosition().x, desiredDirectionNode->getPosition().y, 14, pacR, pacG, pacB);
@@ -87,7 +86,7 @@ void Player::restart() {
 
 void Player::restartGame() {
 	m_allDotsEaten = false;
-	m_health = 3;
+	m_health = 5;
 	m_score = 0.0f;
 
 	createUIHealth();
@@ -237,22 +236,28 @@ void Player::onPlayerMovement(int p_key) {
 
 		if (p_key == GLUT_KEY_RIGHT) { // d
 			if (m_desiredDirection == Direction::left && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::right;
+				if (m_currentDirection == Direction::left)
+					m_currentDirection = Direction::right;
+
 			m_desiredDirection = Direction::right;
 		}
 		if (p_key == GLUT_KEY_LEFT) { // a
-			 if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::left;
+			 if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+				 if (m_currentDirection == Direction::right)
+					m_currentDirection = Direction::left;
+
 			m_desiredDirection = Direction::left;
 		}
 		if (p_key == GLUT_KEY_UP) {	// w
-			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::up;
+			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+				if (m_currentDirection == Direction::down)
+					m_currentDirection = Direction::up;
 			m_desiredDirection = Direction::up;
 		}
 		if (p_key == GLUT_KEY_DOWN) { // s
-			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::down;
+			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+				if (m_currentDirection == Direction::up)
+					m_currentDirection = Direction::down;
 			m_desiredDirection = Direction::down;
 		}
 	}
@@ -263,23 +268,27 @@ void Player::onPlayerJoystickMovement(int p_x, int p_y, int p_z) {
 	if (globalGameState == GameState::running) {
 
 		if (p_x > 900) { // d
-			if (m_desiredDirection == Direction::left && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::right;
+			if (m_desiredDirection == Direction::left && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+				if (m_currentDirection == Direction::left)
+					m_currentDirection = Direction::right;
 			m_desiredDirection = Direction::right;
 		}
 		if (p_x < -900) { // a
-			if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::left;
+			if (m_desiredDirection == Direction::right && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+				if (m_currentDirection == Direction::right)
+					m_currentDirection = Direction::left;
 			m_desiredDirection = Direction::left;
 		}
 		if (p_y < -900) {	// w
-			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection))
+			if (m_desiredDirection == Direction::down && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+					if (m_currentDirection == Direction::down)
 				m_currentDirection = Direction::up;
 			m_desiredDirection = Direction::up;
 		}
 		if (p_y > 900) { // s
-			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection))
-				m_currentDirection = Direction::down;
+			if (m_desiredDirection == Direction::up && isValidDirection(m_desiredDirection) && isValidDirection(m_currentDirection))
+				if (m_currentDirection == Direction::up)
+					m_currentDirection = Direction::down;
 			m_desiredDirection = Direction::down;
 		}
 	}
@@ -324,13 +333,14 @@ void Player::checkForPortal() {
 
 void Player::manageSpeed() {
 
-	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chEat)) 
-		setSpeed(pacDotSpeed);
+	if (AudioManager::getInstance()->isPlaying(AudioManager::getInstance()->m_chEat))
+		Entity::setSpeed(pacDotSpeed);
 	else
-		setSpeed(pacSpeed);
+		Entity::setSpeed(pacSpeed);
 }
 
 void Player::resetAnimation() {
+	m_sprite.setCurrentFramesRange(0, 1);
 	m_sprite.setCurrentFrame(0);
 	m_sprite.setAnimationDelay(normalAnimationDelay);
 	m_sprite.isLooped(true);
@@ -384,20 +394,40 @@ void Player::updateDirection() {
 
 	if (dist < pacDirectionChangeDistanceThreshold) {
 
-		if (!isValidDirection(m_currentDirection) && !isValidDirection(m_desiredDirection)) {
-			m_currentDirection = Direction::none;
-			m_desiredDirection = Direction::none;
 
-			return;
+		//if (isValidDirection(m_desiredDirection)) {
+		//	m_currentDirection = m_desiredDirection;
+		//}
+		//else {
+		//	if (isValidDirection(m_currentDirection)) {
+		//		if (m_currentDirection == m_desiredDirection) {
+		//			m_currentDirection = Direction::none;
+		//			m_desiredDirection = Direction::none;
+		//		}
+		//		else {
+		//			m_currentDirection = Direction::none;
+		//			m_desiredDirection = Direction::none;
+		//		}
+
+		//		//return;
+		//	}
+		//}	
+
+		if (isValidDirection(m_currentDirection) && isValidDirection(m_desiredDirection)) {
+			m_currentDirection = m_desiredDirection;
 		}
-		else if (!isValidDirection(m_desiredDirection)) {
+		else if (!isValidDirection(m_currentDirection) && isValidDirection(m_desiredDirection)) {
+			m_currentDirection = m_desiredDirection;
+		}
+		else if (isValidDirection(m_currentDirection) && !isValidDirection(m_desiredDirection)) {
 			if (m_currentDirection == m_desiredDirection) {
 				m_currentDirection = Direction::none;
 				m_desiredDirection = Direction::none;
 			}
-			//else m_desiredDirection = m_currentDirection;
 		}
-		else
-			m_currentDirection = m_desiredDirection;		
+		else if (!isValidDirection(m_currentDirection) && !isValidDirection(m_desiredDirection)) {
+			m_currentDirection = Direction::none;
+			m_desiredDirection = Direction::none;
+		}
 	}
 }

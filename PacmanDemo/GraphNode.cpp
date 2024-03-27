@@ -124,6 +124,14 @@ bool GraphNode::isTunnelNode(void) const {
 	return m_isTunnelNode;
 }
 
+void GraphNode::isBaseNode(bool p_isBaseNode) {
+	m_isBaseNode = p_isBaseNode;
+}
+
+bool GraphNode::isBaseNode(void) const {
+	return m_isBaseNode;
+}
+
 void GraphNode::setParent(GraphNode* p_node) {
 	m_parentNode = p_node;
 }
