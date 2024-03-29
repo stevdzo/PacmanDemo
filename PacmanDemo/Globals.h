@@ -115,6 +115,7 @@ extern float pacSpeed;
 extern float pacDotSpeed;
 extern float ghostTunnelSpeed;
 extern float chaseScatterSpeed;
+extern float ghostDefaultspeed;
 extern float eatenSpeed;
 extern float frightenedSpeed;
 extern float baseSpeed;
@@ -143,6 +144,10 @@ extern const float clydeB;
 
 extern const float normalAnimationDelay;
 extern const float deathAnimatonDelay;
+
+extern const float pacUISpacingX;
+extern const float pacUIOffsetX;
+extern const float pacUIOffsetY;
 
 extern const int respawnNodeIndex;
 
@@ -223,14 +228,15 @@ extern const float lifeLostDelayTimerThreshold2;
 extern const float nextLevelDelayTimerThreshold;
 extern const float clydeSwitchStateTimerThreshold;
 extern const float inkySwitchStateTimerThreshold;
-extern const float frightenedTimerThreshold;
-extern const float frightenedFlashTimerThreshold;
+extern float frightenedTimerThreshold;
+extern float frightenedFlashTimerThreshold;
 
-extern int eatenCount;
+extern int health;
 extern int dotCounter;
 extern const int maxDots;
 extern const int inkyDotExitThreshold;
 extern const int clydeDotExitThreshold;
+extern const int maxHealth;
 
 extern const int initialGhostEatValue;
 extern int currentBigDotGhostCounter;
@@ -254,7 +260,8 @@ extern const EnemyState pinkyInitialState;
 extern const EnemyState inkyInitialState;
 extern const EnemyState clydeInitialState;
 
-extern StateInterval intervals[7];
+typedef std::vector<StateInterval> Intervals;
+extern Intervals intervals;
 
 void drawCircle(float posX, float posY, float radius, float red, float green, float blue);
 void drawPoint(float posX, float posY, float size, float red, float green, float blue);
@@ -262,5 +269,7 @@ void drawLine(float posX1, float posY1, float posX2, float posY2, float red, flo
 void drawRectangle(float posX, float posY, float sizeW, float sizeH, float red, float green, float blue, int type);
 
 std::string formatElapsedTime(float seconds);
+
+void decreaseInterval(Intervals intervals);
 
 #endif

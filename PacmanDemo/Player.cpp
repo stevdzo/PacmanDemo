@@ -5,7 +5,7 @@
 Player::Player(Sprite p_sprite) : Entity(p_sprite) {
 
 	m_score = 0;
-	m_health = 5;
+	m_health = health;
 	m_speed = pacSpeed;
 
 	m_currentNode = getNodeByIndex(441);
@@ -86,7 +86,7 @@ void Player::restart() {
 
 void Player::restartGame() {
 	m_allDotsEaten = false;
-	m_health = 5;
+	m_health = health;
 	m_score = 0.0f;
 
 	createUIHealth();
@@ -104,9 +104,10 @@ void Player::setGhosts(const std::vector<Enemy*>& p_ghosts) {
 }
 
 void Player::createUIHealth() {
-	for (size_t i = 1; i <= 5; i++) {
-		auto pacImg = new GameObject(Sprite(pacFilePath));
-		pacImg->setPosition(Vector2D(screenWidth - (380 - 30 * i), screenHeight / 2 - 150));
+	for (size_t i = 1; i <= health; i++) {
+		GameObject* pacImg = new GameObject(Sprite(pacFilePath));
+		pacImg->setSize(Vector2D(48.0f, 48.0f));
+		pacImg->setPosition(Vector2D(screenWidth / 2 + pacUIOffsetX + (pacUISpacingX * i), screenHeight / 2 - pacUIOffsetY));
 		m_pacLives.push_back(pacImg);
 	}
 }
@@ -157,7 +158,8 @@ void Player::checkGameWon() {
 void Player::onGhostCollision(Enemy* p_ghost) {
 
 	if (m_position.distanceTo(p_ghost->getPosition()) <= ghostCollisionDistanceThreshold) {
-		if (p_ghost->getCurrentState() == globalGhostState)			
+		if (p_ghost->getCurrentState() == EnemyState::chase ||
+			p_ghost->getCurrentState() == EnemyState::scatter)
 			onLifeLost();		
 		if (p_ghost->getCurrentState() == EnemyState::frightened)
 			onGhostEaten(p_ghost);
@@ -197,8 +199,10 @@ void Player::onLifeLost() {
 
 	AudioManager::getInstance()->playDieSound();
 
-	m_health -= 1;
-	m_pacLives.erase(m_pacLives.end() - 1);
+	/*m_pacLives.erase(m_pacLives.end() - 1);
+	m_health = m_pacLives.size();*/
+
+	decreaseHealth();
 
 	frightenedTimer = 0.0f;
 	toggleFrightenedMode = false;
@@ -318,6 +322,22 @@ bool Player::gameOver() {
 	return m_health == 0;
 }
 
+void Player::decreaseHealth() {
+	m_pacLives.erase(m_pacLives.end() - 1);
+	m_health -= 1;
+}
+
+void Player::increaseHealth() {
+
+	int lastIndex = m_pacLives.size();
+
+	auto pacImg = new GameObject(Sprite(pacFilePath));
+	pacImg->setPosition(Vector2D(screenWidth - (pacUIOffsetX - 30 * lastIndex), screenHeight / 2 - pacUIOffsetY));
+	m_pacLives.push_back(pacImg);
+
+	m_health += 1;
+}
+
 void Player::checkForPortal() {
 	//Entity::checkForPortal();
 
@@ -393,25 +413,6 @@ void Player::updateDirection() {
 	float dist = m_position.distanceToSq(m_currentNode->getPosition());
 
 	if (dist < pacDirectionChangeDistanceThreshold) {
-
-
-		//if (isValidDirection(m_desiredDirection)) {
-		//	m_currentDirection = m_desiredDirection;
-		//}
-		//else {
-		//	if (isValidDirection(m_currentDirection)) {
-		//		if (m_currentDirection == m_desiredDirection) {
-		//			m_currentDirection = Direction::none;
-		//			m_desiredDirection = Direction::none;
-		//		}
-		//		else {
-		//			m_currentDirection = Direction::none;
-		//			m_desiredDirection = Direction::none;
-		//		}
-
-		//		//return;
-		//	}
-		//}	
 
 		if (isValidDirection(m_currentDirection) && isValidDirection(m_desiredDirection)) {
 			m_currentDirection = m_desiredDirection;

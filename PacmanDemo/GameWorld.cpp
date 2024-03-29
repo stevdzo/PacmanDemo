@@ -131,6 +131,7 @@ void GameWorld::updatePlayer(float p_deltaTime) {
 }
 
 void GameWorld::render() {
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -141,14 +142,14 @@ void GameWorld::render() {
 		dot->render();
 	}
 
+	m_player->render();
+
 	if (globalGameState != GameState::next_level) {
 		m_clyde->render();
 		m_inky->render();
 		m_pinky->render();
 		m_blinky->render();
 	}
-
-	m_player->render();
 
 	renderWireframe();
 	renderUi();
@@ -157,25 +158,18 @@ void GameWorld::render() {
 }
 
 void GameWorld::renderWireframe() {
-
 	m_graph->renderWireframe();
-
 	m_clyde->renderWireframe();
 	m_inky->renderWireframe();
 	m_pinky->renderWireframe();
 	m_blinky->renderWireframe();
-
 	m_player->renderWireframe();
-
-	//m_cherry->renderWireframe();
 }
 
 void GameWorld::gameOver() {
 }
 
 void GameWorld::restart() {
-
-	//if (globalGameState == GameState::paused) return;
 
 	m_blinky->setPositionByNode(blinkyStartNodeIndex);
 	m_pinky->setPositionByNode(pinkyStartNodeIndex);
@@ -240,18 +234,22 @@ void GameWorld::manageSirenSound() {
 
 	if (dotCounter == 60 + dotCoeff && !siren2Executed) {
 		AudioManager::getInstance()->changeSirenSound();
+		chaseScatterSpeed += dotCoeff / 4;
 		siren2Executed = true;
 	}
 	if (dotCounter == 100 + dotCoeff && !siren3Executed) {
 		AudioManager::getInstance()->changeSirenSound();
+		chaseScatterSpeed += dotCoeff / 4;
 		siren3Executed = true;
 	}
 	if (dotCounter == 140 + dotCoeff && !siren4Executed) {
 		AudioManager::getInstance()->changeSirenSound();
+		chaseScatterSpeed += dotCoeff / 4;
 		siren4Executed = true;
 	}
 	if (dotCounter == 180 + dotCoeff && !siren5Executed) {
 		AudioManager::getInstance()->changeSirenSound();
+		chaseScatterSpeed += dotCoeff / 4;
 		siren5Executed = true;
 	}
 }
@@ -273,8 +271,10 @@ void GameWorld::manageGhostStates() {
 
 				for (auto& ghost : m_ghosts)
 					if (ghost->getCurrentState() != EnemyState::base &&
-						ghost->getCurrentState() != EnemyState::eaten)
+						ghost->getCurrentState() != EnemyState::eaten) {
+						//ghost->reverseDirection();
 						ghost->changeEnemyState(interval.state);
+					}
 			}
 		}
 		else if (hasIntervalStateChanged && globalTimer > interval.end)
@@ -282,19 +282,34 @@ void GameWorld::manageGhostStates() {
 	}
 }
 
+void GameWorld::manageBonusHealth() {
+	m_player->increaseHealth();
+}
+
 void GameWorld::adjustLevelStats() {
 
 	currentLevel += 1;
 
-	if (currentLevel > 4) return;
+	if (currentLevel > 5) return;
 
-	pacSpeed          += pacSpeed          * speedIncreaseCoeff + currentLevel * 3;
-	pacDotSpeed       += pacDotSpeed       * speedIncreaseCoeff + currentLevel * 3;
-	ghostTunnelSpeed  += ghostTunnelSpeed  * speedIncreaseCoeff + currentLevel * 3;
-	chaseScatterSpeed += chaseScatterSpeed * speedIncreaseCoeff + currentLevel * 3;
-	eatenSpeed        += eatenSpeed        * speedIncreaseCoeff + currentLevel * 3;
-	frightenedSpeed   += frightenedSpeed   * speedIncreaseCoeff + currentLevel * 3;
-	baseSpeed         += baseSpeed         * speedIncreaseCoeff + currentLevel * 3;
+	chaseScatterSpeed = ghostDefaultspeed;
+
+	pacSpeed          += pacSpeed          * speedIncreaseCoeff + currentLevel;
+	pacDotSpeed       += pacDotSpeed       * speedIncreaseCoeff + currentLevel;
+	ghostTunnelSpeed  += ghostTunnelSpeed  * speedIncreaseCoeff + currentLevel;
+	ghostDefaultspeed += ghostDefaultspeed * speedIncreaseCoeff + currentLevel;
+	chaseScatterSpeed += ghostDefaultspeed * speedIncreaseCoeff + currentLevel;
+	eatenSpeed        += eatenSpeed        * speedIncreaseCoeff + currentLevel;
+	frightenedSpeed   += frightenedSpeed   * speedIncreaseCoeff + currentLevel;
+	baseSpeed         += baseSpeed         * speedIncreaseCoeff + currentLevel;
+
+	if (frightenedTimerThreshold > 0) {
+		frightenedTimerThreshold--;
+		frightenedFlashTimerThreshold--;
+	}
+
+	if (currentLevel == 5)
+		decreaseInterval(intervals);
 }
 
 void GameWorld::flashBackgroundOnNextLevel() {
@@ -313,7 +328,7 @@ void GameWorld::renderUi() {
 
 	char dots[50];
 	sprintf_s(dots, 50, "Dots eaten: %i", dotCounter);
-	TextRenderer::getInstance()->drawStrokeText(dots, screenWidth - offsetX, screenHeight / 2 + offsetY/2, 1, 1, 0);
+	TextRenderer::getInstance()->drawStrokeText(dots, screenWidth - offsetX, screenHeight / 2 + offsetY / 2 , 1, 1, 0);
 
 	char score[50];
 	sprintf_s(score, 50, "Score: %i", static_cast<int>(m_player->getScore()));
@@ -332,22 +347,6 @@ void GameWorld::renderUi() {
 	char state[50];
 	sprintf_s(state, 50, "Global state: %s", currState);
 	TextRenderer::getInstance()->drawStrokeText(state, screenWidth - offsetX, screenHeight / 2 - offsetY, 1, 1, 0);
-
-	/*char* inkyCurrState = (char*) " ";
-	if (m_inky->getCurrentState() == EnemyState::chase)
-		inkyCurrState = (char*)"Chase";
-	if (m_inky->getCurrentState() == EnemyState::scatter)
-		inkyCurrState = (char*)"Scatter";
-	if (m_inky->getCurrentState() == EnemyState::base)
-		inkyCurrState = (char*)"Base";
-	if (m_inky->getCurrentState() == EnemyState::frightened)
-		inkyCurrState = (char*)"Frightened";
-	if (m_inky->getCurrentState() == EnemyState::eaten)
-		inkyCurrState = (char*)"Eaten";
-
-	char state2[50];
-	sprintf_s(state2, 50, "Inky state: %s", inkyCurrState);
-	TextRenderer::getInstance()->drawStrokeText(state2, screenWidth - offsetX, screenHeight / 2 - offsetY*2, 1, 1, 0);*/
 }
 
 void GameWorld::keyboardSpec(int p_key, int p_x, int p_y) {

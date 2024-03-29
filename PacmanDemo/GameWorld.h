@@ -65,6 +65,7 @@ public:
 	void manageSirenSound();
 	void manageCollision();
 	void manageGhostStates();
+	void manageBonusHealth();
 
 	void adjustLevelStats();
 	void flashBackgroundOnNextLevel();

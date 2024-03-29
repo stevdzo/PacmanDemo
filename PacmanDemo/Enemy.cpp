@@ -60,10 +60,6 @@ void Enemy::update(float p_deltaTime) {
 	
 	flashOnFrightened(p_deltaTime);
 
-	if (m_ghostType == GhostType::clyde &&
-		m_currentEnemyState == globalGhostState)
-		shouldClydeSwitchState(p_deltaTime);
-
 	checkForPortal();
 }
 
@@ -130,6 +126,9 @@ void Enemy::renderWireframe() {
 			drawCircle(m_player->getPosition().x, m_player->getPosition().y, dist, 0.0f, 1.0f, 0.0f);
 
 			drawPoint(m_previousNode->getPosition().x, m_previousNode->getPosition().y, 16, 1.0, 0.0f, inkyB);
+
+			if (m_clydeCurrentTargetNode)
+				drawPoint(m_clydeCurrentTargetNode->getPosition().x, m_clydeCurrentTargetNode->getPosition().y, 16, .5, 0.0f, inkyB);
 		}
 		break;
 		}
@@ -251,7 +250,6 @@ void Enemy::setPositionByNode(const int p_index) {
 }
 
 void Enemy::findShortestPath(GraphNode* p_targetNode) {
-
 	if (m_currentNode && p_targetNode && m_previousNode)
 		m_path = m_astar.findShortestPath(m_currentNode, p_targetNode, m_previousNode, m_currentEnemyState == EnemyState::base);
 }
@@ -283,13 +281,19 @@ void Enemy::moveEnemy() {
 
 void Enemy::followPath() {
 
-	if (m_path.empty())
-		return;
+	if (m_path.empty()) return;
 
 	if (onEnemyNodeChange())
-		m_path.erase(m_path.begin());	
+		m_path.erase(m_path.begin());
+
+	//std::cout << m_path.size() << std::endl;
 
 	m_nextNode = *m_path.begin();
+
+	for (auto it = m_path.begin(); it != m_path.end(); ++it) {
+		m_nextNode = *it;
+		break;
+	}
 }
 
 void Enemy::updateChaseTarget() {
@@ -307,12 +311,12 @@ void Enemy::updateChaseTarget() {
 		m_currentTargetNode = m_player->getCurrentNode();
 
 		GraphNode* node = getNodeInDirection(m_player->getCurrentNode(), m_player->getCurrentDirection(), pinkyTargetNodeDistance);
-		if (node && node != m_currentNode && !node->isBaseNode()) {
-			m_playerNode = node;
-		}		
+		if (node && (node != m_currentNode || node != m_previousNode) && !node->isBaseNode())
+			m_currentTargetNode = node;
 
-		if (pathCompleted())
+		//if (pathCompleted()) {
 			m_playerNode = m_currentTargetNode;
+		//}
 	}
 		break;
 	case GhostType::inky: {
@@ -330,16 +334,17 @@ void Enemy::updateChaseTarget() {
 		break;
 	case GhostType::clyde: {
 
+		m_clydeCurrentTargetNode = m_player->getCurrentNode();
+
 		if (!toggleFrightenedMode) {
 			if (m_position.distanceTo(m_player->getPosition()) <= clyde8NodesDistance) {
-				m_clydeSwitchState = true;
-				m_nextClydeState = EnemyState::scatter;
+				changeEnemyState(EnemyState::scatter);
 			}
 		}
 
 		if (pathCompleted()) {
 			m_currentTargetNode = m_player->getCurrentNode();
-			m_playerNode = m_currentTargetNode;
+			m_playerNode = m_clydeCurrentTargetNode;
 		}
 	}
 		break;
@@ -364,19 +369,32 @@ void Enemy::onScatter() {
 	if (canUpdateChaseTarget())
 		findShortestPath(m_scatterNode);
 
+	//std::cout << m_path.size() << std::endl;
+
 	if (pathCompleted()) {	
+
+		
+
 		m_currentTargetNode = m_scatterNode;
 		toggleScatterNode();
 	}
 	followPath();
 
 	if (m_ghostType == GhostType::clyde) {
+
+		if (globalGhostState == EnemyState::scatter) return;
+
 		if (m_position.distanceTo(m_player->getPosition()) > clyde8NodesDistance && 
-			globalGhostState == EnemyState::chase &&
 			!toggleFrightenedMode) {
+
+			
 
 			m_clydeSwitchState = true;
 			m_nextClydeState = EnemyState::chase;
+		}
+
+		if (pathCompleted()) {
+			changeEnemyState(EnemyState::chase);
 		}
 	}
 }
@@ -503,8 +521,6 @@ void Enemy::toggleBaseNode() {
 		else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1])) {
 			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
 		}
-
-
 	}
 
 	if (m_canGoOutsideBase && m_baseNode == m_initialNode) {
@@ -534,7 +550,7 @@ void Enemy::flashOnFrightened(float p_deltaTime) {
 
 void Enemy::shouldClydeSwitchState(float p_deltaTime) {
 
-	if (m_clydeSwitchState)
+	/*if (m_clydeSwitchState)
 		clydeSwitchStateTimer += p_deltaTime;
 
 	if (clydeSwitchStateTimer >= clydeSwitchStateTimerThreshold && 
@@ -545,12 +561,12 @@ void Enemy::shouldClydeSwitchState(float p_deltaTime) {
 			clydeSwitchStateTimer = 0.0f;
 			changeEnemyState(m_nextClydeState);
 		}
-	}
+	}*/
 }
 
 void Enemy::shouldInkySwitchState(float p_deltaTime) {
 
-	if (m_inkySwitchState)
+	/*if (m_inkySwitchState)
 		inkySwitchStateTimer += p_deltaTime;
 
 	if (inkySwitchStateTimer >= inkySwitchStateTimerThreshold && !toggleFrightenedMode) {
@@ -559,7 +575,7 @@ void Enemy::shouldInkySwitchState(float p_deltaTime) {
 			inkySwitchStateTimer = 0.0f;
 			changeEnemyState(m_nextInkyState);
 		}
-	}
+	}*/
 }
 
 void Enemy::changeEnemyState(EnemyState p_enemyState) {

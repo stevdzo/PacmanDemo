@@ -112,14 +112,15 @@ const float clyde8NodesDistance = 256.0f;
 
 const int respawnNodeIndex = 450; 
 
-float pacSpeed = 310.0f;
-float pacDotSpeed = 230.0f;
-float ghostTunnelSpeed = 150.0f;
-float chaseScatterSpeed = 260.0f;
-float eatenSpeed = 400.0f;
-float frightenedSpeed = 170.0f;
-float baseSpeed = 100.0f;
-const float maxSpeed = 500.0f;
+float pacSpeed = 280.0f;
+float pacDotSpeed = 200.0f;
+float ghostTunnelSpeed = 110.0f;
+float chaseScatterSpeed = 240.0f;
+float ghostDefaultspeed = 240.0f;
+float eatenSpeed = 340.0f;
+float frightenedSpeed = 140.0f;
+float baseSpeed = 130.0f;
+const float maxSpeed = 400.0f;
 const float speedIncreaseCoeff = 0.05f;
 
 const float pacR = 254.0f/255.0f;
@@ -144,6 +145,10 @@ const float clydeB = 82.0f/255.0f;
 
 const float normalAnimationDelay = 0.15f;
 const float deathAnimatonDelay = 0.4;
+
+const float pacUISpacingX = 40.0f;
+const float pacUIOffsetX = 230.0f;
+const float pacUIOffsetY = 150.0f;
 
 const int baseEntranceNodeIndex = 453; // čvor ispred ulaza u bazu
 const int baseEntranceBlockNodeIndex = 452; // čvor kojim blokiram ulaz u bazu
@@ -219,17 +224,17 @@ const float gameRestartTimerThreshold = 2.0f;
 const float lifeLostDelayTimerThreshold1 = 2.0f;
 const float lifeLostDelayTimerThreshold2 = 3.0f;
 const float nextLevelDelayTimerThreshold = 3.0f;
-const float clydeSwitchStateTimerThreshold = 2.0f;
+const float clydeSwitchStateTimerThreshold = 1.0f;
 const float inkySwitchStateTimerThreshold = 2.0f;
-const float frightenedTimerThreshold = 7.0f;
-const float frightenedFlashTimerThreshold = 4.0f;
+float frightenedTimerThreshold = 7.0f;
+float frightenedFlashTimerThreshold = 4.0f;
 
-int eatenCount = 0;
-
+int health = 3;
 int dotCounter = 0;
 const int maxDots = 246;
 const int inkyDotExitThreshold = 30;
 const int clydeDotExitThreshold = 70;
+const int maxHealth = 5;
 
 const int initialGhostEatValue = 200;
 int currentBigDotGhostCounter = 1;
@@ -253,15 +258,7 @@ const EnemyState pinkyInitialState = EnemyState::base;
 const EnemyState inkyInitialState = EnemyState::base;
 const EnemyState clydeInitialState = EnemyState::base;
 
-StateInterval intervals[] = {
-	{7.0f, 27.0f, EnemyState::chase},
-	{27.0f, 34.0f, EnemyState::scatter},
-	{34.0f, 54.0f, EnemyState::chase},
-	{54.0f, 59.0f, EnemyState::scatter},
-	{59.0f, 79.0f, EnemyState::chase},
-	{79.0f, 84.0f, EnemyState::scatter},
-	{84.0f, FLT_MAX, EnemyState::chase}
-};
+
 
 void drawCircle(float posX, float posY, float radius, float red, float green, float blue) {
 	int i, n = 360;
@@ -316,4 +313,34 @@ std::string formatElapsedTime(float elapsed) {
 		<< std::setw(2) << std::setfill('0') << milliseconds;
 
 	return formattedTime.str();
+}
+
+std::vector<StateInterval> intervals = {
+	{7.0f, 27.0f, EnemyState::chase},
+	{27.0f, 34.0f, EnemyState::scatter},
+	{34.0f, 54.0f, EnemyState::chase},
+	{54.0f, 59.0f, EnemyState::scatter},
+	{59.0f, 79.0f, EnemyState::chase},
+	{79.0f, 84.0f, EnemyState::scatter},
+	{84.0f, FLT_MAX, EnemyState::chase}
+};
+
+void decreaseInterval(Intervals intervals) {
+	for (int i = 0; i < intervals.size(); ++i) {
+
+		if (currentLevel == 2) {
+			if (i == 4) {
+				intervals[i].end = FLT_MAX;
+				intervals.erase(intervals.begin() + i + 1);
+				intervals.erase(intervals.begin() + i + 2);
+			}
+		}
+
+		if (currentLevel == 5) {
+			if (intervals[i].state == EnemyState::scatter)
+				intervals[i].end -= 2;
+			else
+				intervals[i].start -= 2;
+		}
+	}
 }

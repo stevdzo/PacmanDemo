@@ -61,14 +61,12 @@ public:
 
 	bool gameOver();
 
+	void decreaseHealth();
+	void increaseHealth();
 	void checkForPortal();
-
 	void manageSpeed();
-
 	void resetAnimation();
-
 	void setDefaultPosition() override;
-
 	void setVelocityByDirection() override;
 	void updateDirection() override;
 };

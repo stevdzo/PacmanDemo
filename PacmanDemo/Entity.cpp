@@ -199,7 +199,7 @@ void Entity::setDesiredDirection(const Direction p_direction) {
 }
 
 void Entity::setSpeed(const float p_speed) {   
-    if (m_speed != p_speed && p_speed < maxSpeed) m_speed = p_speed;
+    if (m_speed != p_speed) m_speed = p_speed;
 }
 
 void Entity::setDefaultPosition() {
