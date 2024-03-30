@@ -36,6 +36,7 @@ bool AudioManager::loadAudio() {
 	result = m_system->createSound(introSfxFilePath,      FMOD_DEFAULT | FMOD_2D, 0, &m_sfxIntro);
 	result = m_system->createSound(pacDieSfxFilePath,     FMOD_DEFAULT, 0, &m_sfxPacDie); 
 	result = m_system->createSound(eatGhostSfxFilePath,   FMOD_DEFAULT, 0, &m_sfxEatGhost);
+	result = m_system->createSound(extendSfxFilePath,   FMOD_DEFAULT, 0, &m_sfxExtend);
 	result = m_system->createSound(frightenedSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxFrightened);	
 	result = m_system->createSound(retreatingSfxFilePath, FMOD_LOOP_NORMAL | FMOD_2D, 0, &m_sfxRetreating);
 
@@ -83,6 +84,11 @@ void AudioManager::playSirenSound() {
 void AudioManager::playRetreatingSound() {
 	if (!isPlaying(m_chRetreating))
 		m_system->playSound(m_sfxRetreating, 0, false, &m_chRetreating);
+}
+
+void AudioManager::playExtendSound() {
+	if (!isPlaying(m_chExtend))
+		m_system->playSound(m_sfxExtend, 0, false, &m_chExtend);
 }
 
 void AudioManager::changeSirenSound() {

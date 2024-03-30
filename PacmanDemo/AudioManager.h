@@ -32,6 +32,7 @@ public:
 	FMOD::Sound* m_sfxSiren;
 	FMOD::Sound* m_sfxSiren1;
 	FMOD::Sound* m_sfxRetreating;
+	FMOD::Sound* m_sfxExtend;
 
 	std::vector<FMOD::Sound*> m_sirens;
 
@@ -42,6 +43,7 @@ public:
 	FMOD::Channel* m_chEatGhost;
 	FMOD::Channel* m_chSiren;
 	FMOD::Channel* m_chRetreating;
+	FMOD::Channel* m_chExtend;
 
 	void playPacEatSound();
 	void playIntroSound();
@@ -50,6 +52,7 @@ public:
 	void playEatGhostSound();
 	void playSirenSound();
 	void playRetreatingSound();
+	void playExtendSound();
 
 	void changeSirenSound();
 

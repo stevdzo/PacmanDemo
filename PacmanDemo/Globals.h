@@ -149,6 +149,8 @@ extern const float pacUISpacingX;
 extern const float pacUIOffsetX;
 extern const float pacUIOffsetY;
 
+extern const int pacHealthIncreaseScoreThreshold;
+
 extern const int respawnNodeIndex;
 
 extern const int baseEntranceNodeIndex;
@@ -203,6 +205,7 @@ extern const char* introSfxFilePath;
 extern const char* pacDieSfxFilePath;
 extern const char* frightenedSfxFilePath;
 extern const char* eatGhostSfxFilePath;
+extern const char* extendSfxFilePath;
 extern const char* siren1SfxFilePath;
 extern const char* siren2SfxFilePath;
 extern const char* siren3SfxFilePath;
@@ -250,6 +253,8 @@ extern bool siren2Executed;
 extern bool siren3Executed;
 extern bool siren4Executed;
 extern bool siren5Executed;
+
+extern bool healthIncreased;
 
 extern GameState globalGameState;
 

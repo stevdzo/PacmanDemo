@@ -329,13 +329,20 @@ void Player::decreaseHealth() {
 
 void Player::increaseHealth() {
 
-	int lastIndex = m_pacLives.size();
+	if (m_score >= pacHealthIncreaseScoreThreshold && !healthIncreased) {
 
-	auto pacImg = new GameObject(Sprite(pacFilePath));
-	pacImg->setPosition(Vector2D(screenWidth - (pacUIOffsetX - 30 * lastIndex), screenHeight / 2 - pacUIOffsetY));
-	m_pacLives.push_back(pacImg);
+		int lastIndex = m_pacLives.size();
 
-	m_health += 1;
+		auto pacImg = new GameObject(Sprite(pacFilePath)); 
+		pacImg->setSize(Vector2D(48.0f, 48.0f));
+		pacImg->setPosition(Vector2D(screenWidth / 2 + pacUIOffsetX + (pacUISpacingX * (lastIndex+1)), screenHeight / 2 - pacUIOffsetY));
+		m_pacLives.push_back(pacImg);
+
+		AudioManager::getInstance()->playExtendSound();
+
+		m_health += 1;
+		healthIncreased = true;
+	}
 }
 
 void Player::checkForPortal() {

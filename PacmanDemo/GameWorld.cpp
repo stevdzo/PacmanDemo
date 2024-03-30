@@ -283,7 +283,7 @@ void GameWorld::manageGhostStates() {
 }
 
 void GameWorld::manageBonusHealth() {
-	m_player->increaseHealth();
+	m_player->increaseHealth();	
 }
 
 void GameWorld::adjustLevelStats() {
@@ -411,6 +411,7 @@ void GameWorld::onRunningGameState() {
 	manageRetreatingSound();
 	manageSirenSound();
 	manageCollision();	
+	manageBonusHealth();
 }
 
 void GameWorld::onGameOverGameState() {

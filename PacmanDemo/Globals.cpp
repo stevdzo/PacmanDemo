@@ -150,6 +150,8 @@ const float pacUISpacingX = 40.0f;
 const float pacUIOffsetX = 230.0f;
 const float pacUIOffsetY = 150.0f;
 
+const int pacHealthIncreaseScoreThreshold = 10000.0f;
+
 const int baseEntranceNodeIndex = 453; // čvor ispred ulaza u bazu
 const int baseEntranceBlockNodeIndex = 452; // čvor kojim blokiram ulaz u bazu
 const int specialBlockNodeIndex = 483; // specijalni čvor koji se takođe ignoriše
@@ -201,6 +203,7 @@ const char* introSfxFilePath      = "resources/sounds/intro_sound.wav";
 const char* pacDieSfxFilePath     = "resources/sounds/die.mp3";
 const char* frightenedSfxFilePath = "resources/sounds/frightened.wav";
 const char* eatGhostSfxFilePath   = "resources/sounds/eat_ghost.wav";
+const char* extendSfxFilePath	  = "resources/sounds/extend.wav";
 const char* siren1SfxFilePath     = "resources/sounds/siren_1.wav";
 const char* siren2SfxFilePath	  = "resources/sounds/siren_2.wav";
 const char* siren3SfxFilePath	  = "resources/sounds/siren_3.wav";
@@ -248,6 +251,8 @@ bool siren2Executed = false;
 bool siren3Executed = false;
 bool siren4Executed = false;
 bool siren5Executed = false;
+
+bool healthIncreased = false;
 
 GameState globalGameState = GameState::intro;
 
