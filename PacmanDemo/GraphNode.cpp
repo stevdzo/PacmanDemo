@@ -1,4 +1,4 @@
-#include "GraphNode.h"
+﻿#include "GraphNode.h"
 #include "GraphEdge.h"
 #include "TextRenderer.h"
 
@@ -96,13 +96,16 @@ void GraphNode::isCorner(bool p_isCorner) {
 	m_isCorner = p_isCorner;
 }
 
+// ukoliko je srednja vrednost zbira indeksa dva susedna čvora 
+// jednaka trenutnom čvoru, 
+// taj čvor nije skretanje
 bool GraphNode::isCorner(void) const {
 	int indexSum = 0;
 	if (m_edges.size() == 2) {
 		for (auto& node : m_connectedNodes)
 			if (node->isObstacle())
 				indexSum += node->getIndex();			
-		if (indexSum / 2 != m_index)
+		if (indexSum / 2 != m_index) 
 			return true;
 	}
 	return false;

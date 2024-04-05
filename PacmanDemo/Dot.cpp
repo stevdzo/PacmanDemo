@@ -6,13 +6,13 @@ Dot::Dot(Sprite p_sprite, DotType p_type) : GameObject(p_sprite), m_type(p_type)
     case DotType::small:
         m_size = Vector2D(8.0f, 8.0f);
         m_wireframeSize = Vector2D(8.0f, 8.0f);
-        m_value = 10;
+        m_value = smallDotValue;
         
         break;
     case DotType::big:
         m_size = Vector2D(32.0f, 32.0f);
         m_wireframeSize = Vector2D(32.0f, 32.0f);
-        m_value = 50;
+        m_value = bigDotValue;
         break;
     }
     m_wireframeColor = Vector3D(1.0f, 1.0f, 1.0f);

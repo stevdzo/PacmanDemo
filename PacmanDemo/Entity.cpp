@@ -133,18 +133,17 @@ Entity::Entity(Sprite p_sprite): GameObject(p_sprite) {
     m_previousNode = getNodeByIndex(0);
     m_position = m_currentNode->getPosition();
     m_velocity = Vector2D();
-    m_speed = 0.0f;
+    m_speed = 100.0f;
 }
 
 Entity::Entity(Vector2D p_position) : GameObject(p_position) {
     m_velocity = Vector2D();
-    m_speed = 0.0f;  
+    m_speed = 100.0f;  
 }
 
 void Entity::update(float p_deltaTime) {
-    //GameObject::update(p_deltaTime);
 
-    m_sprite.animate(m_speed * 0.01f, p_deltaTime);
+    m_sprite.animate(m_speed * animationSpeed, p_deltaTime);
 
     m_position += m_velocity * (m_speed * p_deltaTime);
 
@@ -168,17 +167,18 @@ void Entity::restart() {
     
 }
 
-void Entity::setCurrentFramesRange(int p_startingFrame, int p_endingFrame, bool p_isLooped) {
+bool Entity::setCurrentFramesRange(int p_startingFrame, int p_endingFrame, bool p_isLooped) {
     m_sprite.setCurrentFramesRange(p_startingFrame, p_endingFrame);
     m_sprite.isLooped(p_isLooped);
+    return true;
 }
 
 void Entity::setAnimationDelay(float p_animationDelay) {
     m_sprite.setAnimationDelay(p_animationDelay);
 }
 
-float Entity::getCurrentFrame() {
-    return m_sprite.getCurrentFrameIndex();
+float Entity::getTexture() {
+    return m_sprite.getCurrentFrame();
 }
 
 Direction Entity::getCurrentDirection() const {
@@ -202,7 +202,12 @@ void Entity::setSpeed(const float p_speed) {
     if (m_speed != p_speed) m_speed = p_speed;
 }
 
-void Entity::setDefaultPosition() {
+float Entity::distanceTo(const Vector2D p_position) {
+    return m_position.distanceTo(p_position);
+}
+
+float Entity::distanceToSq(const Vector2D p_position) {
+    return m_position.distanceToSq(p_position);
 }
  
 GraphNode* Entity::getCurrentNode() const {

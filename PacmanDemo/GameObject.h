@@ -13,14 +13,14 @@ protected:
 
 	Sprite m_sprite;
 
-	std::vector<Sprite> m_mazeFlashBgrs; // bgr only
-
 	Vector2D m_position;
 	Vector2D m_previousPosition;
 	Vector2D m_size;
 	Vector2D m_wireframeSize;
 
 	Vector3D m_wireframeColor;
+
+	Vector<Sprite> m_mazeFlashBgrs; // samo za pozadinu
 
 	bool m_isVisible;
 
@@ -51,8 +51,9 @@ public:
 	void setWireFrameColor(Vector3D p_wireframeColor);
 	Vector3D getWireFrameColor() const;
 
-	// BGR ONLY
+	// samo za pozadinu
 	void flashBackground(float p_deltaTime);
+
 	void resetSprite();
 };
 #endif

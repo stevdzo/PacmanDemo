@@ -19,7 +19,7 @@ private:
 	AStar m_astar;
 
 	Player* m_player;
-	Enemy* m_blinky; // only for inky
+	Enemy* m_blinky; // samo za Inky-a
 
 	Vector2D m_offsetPosition;
 
@@ -30,32 +30,14 @@ private:
 	GraphNode* m_currentTargetNode;
 	GraphNode* m_initialNode;
 
-	GraphNode* m_inkyCurrentTargetNode; // only for inky
-	GraphNode* m_clydeCurrentTargetNode; // only for clyde
-
 	int m_scatterNodeIndices[3];
 	int m_baseNodeIndices[3];
-	int m_currentNodeIndex;
-
 	int m_animRange[8];
 
 	bool m_frightenedDirectionChosen;
 	bool m_frightened;
-	bool m_insideBase;
 	bool m_inBase;
 	bool m_canGoOutsideBase;
-	bool m_isEaten;
-	bool m_hasGlobalStateChanged;
-	bool m_canChangeTarget;
-
-	bool m_canExitFrightened;
-
-	bool m_isClydeInRange; // clyde
-	bool m_clydeSwitchState; // clyde
-	bool m_inkySwitchState; // inky
-
-	EnemyState m_nextClydeState; // clyde
-	EnemyState m_nextInkyState; // clyde
 
 	EnemyState m_initialEnemyState;
 	EnemyState m_currentEnemyState;
@@ -63,30 +45,33 @@ private:
 
 	GhostType m_ghostType;
 
-	std::vector<GraphNode*> m_path;	
+	Vector<GraphNode*> m_path;	
 
 public:
 
-	Enemy(GhostType p_ghostType, Sprite p_sprite, const int* p_scatterNodeIndices, const int* p_baseNodeIndices, const int* p_animRange, const EnemyState p_initialState, Player* m_player);
+	Enemy(GhostType p_ghostType, 
+		Sprite p_sprite, 
+		const int* p_scatterNodeIndices, 
+		const int* p_baseNodeIndices,
+		const int* p_animRange, 
+		const EnemyState p_initialState, 
+		Player* m_player);
 
 	void update(float p_deltaTime) override;
 	void render() override;
 	void renderWireframe() override;
 	void renderPath();
-
 	void restart() override;
 
 	void setVelocityByDirection() override;
 
-	void onEnemyMoveUp();
-	void onEnemyMoveDown();
-	void onEnemyMoveLeft();
-	void onEnemyMoveRight();
+	int onEnemyMoveUp();
+	int onEnemyMoveDown();
+	int onEnemyMoveLeft();
+	int onEnemyMoveRight();
 
 	void updateDirection() override;
-
 	void setPositionByNode(const int p_index) override;
-
 	void findShortestPath(GraphNode* p_targetNode);
 
 	void moveEnemy();
@@ -107,6 +92,11 @@ public:
 	bool isFrightened(void);
 	void isFrightened(bool);
 
+	bool setGhostFrightenedTextures();
+	bool setGhostFrightenedFlashTextures();
+	bool setGhostEatenTextures(const int index);
+	bool setGhostDefaultTextures(const int index1, const int index2);
+
 	GhostType getGhostType() const;
 	GraphNode* getCurrentTargetNode() const;
 
@@ -114,36 +104,24 @@ public:
 
 	void toggleScatterNode();
 	void toggleBaseNode();
-
 	void flashOnFrightened(float p_deltaTime);
-
-	void shouldExitBase(const bool p_insideBase);
-	void shouldClydeSwitchState(float p_deltaTime);
-	void shouldInkySwitchState(float p_deltaTime);
-
 	void changeEnemyState(EnemyState p_enemyState);
 	void returnPreviousEnemyState();
 	void reverseDirection();
-
 	void exitBase();
-
 	void checkForPortal();
-
 	void setSpeed(const float p_speed);
+	void assignBlinkyToInky(Enemy* m_enemy); // inky
 
-	void assignBlinkyToInky(Enemy* m_enemy);
+	void switchClydeToChase();
+	void switchClydeToScatter();
 
 	bool closeToNode();
 	bool canUpdateChaseTarget();
 	bool canCalculateNewDirection() const;
 
-	bool canExitFrightened(void) const;
-	void canExitFrightened(bool);
-
-	bool allignedWithNode();
-
 	EnemyState getCurrentState() const;
 
-	std::vector<Direction> chooseDirectionWhenFrightened();
+	Vector<Direction> chooseDirectionWhenFrightened();
 };
 #endif

@@ -12,16 +12,10 @@ private:
 
 	int m_score;
 	int m_health;
-
 	bool m_isAlive;
-	bool m_deathAnimationStarted;
 	bool m_allDotsEaten;
-
-	PlayerState m_playerState;
-
-	std::vector<Enemy*> m_ghosts;
-
-	std::vector<GameObject*> m_pacLives;
+	Vector<Enemy*> m_ghosts;
+	Vector<GameObject*> m_pacLives;
 
 public:
 
@@ -37,11 +31,11 @@ public:
 	int getScore(void) const;
 	int getHealth(void) const;
 
-	void setGhosts(const std::vector<Enemy*>& p_ghosts);
+	void setGhosts(const Vector<Enemy*>& p_ghosts);
 
 	void createUIHealth();
 
-	void onDotCollision(std::vector<Dot*>&);
+	void onDotCollision(Vector<Dot*>&);
 
 	void checkGameOver();
 	void checkGameWon();
@@ -55,9 +49,9 @@ public:
 
 	void isAlive(bool p_isAlive);
 	bool isAlive(void);
+
 	void isVisible(bool p_isVisible);
 	bool isVisible(void);
-	bool isDeathAnimationFinished();
 
 	bool gameOver();
 
@@ -66,7 +60,7 @@ public:
 	void checkForPortal();
 	void manageSpeed();
 	void resetAnimation();
-	void setDefaultPosition() override;
+	void setDefaultPosition();
 	void setVelocityByDirection() override;
 	void updateDirection() override;
 };

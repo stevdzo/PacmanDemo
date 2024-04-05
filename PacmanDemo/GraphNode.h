@@ -37,19 +37,16 @@ private:
 	float m_gCost;
 	float m_fCost;
 	float m_hCost;
-
-	NodeType m_nodeType;
-
 	bool m_isIntersection;
 	bool m_isCorner;
 	bool m_isTurn;
 	bool m_isTunnelNode;
 	bool m_isBaseNode;
-
+	NodeType m_nodeType;
 	GraphNode* m_parentNode;
+	Vector<GraphEdge*> m_edges;
+	Vector<GraphNode*> m_connectedNodes;
 
-	std::vector<GraphEdge*> m_edges;
-	std::vector<GraphNode*> m_connectedNodes;
 
 public:
 

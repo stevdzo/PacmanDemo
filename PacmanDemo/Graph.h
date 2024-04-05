@@ -3,7 +3,7 @@
 
 #include "GraphNode.h"
 
-// Singleton class
+// Singleton klasa
 class Graph {
 
 private:
@@ -11,7 +11,7 @@ private:
 	static Graph* instance;
 
 	Matrix<GraphNode*> m_nodeMatrix;
-	std::vector<GraphNode*> m_nodeVector;
+	Vector<GraphNode*> m_nodeVector;
 
 	void initNodes();
 	void initEdges();
@@ -26,7 +26,7 @@ public:
 	~Graph();
 
 	Matrix<GraphNode*> getNodes();
-	std::vector<GraphNode*> getNodeVector();
+	Vector<GraphNode*> getNodeVector();
 	
 	int calculateDistanceInNodes(const GraphNode* p_node1, const GraphNode* p_node2) const;
 	int getNodeIndexByDirection(GraphNode* p_currentNode, Direction p_direction) const;

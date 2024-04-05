@@ -4,7 +4,6 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Dot.h"
-#include "Drop.h"
 
 class Graph;
 class InputManager;
@@ -24,18 +23,10 @@ private:
 	Enemy* m_inky;
 	Enemy* m_clyde;
 
-	Drop* m_cherry;
-
-	std::vector<Dot*> m_dots;
-	std::vector<Enemy*> m_ghosts;	
-
-	Graph* m_graph;
-	InputManager* m_inputManager;
-	AudioManager* m_audioManager;
+	Vector<Dot*> m_dots;
+	Vector<Enemy*> m_ghosts;
 
 	GameState m_gameState;
-
-	AStar m_astar;
 
 	float m_deltaTime;
 	float m_previousTime;
@@ -45,15 +36,15 @@ public:
 	void init();
 	void initDots();
 
-	void update(float p_deltaTime);
-	void updateGhosts(float p_deltaTime);
-	void updatePlayer(float p_deltaTime);
+	void update();
+	void updateGhosts();
+	void updatePlayer();
 
 	void render();
 	void renderWireframe();
 	void renderUi();
 
-	void onIntroGameState();
+	void onStartGameState();
 	void onPausedGameState();
 	void onRunningGameState();
 	void onGameOverGameState();
@@ -69,10 +60,7 @@ public:
 
 	void adjustLevelStats();
 	void flashBackgroundOnNextLevel();
-
-	void gameOver();
 	void restart();
-	void restartGame();
 
 	virtual void keyboardSpec(int, int, int);
 	virtual void keyboardSpecUp(int, int, int);

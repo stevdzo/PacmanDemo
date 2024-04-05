@@ -1,4 +1,4 @@
-#include "Sprite.h"
+﻿#include "Sprite.h"
 
 Sprite::Sprite() {}
 
@@ -7,11 +7,10 @@ Sprite::Sprite(
 	const int p_numberOfFramesX,
 	const int p_numberOfFramesY,
 	bool p_isTransparent)
-	: m_numberOfFramesX(p_numberOfFramesX),
-	  m_numberOfFramesY(p_numberOfFramesY)
+							 : m_numberOfFramesX(p_numberOfFramesX),
+							   m_numberOfFramesY(p_numberOfFramesY),
+							   m_isTransparent(p_isTransparent)
 {
-
-	m_textureIndex = 0;
 	m_currentFrame = 0;
 	m_numberOfFrames = m_numberOfFramesX * m_numberOfFramesY;
 
@@ -24,24 +23,11 @@ Sprite::Sprite(
 	m_animationDelay = normalAnimationDelay;
 	m_animationElapsedTime = 0.0f;
 
-	int texture = SOIL_load_OGL_texture(p_fileName, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
+	loadTexture(p_fileName);
+}
 
-	if (!texture) {
-		const char* errorMessage = SOIL_last_result();
-		std::cout << "Texture loading failed: " << errorMessage << "\n" << std::endl;
-	}
-	else {
-		this->m_texture = texture;
-		this->m_textureIndex++;
-
-		if (this->m_textureIndex == 1 && this->m_numberOfFramesX * this->m_numberOfFramesY > 1) {
-			this->m_isSpriteSheet = true;
-		}
-		else {
-			this->m_isSpriteSheet = false;
-		}
-		this->m_isTransparent = p_isTransparent;
-	}
+void Sprite::loadTexture(const char* p_fileName) {
+	m_texture = SOIL_load_OGL_texture(p_fileName, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 0);
 }
 
 void Sprite::setCurrentFrame(int p_currentFrame) {
@@ -57,15 +43,11 @@ void Sprite::setCurrentFramesRange(int p_start, int p_end) {
 	}
 }
 
-int Sprite::getTextureIndex() {
-	return this->m_textureIndex;
-}
-
-int Sprite::getCurrentFrameIndex() {
+int Sprite::getCurrentFrame() {
 	return this->m_currentFrame;
 }
 
-int Sprite::getCurrentFrame() {
+int Sprite::getTexture() {
 	return this->m_texture;
 }
 
@@ -115,18 +97,18 @@ void Sprite::isLooped(bool p_isLooped) {
 
 void Sprite::animate(float p_speed, float p_deltaTime) {
 
-	m_animationElapsedTime += p_deltaTime * p_speed;
-	if (m_animationElapsedTime >= m_animationDelay) {
+	m_animationElapsedTime += p_deltaTime * p_speed; 
+	if (m_animationElapsedTime >= m_animationDelay) { // promena sličice nakon što protekne definisano vreme
 		m_currentFrame++;
-		if (m_currentFrame > m_endingFrame)
+		if (m_currentFrame > m_endingFrame) // kada se dođe do poslednjeg frejma u intervalu, gleda se da li se animacija ponavlja
 			if (m_isLooped)
-				m_currentFrame = m_startingFrame;
+				m_currentFrame = m_startingFrame; // ako se ponavlja, trenutni frejm se vraća na početak
 			else
-				m_currentFrame--;
+				m_currentFrame--; // ako se ne ponavlja vraća se na poslednji frejm
 
-		m_animationElapsedTime = 0.0f;
+		m_animationElapsedTime = 0.0f; // resetuje se tajmer
 	}
-	if (m_hasAnimationChanged) {
+	if (m_hasAnimationChanged) { // ukoliko je animacija promenjena, resetuje se na početak novog frejma
 		m_currentFrame = m_startingFrame;
 		m_hasAnimationChanged = false;
 	}

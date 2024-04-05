@@ -1,4 +1,4 @@
-#include "GameWorld.h"
+﻿#include "GameWorld.h"
 #include "Graph.h"
 #include "InputManager.h"
 #include "AudioManager.h"
@@ -9,63 +9,59 @@ void GameWorld::init() {
 	std::cout << "*** OpenGL Pacman demo ~ Stevan ***" << std::endl;
 	std::cout << "***********************************" << std::endl;
 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // nicijalna boja pozadine
 
-	glEnable(GL_TEXTURE_2D);
-	glShadeModel(GL_SMOOTH);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glDisable(GL_DEPTH_TEST);	
+	srand(time(0)); // pseudo random generator 
 
-	srand(time(0));
+	initDots(); // inicijalizovanje tačaka
 
-	m_graph = Graph::getInstance();
-	
-	initDots();
+	m_background = new GameObject(Sprite(mazeFilePath, 1, 1, false));  // kreiranje objekta pozadine
+	m_background->setPosition(Vector2D((screenWidth-backgroundXOffset) / 2, screenHeight / 2));
+	m_background->setSize(Vector2D(screenWidth- backgroundXOffset, screenHeight));
 
-	m_background = new GameObject(Sprite(mazeFilePath, 1, 1, false));
-	m_background->setPosition(Vector2D((screenWidth-400) / 2, screenHeight / 2));
-	m_background->setSize(Vector2D(screenWidth-400, screenHeight));
-
-	m_background->addBgrSprites(Sprite(mazeFlash1FilePath, 1, 1, false));
+	// dodavanje još dva sprajta objektu pozadine, zbog animacije prelaska na sledeći nivo
+	m_background->addBgrSprites(Sprite(mazeFlash1FilePath, 1, 1, false)); 
 	m_background->addBgrSprites(Sprite(mazeFlash2FilePath, 1, 1, false));
 
-	m_player = new Player(Sprite(assetsFilePath));
+	m_player = new Player(Sprite(assetsFilePath)); // kreiranje objekta igrača
 
+	// kreiranje objekata duhova
 	m_blinky = new Enemy(GhostType::blinky, Sprite(assetsFilePath), blinkyScatterNodeIndices, blinkyBaseNodeIndices, blinkyAnimRange, blinkyInitialState, m_player);
 	m_pinky  = new Enemy(GhostType::pinky , Sprite(assetsFilePath), pinkyScatterNodeIndices , pinkyBaseNodeIndices , pinkyAnimRange , pinkyInitialState , m_player);
 	m_inky   = new Enemy(GhostType::inky  , Sprite(assetsFilePath), inkyScatterNodeIndices  , inkyBaseNodeIndices  , inkyAnimRange  , inkyInitialState  , m_player);
 	m_clyde  = new Enemy(GhostType::clyde , Sprite(assetsFilePath), clydeScatterNodeIndices , clydeBaseNodeIndices , clydeAnimRange , clydeInitialState , m_player);
 
+	// postavljanje duhova na njihovu početnu poziciju
 	m_blinky->setPositionByNode(blinkyStartNodeIndex);
 	m_pinky->setPositionByNode(pinkyStartNodeIndex);
 	m_inky->setPositionByNode(inkyStartNodeIndex);
 	m_clyde->setPositionByNode(clydeStartNodeIndex);
 
+	// postavljanje prvobitnog smera kretanja duhova
 	m_blinky->setCurrentDirection(Direction::left);
 	m_pinky->setCurrentDirection(Direction::down);
 	m_inky->setCurrentDirection(Direction::up);
 	m_clyde->setCurrentDirection(Direction::down);
 
+	// postavljanje inicijalnog stanja duhova
 	m_blinky->changeEnemyState(EnemyState::scatter);
 	m_pinky->changeEnemyState(EnemyState::base);
 	m_inky->changeEnemyState(EnemyState::base);
 	m_clyde->changeEnemyState(EnemyState::base);
 
-	m_inky->assignBlinkyToInky(m_blinky);
+	m_inky->assignBlinkyToInky(m_blinky); // dodeljivanje crvenog duha plavom, zbog njegovog ponašanja
 
+	// dodavanje duhova u vektor 
 	m_ghosts.push_back(m_blinky);
 	m_ghosts.push_back(m_pinky);
 	m_ghosts.push_back(m_inky);
 	m_ghosts.push_back(m_clyde);
 
-	m_player->setGhosts(m_ghosts);
+	m_player->setGhosts(m_ghosts); // dodeljivanje duhova igraču
 
-	m_inputManager = InputManager::getInstance(m_player);
-	m_audioManager = AudioManager::getInstance();	
+	InputManager::getInstance()->setPlayer(m_player); // dodeljivanje igrača singleton klasi InputManager
 
-	m_audioManager->playIntroSound();
-
-	m_astar = AStar();
+	AudioManager::getInstance()->playIntroSound(); // puštanje početne melodije na startu igre
 }
 
 void GameWorld::initDots() {
@@ -88,32 +84,31 @@ void GameWorld::initDots() {
 	}
 }
 
-void GameWorld::update(float p_deltaTime) {
-
+void GameWorld::update() {
 	switch (globalGameState) {
 	
-	case GameState::paused:
-		onPausedGameState();			
-		break;
 	case GameState::running:
-		onRunningGameState();
+		onRunningGameState();			
+		break;
+	case GameState::paused:
+		onPausedGameState();
 		break;
 	case GameState::game_over:
 		onGameOverGameState();
 		break;
-	case GameState::next_level:
-		onNextLevelGameState();
-		break;
 	case GameState::life_lost:
 		onLifeLostGameState();
-		break;		
-	case GameState::intro:
-		onIntroGameState();
+		break;
+	case GameState::next_level:
+		onNextLevelGameState();
+		break;			
+	case GameState::start:
+		onStartGameState();
 		break;
 	}	
 }
 
-void GameWorld::updateGhosts(float p_deltaTime) {
+void GameWorld::updateGhosts() {
 	m_clyde->update(m_deltaTime);
 	m_inky->update(m_deltaTime);
 	m_pinky->update(m_deltaTime);
@@ -126,24 +121,24 @@ void GameWorld::updateGhosts(float p_deltaTime) {
 		m_clyde->exitBase();
 }
 
-void GameWorld::updatePlayer(float p_deltaTime) {
+void GameWorld::updatePlayer() {
 	m_player->update(m_deltaTime);
 }
 
 void GameWorld::render() {
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // brisanje buffer-a boje i dubine
+	glLoadIdentity(); // resetovanje matrice na jediničnu 
 
-	m_background->render();
+	m_background->render(); // iscrtavanje objekta pozadine
 
-	for (auto& dot : m_dots) {
-		dot->renderWireframe();
+	// iscrtavanje tačaka
+	for (auto& dot : m_dots) 	
 		dot->render();
-	}
 
-	m_player->render();
+	m_player->render(); // iscrtavanje igrača
 
+	// iscrtavanje duhova, ukoliko trenutno stanje igre nije next_level
 	if (globalGameState != GameState::next_level) {
 		m_clyde->render();
 		m_inky->render();
@@ -151,22 +146,22 @@ void GameWorld::render() {
 		m_blinky->render();
 	}
 
-	renderWireframe();
-	renderUi();
+	renderWireframe(); // render za mrežni prikaz
+	renderUi(); // render UI elemenata
 
-	glutSwapBuffers();
+	glutSwapBuffers(); // pražnjenje buffer-a kada je aktivno dvostruko buffer-ovanje
 }
 
 void GameWorld::renderWireframe() {
-	m_graph->renderWireframe();
+	Graph::getInstance()->renderWireframe();
+	for (auto& dot : m_dots)
+		dot->renderWireframe();
+	m_player->renderWireframe();
 	m_clyde->renderWireframe();
 	m_inky->renderWireframe();
 	m_pinky->renderWireframe();
 	m_blinky->renderWireframe();
-	m_player->renderWireframe();
-}
-
-void GameWorld::gameOver() {
+	
 }
 
 void GameWorld::restart() {
@@ -186,11 +181,6 @@ void GameWorld::restart() {
 	frightenedTimer = 0.0f;
 	currentBigDotGhostCounter = 1;
 	toggleFrightenedMode = false;
-}
-
-void GameWorld::restartGame() {
-	restart();
-	m_player->restartGame();
 }
 
 void GameWorld::manageFrightenedState() {
@@ -262,17 +252,21 @@ void GameWorld::manageCollision() {
 }
 
 void GameWorld::manageGhostStates() {
+
+	if (toggleFrightenedMode) return; 
+
+	globalTimer += m_deltaTime;
 	for (auto& interval : intervals) {
 		if (!hasIntervalStateChanged && globalTimer > interval.start && globalTimer <= interval.end) {
 			if (globalGhostState != interval.state) {
 
-				hasIntervalStateChanged = true;
-				globalGhostState = interval.state;
+				hasIntervalStateChanged = true; // provera da se interval menja tačno jednom
+				globalGhostState = interval.state; // promena stanja
 
+				// za svakog duha menja se stanje u novo, ukoliko duhovi nisu u bazi ili nisu pojedeni
 				for (auto& ghost : m_ghosts)
 					if (ghost->getCurrentState() != EnemyState::base &&
 						ghost->getCurrentState() != EnemyState::eaten) {
-						//ghost->reverseDirection();
 						ghost->changeEnemyState(interval.state);
 					}
 			}
@@ -350,35 +344,32 @@ void GameWorld::renderUi() {
 }
 
 void GameWorld::keyboardSpec(int p_key, int p_x, int p_y) {
-	m_inputManager->keyboard(p_key, p_x, p_y);
+	InputManager::getInstance()->keyboardSpec(p_key, p_x, p_y);
 }
 
 void GameWorld::keyboardSpecUp(int p_key, int p_x, int p_y) {
-	m_inputManager->keyboardUp(p_key, p_x, p_y);
+	InputManager::getInstance()->keyboardSpecUp(p_key, p_x, p_y);
 }
 
 void GameWorld::keyboard(int p_key, int p_x, int p_y) {
-	m_inputManager->keyboard(p_key, p_x, p_y);
+	InputManager::getInstance()->keyboard(p_key, p_x, p_y);
 }
 
 void GameWorld::keyboardUp(int p_key, int p_x, int p_y) {
-	m_inputManager->keyboardUp(p_key, p_x, p_y);
+	InputManager::getInstance()->keyboardUp(p_key, p_x, p_y);
 }
 
 void GameWorld::joystick(unsigned int p_buttons, int p_x, int p_y, int p_z) {
-	m_inputManager->joystick(p_buttons, p_x, p_y, p_z);
+	InputManager::getInstance()->joystick(p_buttons, p_x, p_y, p_z);
 }
 
-void GameWorld::onIntroGameState() {
+void GameWorld::onStartGameState() {
 
-	gameStartTimer += m_deltaTime;
+	auto chIntro = AudioManager::getInstance()->m_chIntro;
 
-	if (gameStartTimer > gameStartTimerThreshold) {
-		gameStartTimer = 0.0f;
-
-		AudioManager::getInstance()->playSirenSound();
+	if (!AudioManager::getInstance()->isPlaying(chIntro)) {
 		m_pinky->exitBase();
-		gameStartTimer = 0.0f;
+		AudioManager::getInstance()->playSirenSound();
 		globalGameState = GameState::running;
 	}
 }
@@ -398,15 +389,11 @@ void GameWorld::onPausedGameState() {
 }
 
 void GameWorld::onRunningGameState() {
+			
+	updateGhosts();
+	updatePlayer();
 
-	if (!toggleFrightenedMode) {
-		globalTimer += m_deltaTime;
-		manageGhostStates();
-	}
-
-	updateGhosts(m_deltaTime);
-	updatePlayer(m_deltaTime);
-
+	manageGhostStates();
 	manageFrightenedState();
 	manageRetreatingSound();
 	manageSirenSound();
@@ -452,7 +439,7 @@ void GameWorld::onNextLevelGameState() {
 
 void GameWorld::onLifeLostGameState() {
 
-	updatePlayer(m_deltaTime);
+	updatePlayer();
 
 	lifeLostDelayTimer += m_deltaTime;
 
@@ -475,7 +462,7 @@ void GameWorld::onLifeLostGameState() {
 }
 
 void GameWorld::mouse(int p_button, int p_state, int p_x, int p_y) {
-	m_inputManager->mouse(p_button, p_state, p_x, p_y);
+	InputManager::getInstance()->mouse(p_button, p_state, p_x, p_y);
 }
 
 void GameWorld::reshape(int p_w, int p_h) {
@@ -499,13 +486,14 @@ void GameWorld::display() {
 }
 
 void GameWorld::idle() {
+	// izračunavanje delta vremena, tj. vremenske razlike između dva frejma
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
-	m_deltaTime = (float) (currentTime - m_previousTime) / 1000;
+	m_deltaTime = (float) (currentTime - m_previousTime) / ms;
 	m_previousTime = currentTime;
 
-	elapsedTime += m_deltaTime;
+	elapsedTime += m_deltaTime; // tajmer koji računa vreme od pokretanja programa
 
-	update(m_deltaTime);
+	update();
 
-	glutPostRedisplay();
+	glutPostRedisplay(); // trigger-ovanje display callback-a
 }

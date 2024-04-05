@@ -4,7 +4,7 @@
 #include "Globals.h"
 #include "fmod.hpp"
 
-// Singleton class
+// Singleton klasa
 class AudioManager {
 
 private:
@@ -34,7 +34,7 @@ public:
 	FMOD::Sound* m_sfxRetreating;
 	FMOD::Sound* m_sfxExtend;
 
-	std::vector<FMOD::Sound*> m_sirens;
+	Vector<FMOD::Sound*> m_sirens;
 
 	FMOD::Channel* m_chEat;
 	FMOD::Channel* m_chIntro;

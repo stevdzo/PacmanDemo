@@ -1,11 +1,10 @@
-#include "GameObject.h"
+﻿#include "GameObject.h"
 
 GameObject::GameObject() {
-	//m_sprite = nullptr;
 	m_position = Vector2D(0.0f, 0.0f);
 	m_previousPosition = Vector2D(0.0f, 0.0f);
 	m_size = Vector2D(32.0f, 32.0f);
-	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
+	m_wireframeSize = Vector2D(nodeSize, nodeSize);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }
 
@@ -13,7 +12,7 @@ GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite), m_isVisible(true) 
 	m_position = Vector2D(0.0f, 0.0f);
 	m_previousPosition = Vector2D(0.0f, 0.0f);
 	m_size = Vector2D(32.0f, 32.0f);
-	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
+	m_wireframeSize = Vector2D(nodeSize, nodeSize);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 
 	if (!p_sprite.isTransparent())
@@ -22,23 +21,25 @@ GameObject::GameObject(Sprite p_sprite) : m_sprite(p_sprite), m_isVisible(true) 
 
 GameObject::GameObject(Vector2D p_position) : m_position(p_position), m_previousPosition(p_position) {
 	m_size = Vector2D(32.0f, 32.0f);
-	m_wireframeSize = Vector2D(wireframeSizeX, wireframeSizeY);
+	m_wireframeSize = Vector2D(nodeSize, nodeSize);
 	m_wireframeColor = Vector3D(0.0f, 0.0f, 0.0f);
 }
 
 void GameObject::update(float p_deltaTime) {
-	m_sprite.animate(p_deltaTime, 1.0f);
+	m_sprite.animate(1.0, p_deltaTime);
 }
 
 void GameObject::render() {
 
 	if (toggleRender && m_isVisible) {
-
-		glEnable(GL_BLEND);
+		
+		// transparentnost sprajta
+		glEnable(GL_BLEND); 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+		
+		// omogućavanje da se tekstura iscrta 
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, m_sprite.getCurrentFrame());
+		glBindTexture(GL_TEXTURE_2D, m_sprite.getTexture());
 
 		float x = m_position.x;
 		float y = m_position.y;
@@ -46,25 +47,24 @@ void GameObject::render() {
 		float w = m_size.x;
 		float h = m_size.y;
 
-		float texWidth = (float)m_sprite.getTextureIndex() / (float)m_sprite.getNumberOfFramesX();
-		float texHeight = (float)m_sprite.getTextureIndex() / (float)m_sprite.getNumberOfFramesY();
+		float texWidth  = 1.0f / (float) m_sprite.getNumberOfFramesX();
+		float texHeight = 1.0f / (float) m_sprite.getNumberOfFramesY();
 
 		float u = 0.0f;
 		float v = 0.0f;
 
-		if (m_sprite.getTextureIndex() < m_sprite.getNumberOfFramesX() * m_sprite.getNumberOfFramesY()) {
+		unsigned int currentY = m_sprite.getCurrentFrame() / m_sprite.getNumberOfFramesX();
+		unsigned int currentX = m_sprite.getCurrentFrame() % m_sprite.getNumberOfFramesX();
 
-			unsigned int m_currentY = m_sprite.getCurrentFrameIndex() / m_sprite.getNumberOfFramesX();
-			unsigned int m_currentX = m_sprite.getCurrentFrameIndex() - m_currentY * m_sprite.getNumberOfFramesX();
-
-			u = (float)m_currentX * texWidth;
-			v = (float)m_currentY * texHeight;
-		}
+		u = (float) currentX * texWidth;
+		v = (float) currentY * texHeight;
+	
+		// texCoord zauzima opseg 0-1, tex tacke se lepe na tacke objekta
 		glBegin(GL_QUADS);
-		glTexCoord2f(u, v + texHeight);				glVertex2f(m_position.x - m_size.x / 2, m_position.y - m_size.y / 2);
-		glTexCoord2f(u + texWidth, v + texHeight);	glVertex2f(m_position.x + m_size.x / 2, m_position.y - m_size.y / 2);
-		glTexCoord2f(u + texWidth, v);				glVertex2f(m_position.x + m_size.x / 2, m_position.y + m_size.y / 2);
-		glTexCoord2f(u, v);							glVertex2f(m_position.x - m_size.x / 2, m_position.y + m_size.y / 2);
+		glTexCoord2f(u,            v + texHeight);	glVertex2f(x - w / 2, y - h / 2);
+		glTexCoord2f(u + texWidth, v + texHeight);	glVertex2f(x + w / 2, y - h / 2);
+		glTexCoord2f(u + texWidth, v);				glVertex2f(x + w / 2, y + h / 2);
+		glTexCoord2f(u,            v);				glVertex2f(x - w / 2, y + h / 2);
 		glEnd();
 
 		glDisable(GL_TEXTURE_2D);
@@ -73,7 +73,6 @@ void GameObject::render() {
 }
 
 void GameObject::renderWireframe() {
-
 	if (toggleWireframe)
 		drawRectangle(m_position.x, m_position.y, m_wireframeSize.x, m_wireframeSize.y, 1.0f, 1.0f, 1.0f, GL_LINE_LOOP);		
 }
@@ -123,7 +122,7 @@ Vector3D GameObject::getWireFrameColor() const {
 }
 
 void GameObject::flashBackground(float p_deltaTime) {
-	((int)(nextLevelDelayTimer * 10) % 7 == 0) ?
+	((int) (nextLevelDelayTimer * 10) % 7 == 0) ?
 		m_sprite = m_mazeFlashBgrs[2] :
 		m_sprite = m_mazeFlashBgrs[1];
 }

@@ -4,7 +4,6 @@
 #include "GameObject.h"
 
 enum DotType {
-
 	small = 0,
 	big = 1
 };

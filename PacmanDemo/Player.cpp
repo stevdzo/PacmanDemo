@@ -99,7 +99,7 @@ int Player::getScore(void) const {
 int Player::getHealth(void) const {
 	return m_health;
 }
-void Player::setGhosts(const std::vector<Enemy*>& p_ghosts) {
+void Player::setGhosts(const Vector<Enemy*>& p_ghosts) {
 	m_ghosts = p_ghosts;
 }
 
@@ -112,9 +112,9 @@ void Player::createUIHealth() {
 	}
 }
 
-void Player::onDotCollision(std::vector<Dot*>& p_dots) {
+void Player::onDotCollision(Vector<Dot*>& p_dots) {
 	for (auto it = p_dots.begin(); it != p_dots.end();) {
-		if (m_position.distanceTo((*it)->getPosition()) < eatDistanceThreshold) {			
+		if (distanceTo((*it)->getPosition()) < eatDistanceThreshold) {			
 			if ((*it)->getType() == DotType::big) {
 				onBigDotEaten();
 			}
@@ -230,13 +230,13 @@ void Player::onPlayerMovement(int p_key) {
 
 	if (globalGameState == GameState::running) {
 
-		if (p_key == '2') {
+		/*if (p_key == '2') {
 			restart();
 		}
 
 		if (p_key == '5') {
 			onBigDotEaten();
-		}
+		}*/
 
 		if (p_key == GLUT_KEY_RIGHT) { // d
 			if (m_desiredDirection == Direction::left && isValidDirection(m_desiredDirection))
@@ -314,10 +314,6 @@ bool Player::isVisible(void) {
 	return m_isVisible;
 }
 
-bool Player::isDeathAnimationFinished() {
-	return getCurrentFrame() != 13;
-}
-
 bool Player::gameOver() {
 	return m_health == 0;
 }
@@ -355,7 +351,7 @@ void Player::checkForPortal() {
 	if (m_currentNode->getIndex() == rightPortalIndex && m_currentDirection == Direction::right) {
 		m_desiredDirection = Direction::right;
 		m_position = getNodeByIndex(leftPortalIndex)->getPosition();
-	}
+	}	
 }
 
 void Player::manageSpeed() {
@@ -417,7 +413,7 @@ void Player::setVelocityByDirection() {
 
 void Player::updateDirection() {
 
-	float dist = m_position.distanceToSq(m_currentNode->getPosition());
+	float dist = distanceToSq(m_currentNode->getPosition());
 
 	if (dist < pacDirectionChangeDistanceThreshold) {
 

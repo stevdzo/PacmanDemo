@@ -5,7 +5,7 @@ Graph* Graph::instance = nullptr;
 
 void Graph::initNodes() {
     std::cout << "Initializing Nodes." << std::endl;
-    m_nodeMatrix.resize(rows, std::vector<GraphNode*>(columns, nullptr));
+    m_nodeMatrix.resize(rows, Vector<GraphNode*>(columns, nullptr));
     int index = 0;
     for (unsigned int row = 0; row < rows; row++) {
         for (unsigned int col = 0; col < columns; col++) {
@@ -26,16 +26,12 @@ void Graph::initNodes() {
             }
                 break;
             case 2: {
-                node->setPosition(node->getPosition() + Vector2D(nodeSize /2.0f, 0.0f));
+                node->setPosition(node->getPosition() + Vector2D(nodeSize / 2.0f, 0.0f));
                 node->isBaseNode(true);
                 node->setNodeType(NodeType::valid);
             }
                   break;
             case 3: {
-
-                //node->isObstacle(false);
-                //node->setPosition(node->getPosition() - Vector2D(nodeSize / 2.0f, 0.0f));
-
                 node->isTunnelNode(true);
                 node->setNodeType(NodeType::valid);
             }

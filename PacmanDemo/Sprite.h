@@ -1,32 +1,23 @@
 #ifndef _SPRITE_H
 #define _SPRITE_H
 
-#include "SOIL.h"
+#include "SOIL2.h"
 #include "Globals.h"
 
 class Sprite {
 
 private:
 
-	int* m_textures;
-
 	int m_texture;
-	int m_textureIndex;
 	int m_currentFrame;
 	int m_numberOfFrames;
 	int m_numberOfFramesX;
 	int m_numberOfFramesY;
 	int m_startingFrame;
 	int m_endingFrame;
-
-	int m_animSpriteRange[1][4];
-
 	float m_animationDelay;
 	float m_animationElapsedTime;
-
-	bool m_isTextureLoaded;
 	bool m_isTransparent;
-	bool m_isSpriteSheet;
 	bool m_hasAnimationChanged;
 	bool m_isLooped;
 
@@ -35,12 +26,13 @@ public:
 	Sprite();
 	Sprite(const char*, const int = numberOfFramesX, const int = numberOfFramesY, const bool = true);
 
+	void loadTexture(const char* p_fileName);
+
 	void setCurrentFrame(int p_currentFrame);
 	void setCurrentFramesRange(int p_start, int p_end);
 
-	int getTextureIndex();
-	int getCurrentFrameIndex();
 	int getCurrentFrame();
+	int getTexture();
 	int getNumberOfFramesX();
 	int getNumberOfFramesY();
 

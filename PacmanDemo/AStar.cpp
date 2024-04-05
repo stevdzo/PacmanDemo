@@ -4,36 +4,18 @@ AStar::AStar() {
 	std::cout << "Initializing AStar." << std::endl;
 }
 
-void AStar::update(float p_deltaTime) {
-}
-
-void AStar::render() {
-	for (auto& node : m_path) {
-		node->renderNodeFromPath();
-
-		for (auto& adjNode : node->getConnectedNodes())
-		{
-			drawPoint(adjNode->getPosition().x, adjNode->getPosition().y, 12, 1.0f, 0.0f, 0.0f);
-		}
-		//std::cout << node->getIndex() << std::endl;
-	}
-}
-
-// GraphNode* p_startNode - trenutni čvor neprijatelja
-// GraphNode* p_targetNode - ciljni čvor neprijatelja
-std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_isInsideBase) {
+// Implementacija A* algoritma pretraživanja grafova
+// GraphNode* p_startNode    - trenutni čvor duha
+// GraphNode* p_targetNode   - ciljni čvor duha
+// GraphNode* p_previousNode - prethodni čvor duha
+// bool p_isInsideBase       - flag da li je duh u bazi
+Vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_targetNode, GraphNode* p_previousNode, bool p_isInsideBase) {
 
 	if (p_startNode->isObstacle() || !p_startNode->isValidNode())
-		return std::vector<GraphNode*>();
+		return Vector<GraphNode*>();
 
-	/*if (p_startNode == p_targetNode)
-		return std::vector<GraphNode*>();
-
-	if (p_previousNode == p_targetNode)
-		return std::vector<GraphNode*>();*/
-
-	std::set<GraphNode*> openNodes;
-	std::set<GraphNode*> closedNodes;
+	Set<GraphNode*> openNodes;
+	Set<GraphNode*> closedNodes;
 
 	openNodes.insert(p_startNode);
 
@@ -44,10 +26,9 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 		closedNodes.insert(currentNode);
 
 		if (currentNode == p_targetNode) {
-			std::vector<GraphNode*> finalPath;
+			Vector<GraphNode*> finalPath;
 			while (currentNode != nullptr && currentNode != p_startNode) {
 				finalPath.push_back(currentNode);
-				//m_path.push_back(currentNode);
 				currentNode = currentNode->getParent();
 			}
 			std::reverse(finalPath.begin(), finalPath.end());
@@ -84,7 +65,7 @@ std::vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNod
 }
 
 // std::set<GraphNode*>& p_nodes - skup čvorova na osnovu koga se traži čvor sa najmanjom cenom
-GraphNode* AStar::findNodeWithLowestCost(std::set<GraphNode*>& p_nodes) {
+GraphNode* AStar::findNodeWithLowestCost(const Set<GraphNode*>& p_nodes) {
 
 	GraphNode* lowestCostNode = nullptr;
 	int lowestCost = std::numeric_limits<int>::max();
@@ -99,7 +80,7 @@ GraphNode* AStar::findNodeWithLowestCost(std::set<GraphNode*>& p_nodes) {
 }
 
 // std::set<GraphNode*>& p_nodes - skup čvorova na osnovu koga se traži čvor sa najvišom cenom
-GraphNode* AStar::findNodeWithHighestCost(std::set<GraphNode*>& p_nodes) {
+GraphNode* AStar::findNodeWithHighestCost(const Set<GraphNode*>& p_nodes) {
 	GraphNode* highestCostNode = nullptr;
 	int highestCost = std::numeric_limits<int>::min();
 
