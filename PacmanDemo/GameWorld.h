@@ -59,7 +59,6 @@ public:
 	void manageBonusHealth();
 
 	void adjustLevelStats();
-	void flashBackgroundOnNextLevel();
 	void restart();
 
 	virtual void keyboardSpec(int, int, int);

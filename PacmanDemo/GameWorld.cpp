@@ -224,22 +224,22 @@ void GameWorld::manageSirenSound() {
 
 	if (dotCounter == 60 + dotCoeff && !siren2Executed) {
 		AudioManager::getInstance()->changeSirenSound();
-		chaseScatterSpeed += dotCoeff / 4;
+		chaseScatterSpeed += dotCoeff / 3.0f;
 		siren2Executed = true;
 	}
 	if (dotCounter == 100 + dotCoeff && !siren3Executed) {
 		AudioManager::getInstance()->changeSirenSound();
-		chaseScatterSpeed += dotCoeff / 4;
+		chaseScatterSpeed += dotCoeff / 4.0f;
 		siren3Executed = true;
 	}
 	if (dotCounter == 140 + dotCoeff && !siren4Executed) {
 		AudioManager::getInstance()->changeSirenSound();
-		chaseScatterSpeed += dotCoeff / 4;
+		chaseScatterSpeed += dotCoeff / 5.0f;
 		siren4Executed = true;
 	}
 	if (dotCounter == 180 + dotCoeff && !siren5Executed) {
 		AudioManager::getInstance()->changeSirenSound();
-		chaseScatterSpeed += dotCoeff / 4;
+		chaseScatterSpeed += dotCoeff / 6.0f;
 		siren5Executed = true;
 	}
 }
@@ -306,8 +306,6 @@ void GameWorld::adjustLevelStats() {
 		decreaseInterval(intervals);
 }
 
-void GameWorld::flashBackgroundOnNextLevel() {
-}
 
 void GameWorld::renderUi() {
 
@@ -433,6 +431,10 @@ void GameWorld::onNextLevelGameState() {
 		adjustLevelStats();
 
 		m_background->resetSprite();
+
+		m_pinky->goToBase();
+		m_inky->goToBase();
+		m_clyde->goToBase();
 
 		globalGameState = GameState::paused;	
 	}

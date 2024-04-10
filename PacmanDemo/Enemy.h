@@ -112,12 +112,13 @@ public:
 	void setSpeed(const float p_speed);
 	void assignBlinkyToInky(Enemy* m_enemy); // inky
 
+	void goToBase();
 	void switchClydeToChase();
 	void switchClydeToScatter();
 
 	bool closeToNode();
 	bool canUpdateChaseTarget();
-	bool canCalculateNewDirection() const;
+	bool canCalculateNewDirection() const;	
 
 	EnemyState getCurrentState() const;
 

@@ -132,13 +132,11 @@ void Enemy::restart() {
 
 	m_currentTargetNode = m_currentNode;
 	m_scatterNode = getNodeByIndex(m_scatterNodeIndices[0]);
-	m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
+	m_baseNode = m_initialNode;
 	m_eatenNode = getNodeByIndex(respawnNodeIndex);
 
 	m_currentDirection = Direction::right;
 	m_desiredDirection = Direction::right;
-
-	m_canGoOutsideBase = false;
 
 	m_sprite.setCurrentFrame(m_animRange[0]);	
 
@@ -469,14 +467,19 @@ void Enemy::toggleScatterNode() {
 void Enemy::toggleBaseNode() {
 
 	if (!m_canGoOutsideBase && m_baseNode != getNodeByIndex(m_baseNodeIndices[2])) {
+
+		if (m_baseNode == m_initialNode) 
+			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
+		
 		if (m_baseNode == getNodeByIndex(m_baseNodeIndices[0]))
-			m_baseNode = getNodeByIndex(m_baseNodeIndices[1]);		
+			m_baseNode = getNodeByIndex(m_baseNodeIndices[1]);	
+
 		else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1]))
 			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);		
 	}
 
 	if (m_canGoOutsideBase && m_baseNode == m_initialNode)
-		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);		
+		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
 
 	if (m_currentNode == getNodeByIndex(baseEntranceNodeIndex)) {
 		if (toggleFrightenedMode && m_previousEnemyState != EnemyState::eaten) {
@@ -539,6 +542,10 @@ void Enemy::setSpeed(const float p_speed) {
 
 void Enemy::assignBlinkyToInky(Enemy* p_blinky) {
 	m_blinky = p_blinky;
+}
+
+void Enemy::goToBase() {
+	m_canGoOutsideBase = false;
 }
 
 void Enemy::switchClydeToChase() {
