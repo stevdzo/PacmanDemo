@@ -36,7 +36,6 @@ private:
 
 	bool m_frightenedDirectionChosen;
 	bool m_frightened;
-	bool m_inBase;
 	bool m_canGoOutsideBase;
 
 	EnemyState m_initialEnemyState;

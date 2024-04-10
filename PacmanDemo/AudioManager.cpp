@@ -60,11 +60,13 @@ void AudioManager::playPacEatSound() {
 }
 
 void AudioManager::playIntroSound() {
-	m_system->playSound(m_sfxIntro, 0, false, &m_chIntro);
+	if (!isPlaying(m_chIntro))
+		m_system->playSound(m_sfxIntro, 0, false, &m_chIntro);
 }
 
 void AudioManager::playDieSound() {
-	m_system->playSound(m_sfxPacDie, 0, false, &m_chDie);
+	if (!isPlaying(m_chDie))
+		m_system->playSound(m_sfxPacDie, 0, false, &m_chDie);
 }
 
 void AudioManager::playFrightenedSound() {
@@ -73,7 +75,8 @@ void AudioManager::playFrightenedSound() {
 }
 
 void AudioManager::playEatGhostSound() {
-	m_system->playSound(m_sfxEatGhost, 0, false, &m_chEatGhost);
+	//if (!isPlaying(m_chEatGhost))
+		m_system->playSound(m_sfxEatGhost, 0, false, &m_chEatGhost);
 }
 
 void AudioManager::playSirenSound() {

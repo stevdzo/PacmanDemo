@@ -38,6 +38,10 @@ void InputManager::keyboardUp(int p_key, int p_x, int p_y) {
     }
             break;
 
+    case '2': {
+        toggleFrightenedMode = !toggleFrightenedMode;
+    }
+            break;
     case '3': {
         globalGameState = GameState::paused;
 
@@ -45,6 +49,10 @@ void InputManager::keyboardUp(int p_key, int p_x, int p_y) {
             break;
     case '4': {
         globalGameState = GameState::running;
+    }
+            break;
+    case '5': {
+        dotCounter = 246;
     }
             break;
     }

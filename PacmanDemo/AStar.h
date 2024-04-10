@@ -7,8 +7,8 @@ class AStar {
 
 private:
 
-	GraphNode* findNodeWithLowestCost (const Set<GraphNode*>& p_nodes);
-	GraphNode* findNodeWithHighestCost(const Set<GraphNode*>& p_nodes);
+	GraphNode* findNodeWithLowestFCost (const Set<GraphNode*>& p_nodes);
+	GraphNode* findNodeWithHighestGCost(const Set<GraphNode*>& p_nodes);
 
 public:
 

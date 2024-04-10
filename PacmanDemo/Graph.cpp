@@ -268,7 +268,8 @@ GraphNode* Graph::calculateInkyTargetNode(const GraphNode* p_node1, const GraphN
     GraphNode* node = m_nodeMatrix[targetRow][targetCol];
     if (targetRow >= 0 && targetRow < static_cast<int>(m_nodeMatrix.size()) &&
         targetCol >= 0 && targetCol < static_cast<int>(m_nodeMatrix[0].size()) &&
-        node->isValidNode())
+        node->isValidNode() &&
+       !node->isBaseNode())
          return node;
          
     return nullptr;

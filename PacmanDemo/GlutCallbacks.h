@@ -68,7 +68,7 @@ int glutMain(int p_argc, char** p_argv, int p_width, int p_height, const char* p
 	glutKeyboardUpFunc(keyboardUpCallback);
 	glutJoystickFunc(joystickCallback, joystickPollInterval);
 	glutMouseFunc(mouseCallback);
-	// ------------------------------------------------------
+	// ------------------------------------------------------	
 
 	glutMainLoop(); // glavna petlja igre
 

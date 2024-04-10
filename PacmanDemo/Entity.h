@@ -20,7 +20,6 @@ protected:
 	virtual int getNodeIndexByDirection(Direction p_direction) const;
 	virtual GraphNode* getNodeByIndex(int p_index) const;
 	virtual GraphNode* getNodeByDirectionFromCurrentNode(Direction p_direction) const;
-	virtual GraphNode* getNodeByDirectionFromCustomNode(GraphNode* p_node, Direction p_direction) const;
 	virtual GraphNode* getNodeInDirection(GraphNode* p_node, Direction p_direction, const int p_tileDistance) const;
 	virtual GraphNode* getNodeByPosition() const;
 	virtual GraphNode* getNodeByPosition(Vector2D p_position) const;	

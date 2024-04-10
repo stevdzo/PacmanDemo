@@ -1,62 +1,57 @@
-#include "Entity.h"
+﻿#include "Entity.h"
 
 int Entity::getDistanceInNodes(GraphNode* m_targetNode) const {
     return Graph::getInstance()->calculateDistanceInNodes(m_currentNode, m_targetNode);
 }
 
-// Gets the node positioned next to current node by given direction
+// Vraća indeks susednog čvora u smeru kretanja
 int Entity::getNodeIndexByDirection(Direction p_direction) const {
     return Graph::getInstance()->getNodeIndexByDirection(m_currentNode, p_direction);
 }
 
-// Gets the node from graph by index
+// Vraća čvor grafa po indeksu
 GraphNode* Entity::getNodeByIndex(int p_index) const {
     return Graph::getInstance()->getNodeVector()[p_index];
 }
 
-// Gets the node from given direction by current node
+// Vraća susedni čvor u smeru kretanja
 GraphNode* Entity::getNodeByDirectionFromCurrentNode(Direction p_direction) const {
     auto index = getNodeIndexByDirection(p_direction);
     auto node = getNodeByIndex(index);
     return node ? node : nullptr;
 }
 
-// Gets the node from given direction by custom node
-GraphNode* Entity::getNodeByDirectionFromCustomNode(GraphNode* p_node, Direction p_direction) const {
-    return getNodeByIndex(Graph::getInstance()->getNodeIndexByDirection(p_node, p_direction));
-}
-
-// Gets the node from graph x nodes from current node based on current direction
+// Vraća čvor sa datom udaljenošću od trenutnog čova u smeru kretanja
 GraphNode* Entity::getNodeInDirection(GraphNode* p_node, Direction p_direction, const int p_tileDistance) const {
     return Graph::getInstance()->getNodeInPlayerDirection(p_node, p_direction, p_tileDistance);
 }
 
-// Gets the node from graph by current position of entity
+// Vraća čvor prema trenutnoj poziciji
 GraphNode* Entity::getNodeByPosition() const {
     auto node = Graph::getInstance()->getNodeByPosition(m_position);
     return (node != nullptr) ? node : m_previousNode;
 }
 
-// Gets the node by given position
+// Vraća čvor prema datoj poziciji
 GraphNode* Entity::getNodeByPosition(Vector2D p_position) const {
     return Graph::getInstance()->getNodeByPosition(p_position);
 }
 
-// Gets the node based on two targets doubling the distance (for inky)
+// Vraća čvor tako što povlači vektor od prvog do drugog čvora i duplira ga (za Inky-a)
 GraphNode* Entity::getNodeByTwoTargetsDoubled(GraphNode* p_node1, GraphNode* p_node2, Direction p_direction) const {
     return Graph::getInstance()->calculateInkyTargetNode(p_node1, p_node2, p_direction);
 }
 
-// Gets the direction between current and next node
+// Vraća smer u kom se nalazi sledeći čvor u odnosu na trenutni
 Direction Entity::getDirectionByNextNode() const {
     return Graph::getInstance()->getDirectionByNode(m_currentNode, m_nextNode);
 }
 
-// Gets the direction from current to given node
+// Vraća smer u kom se nalazi dati čvor u odnosu na trenutni
 Direction Entity::getDirectionByGivenNode(GraphNode* p_node) const {
     return Graph::getInstance()->getDirectionByNode(m_currentNode, p_node);
 }
-
+ 
 void Entity::setVelocityByDirection() {
 
     switch (m_currentDirection) {

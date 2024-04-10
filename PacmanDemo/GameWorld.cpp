@@ -115,7 +115,7 @@ void GameWorld::updateGhosts() {
 	m_blinky->update(m_deltaTime);
 
 	if (dotCounter >= inkyDotExitThreshold)
-		m_inky->exitBase();
+		m_inky->exitBase();	
 
 	if (dotCounter >= clydeDotExitThreshold)
 		m_clyde->exitBase();
@@ -380,7 +380,7 @@ void GameWorld::onPausedGameState() {
 
 	if (gameStartTimer > gameRestartTimerThreshold) {
 
-		gameStartTimer = 0.0f;
+		gameStartTimer = 0.0f;		
 
 		m_pinky->exitBase();
 		AudioManager::getInstance()->playSirenSound();
@@ -427,7 +427,8 @@ void GameWorld::onNextLevelGameState() {
 		siren4Executed = false;
 		siren5Executed = false;
 
-		currentSirenSoundIndex = 0;
+		currentSirenSoundIndex = 0;		
+		dotCounter = 0;
 
 		adjustLevelStats();
 

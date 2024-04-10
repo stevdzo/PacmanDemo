@@ -130,10 +130,8 @@ void Player::onDotCollision(Vector<Dot*>& p_dots) {
 			++it;
 	}
 
-	if (dotCounter >= maxDots) {
-		m_allDotsEaten = true;
-		dotCounter = 0;
-	}
+	if (dotCounter >= maxDots)
+		m_allDotsEaten = true;		
 }
 
 void Player::checkGameOver() {
@@ -331,7 +329,7 @@ void Player::increaseHealth() {
 
 		auto pacImg = new GameObject(Sprite(pacFilePath)); 
 		pacImg->setSize(Vector2D(48.0f, 48.0f));
-		pacImg->setPosition(Vector2D(screenWidth / 2 + pacUIOffsetX + (pacUISpacingX * (lastIndex+1)), screenHeight / 2 - pacUIOffsetY));
+		pacImg->setPosition(Vector2D(screenWidth / 2 + pacUIOffsetX + (pacUISpacingX * (lastIndex+1)), screenHeight / 2 - pacUIOffsetY)); 
 		m_pacLives.push_back(pacImg);
 
 		AudioManager::getInstance()->playExtendSound();

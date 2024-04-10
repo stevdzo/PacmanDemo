@@ -32,8 +32,6 @@ Enemy::Enemy(GhostType p_ghostType,
 
 	m_frightenedDirectionChosen = false;
 
-	m_inBase = m_ghostType == GhostType::blinky ? false : true;
-
 	m_sprite.setCurrentFrame(m_animRange[0]);
 
 	if (m_ghostType != GhostType::blinky)
@@ -142,14 +140,15 @@ void Enemy::restart() {
 
 	m_canGoOutsideBase = false;
 
-	m_inBase = m_ghostType == GhostType::blinky ? false : true;
-
 	m_sprite.setCurrentFrame(m_animRange[0]);	
 
 	if (m_ghostType != GhostType::blinky)
 		changeEnemyState(EnemyState::base);
 	else
 		changeEnemyState(globalGhostState);
+
+	if (m_currentEnemyState == EnemyState::base)
+		findShortestPath(m_currentTargetNode);
 }
 
 // pozivanje odgovarajuće funkcije zavisno od m_currentDirection
@@ -327,10 +326,10 @@ void Enemy::onChase() {
 	setSpeed(chaseScatterSpeed);
 	setDesiredDirection(getDirectionByNextNode());
 
-	if (canUpdateChaseTarget()) {
+	//if (canUpdateChaseTarget()) {
 		findShortestPath(m_playerNode);
 		updateChaseTarget();			
-	}
+	//}
 	followPath();
 }
 
@@ -338,7 +337,7 @@ void Enemy::onScatter() {
 	setSpeed(chaseScatterSpeed);
 	setDesiredDirection(getDirectionByNextNode());
 
-	if (canUpdateChaseTarget())
+	//if (canUpdateChaseTarget())
 		findShortestPath(m_scatterNode);
 
 	if (pathCompleted()) {	
@@ -355,10 +354,7 @@ void Enemy::onEaten() {
 	setSpeed(eatenSpeed);
 	setDesiredDirection(getDirectionByNextNode());	
 
-	if (m_currentNode == getNodeByIndex(baseEntranceNodeIndex))
-		m_inBase = true;
-
-	if (canUpdateChaseTarget())
+	//if (canUpdateChaseTarget())
 		findShortestPath(m_eatenNode);	
 
 	if (pathCompleted()) {
@@ -398,7 +394,6 @@ void Enemy::onBase() {
 	if (pathCompleted()) {
 		findShortestPath(m_baseNode);
 		m_currentTargetNode = m_baseNode;
-		//m_inBase = true;
 		toggleBaseNode();
 	}
 	followPath();	
@@ -474,21 +469,16 @@ void Enemy::toggleScatterNode() {
 void Enemy::toggleBaseNode() {
 
 	if (!m_canGoOutsideBase && m_baseNode != getNodeByIndex(m_baseNodeIndices[2])) {
-		if (m_baseNode == getNodeByIndex(m_baseNodeIndices[0])) {
-			m_baseNode = getNodeByIndex(m_baseNodeIndices[1]);
-		}
-		else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1])) {
-			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);
-		}
+		if (m_baseNode == getNodeByIndex(m_baseNodeIndices[0]))
+			m_baseNode = getNodeByIndex(m_baseNodeIndices[1]);		
+		else if (m_baseNode == getNodeByIndex(m_baseNodeIndices[1]))
+			m_baseNode = getNodeByIndex(m_baseNodeIndices[0]);		
 	}
 
-	if (m_canGoOutsideBase && m_baseNode == m_initialNode) {
-		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);
-	}
+	if (m_canGoOutsideBase && m_baseNode == m_initialNode)
+		m_baseNode = getNodeByIndex(m_baseNodeIndices[2]);		
 
 	if (m_currentNode == getNodeByIndex(baseEntranceNodeIndex)) {
-		m_inBase = false;
-
 		if (toggleFrightenedMode && m_previousEnemyState != EnemyState::eaten) {
 			changeEnemyState(EnemyState::frightened);
 			return;
@@ -520,7 +510,6 @@ void Enemy::changeEnemyState(EnemyState p_enemyState) {
 
 void Enemy::returnPreviousEnemyState() {
 	changeEnemyState(m_previousEnemyState);
-	//m_currentEnemyState = m_previousEnemyState;
 }
 
 void Enemy::reverseDirection() {
@@ -577,7 +566,7 @@ bool Enemy::closeToNode() {
 }
 
 bool Enemy::canUpdateChaseTarget() {
-	return !distanceToSq(m_nextNode->getPosition()) <= nodeSize;
+	return distanceToSq(m_nextNode->getPosition()) <= nodeSize;
 }
 
 bool Enemy::canCalculateNewDirection() const {

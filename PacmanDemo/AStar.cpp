@@ -20,7 +20,7 @@ Vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_
 	openNodes.insert(p_startNode);
 
 	while (!openNodes.empty()) {
-		GraphNode* currentNode = findNodeWithLowestCost(openNodes);
+		GraphNode* currentNode = findNodeWithLowestFCost(openNodes);
 
 		openNodes.erase(currentNode);
 		closedNodes.insert(currentNode);
@@ -35,7 +35,7 @@ Vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_
 			return finalPath;
 		}
 
-		for (auto* adjNode : currentNode->getConnectedNodes()) {			
+		for (auto& adjNode : currentNode->getConnectedNodes()) {			
 			
 			if (closedNodes.count(adjNode) || adjNode->isObstacle() || !adjNode->isValidNode() || adjNode->getIndex() == specialBlockNodeIndex)
 				continue;	
@@ -56,7 +56,7 @@ Vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_
 			adjNode->setHCost(heuristicDistance(adjNode, p_targetNode));
 			adjNode->setFCost(adjNode->getGCost() + adjNode->getHCost());
 
-			if (openNodes.count(adjNode) && adjNode->getGCost() > findNodeWithHighestCost(openNodes)->getGCost())
+			if (openNodes.count(adjNode) && adjNode->getGCost() > findNodeWithHighestGCost(openNodes)->getGCost())
 				continue;
 			
 			openNodes.insert(adjNode);							
@@ -65,7 +65,7 @@ Vector<GraphNode*> AStar::findShortestPath(GraphNode* p_startNode, GraphNode* p_
 }
 
 // std::set<GraphNode*>& p_nodes - skup čvorova na osnovu koga se traži čvor sa najmanjom cenom
-GraphNode* AStar::findNodeWithLowestCost(const Set<GraphNode*>& p_nodes) {
+GraphNode* AStar::findNodeWithLowestFCost(const Set<GraphNode*>& p_nodes) {
 
 	GraphNode* lowestCostNode = nullptr;
 	int lowestCost = std::numeric_limits<int>::max();
@@ -80,7 +80,7 @@ GraphNode* AStar::findNodeWithLowestCost(const Set<GraphNode*>& p_nodes) {
 }
 
 // std::set<GraphNode*>& p_nodes - skup čvorova na osnovu koga se traži čvor sa najvišom cenom
-GraphNode* AStar::findNodeWithHighestCost(const Set<GraphNode*>& p_nodes) {
+GraphNode* AStar::findNodeWithHighestGCost(const Set<GraphNode*>& p_nodes) {
 	GraphNode* highestCostNode = nullptr;
 	int highestCost = std::numeric_limits<int>::min();
 

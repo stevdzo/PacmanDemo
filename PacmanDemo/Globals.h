@@ -9,6 +9,7 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#include <queue>
 #include <random>
 #include <thread>
 #include <chrono>
